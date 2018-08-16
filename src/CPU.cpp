@@ -51,7 +51,7 @@ CPU::CPU(const std::vector<uint8_t>& operations)
 void CPU::tick()
 {
     auto opcode = _memory->readByte(_registers.PC++);
-    auto handler = _commandHandlers[opcode];
+    auto handler = _instructions[opcode];
     if (!handler)
     {
         throw std::runtime_error("Invalid opcode: " + opcode);
@@ -85,112 +85,112 @@ std::shared_ptr<Memory> CPU::getMemory()
 
 void CPU::initHandlers()
 {
-    memset(&_commandHandlers, 0, 0xFF);
+    memset(&_instructions, 0, 0xFF);
 
-    _commandHandlers[0x69] = [this]() { op_adc(access_imm); };
-    _commandHandlers[0x65] = [this]() { op_adc(access_zp); };
-    _commandHandlers[0x75] = [this]() { op_adc(access_zpx); };
-    _commandHandlers[0x6D] = [this]() { op_adc(access_abs); };
-    _commandHandlers[0x7D] = [this]() { op_adc(access_absx); };
-    _commandHandlers[0x79] = [this]() { op_adc(access_absy); };
-    _commandHandlers[0x61] = [this]() { op_adc(access_indx); };
-    _commandHandlers[0x71] = [this]() { op_adc(access_indy); };
+    _instructions[0x69] = [this]() { op_adc(access_imm); };
+    _instructions[0x65] = [this]() { op_adc(access_zp); };
+    _instructions[0x75] = [this]() { op_adc(access_zpx); };
+    _instructions[0x6D] = [this]() { op_adc(access_abs); };
+    _instructions[0x7D] = [this]() { op_adc(access_absx); };
+    _instructions[0x79] = [this]() { op_adc(access_absy); };
+    _instructions[0x61] = [this]() { op_adc(access_indx); };
+    _instructions[0x71] = [this]() { op_adc(access_indy); };
 
-    _commandHandlers[0x29] = [this]() { op_and(access_imm); };
-    _commandHandlers[0x25] = [this]() { op_and(access_zp); };
-    _commandHandlers[0x35] = [this]() { op_and(access_zpx); };
-    _commandHandlers[0x2D] = [this]() { op_and(access_abs); };
-    _commandHandlers[0x3D] = [this]() { op_and(access_absx); };
-    _commandHandlers[0x39] = [this]() { op_and(access_absy); };
-    _commandHandlers[0x21] = [this]() { op_and(access_indx); };
-    _commandHandlers[0x31] = [this]() { op_and(access_indy); };
+    _instructions[0x29] = [this]() { op_and(access_imm); };
+    _instructions[0x25] = [this]() { op_and(access_zp); };
+    _instructions[0x35] = [this]() { op_and(access_zpx); };
+    _instructions[0x2D] = [this]() { op_and(access_abs); };
+    _instructions[0x3D] = [this]() { op_and(access_absx); };
+    _instructions[0x39] = [this]() { op_and(access_absy); };
+    _instructions[0x21] = [this]() { op_and(access_indx); };
+    _instructions[0x31] = [this]() { op_and(access_indy); };
 
-    _commandHandlers[0x0A] = [this]() { op_asl(access_acc); };
-    _commandHandlers[0x06] = [this]() { op_asl(access_zp); };
-    _commandHandlers[0x16] = [this]() { op_asl(access_zpx); };
-    _commandHandlers[0x0E] = [this]() { op_asl(access_abs); };
-    _commandHandlers[0x1E] = [this]() { op_asl(access_absx); };
+    _instructions[0x0A] = [this]() { op_asl(access_acc); };
+    _instructions[0x06] = [this]() { op_asl(access_zp); };
+    _instructions[0x16] = [this]() { op_asl(access_zpx); };
+    _instructions[0x0E] = [this]() { op_asl(access_abs); };
+    _instructions[0x1E] = [this]() { op_asl(access_absx); };
 
-    _commandHandlers[0x90] = [this]() { op_bcc(access_rel); };
-    _commandHandlers[0xB0] = [this]() { op_bcs(access_rel); };
-    _commandHandlers[0xF0] = [this]() { op_beq(access_rel); };
-    _commandHandlers[0x30] = [this]() { op_bmi(access_rel); };
-    _commandHandlers[0xD0] = [this]() { op_bne(access_rel); };
-    _commandHandlers[0x10] = [this]() { op_bpl(access_rel); };
-    _commandHandlers[0x50] = [this]() { op_bvc(access_rel); };
-    _commandHandlers[0x70] = [this]() { op_bvs(access_rel); };
+    _instructions[0x90] = [this]() { op_bcc(access_rel); };
+    _instructions[0xB0] = [this]() { op_bcs(access_rel); };
+    _instructions[0xF0] = [this]() { op_beq(access_rel); };
+    _instructions[0x30] = [this]() { op_bmi(access_rel); };
+    _instructions[0xD0] = [this]() { op_bne(access_rel); };
+    _instructions[0x10] = [this]() { op_bpl(access_rel); };
+    _instructions[0x50] = [this]() { op_bvc(access_rel); };
+    _instructions[0x70] = [this]() { op_bvs(access_rel); };
 
-    _commandHandlers[0x24] = [this]() { op_bit(access_zp); };
-    _commandHandlers[0x2C] = [this]() { op_bit(access_abs); };
+    _instructions[0x24] = [this]() { op_bit(access_zp); };
+    _instructions[0x2C] = [this]() { op_bit(access_abs); };
 
-    _commandHandlers[0x00] = [this]() { op_brk(access_impl); };
+    _instructions[0x00] = [this]() { op_brk(access_impl); };
 
-    _commandHandlers[0x18] = [this]() { op_clc(access_impl); };
-    _commandHandlers[0xD8] = [this]() { op_cld(access_impl); };
-    _commandHandlers[0x58] = [this]() { op_cli(access_impl); };
-    _commandHandlers[0xB8] = [this]() { op_clv(access_impl); };
+    _instructions[0x18] = [this]() { op_clc(access_impl); };
+    _instructions[0xD8] = [this]() { op_cld(access_impl); };
+    _instructions[0x58] = [this]() { op_cli(access_impl); };
+    _instructions[0xB8] = [this]() { op_clv(access_impl); };
 
-    _commandHandlers[0xC9] = [this]() { op_cmp(access_imm); };
-    _commandHandlers[0xC5] = [this]() { op_cmp(access_zp); };
-    _commandHandlers[0xD5] = [this]() { op_cmp(access_zpx); };
-    _commandHandlers[0xCD] = [this]() { op_cmp(access_abs); };
-    _commandHandlers[0xDD] = [this]() { op_cmp(access_absx); };
-    _commandHandlers[0xD9] = [this]() { op_cmp(access_absy); };
-    _commandHandlers[0xC1] = [this]() { op_cmp(access_indx); };
-    _commandHandlers[0xD1] = [this]() { op_cmp(access_indy); };
+    _instructions[0xC9] = [this]() { op_cmp(access_imm); };
+    _instructions[0xC5] = [this]() { op_cmp(access_zp); };
+    _instructions[0xD5] = [this]() { op_cmp(access_zpx); };
+    _instructions[0xCD] = [this]() { op_cmp(access_abs); };
+    _instructions[0xDD] = [this]() { op_cmp(access_absx); };
+    _instructions[0xD9] = [this]() { op_cmp(access_absy); };
+    _instructions[0xC1] = [this]() { op_cmp(access_indx); };
+    _instructions[0xD1] = [this]() { op_cmp(access_indy); };
 
-    _commandHandlers[0xE0] = [this]() { op_cpx(access_imm); };
-    _commandHandlers[0xE4] = [this]() { op_cpx(access_zp); };
-    _commandHandlers[0xEC] = [this]() { op_cpx(access_abs); };
-    _commandHandlers[0xC0] = [this]() { op_cpy(access_imm); };
-    _commandHandlers[0xC4] = [this]() { op_cpy(access_zp); };
-    _commandHandlers[0xCC] = [this]() { op_cpy(access_abs); };
+    _instructions[0xE0] = [this]() { op_cpx(access_imm); };
+    _instructions[0xE4] = [this]() { op_cpx(access_zp); };
+    _instructions[0xEC] = [this]() { op_cpx(access_abs); };
+    _instructions[0xC0] = [this]() { op_cpy(access_imm); };
+    _instructions[0xC4] = [this]() { op_cpy(access_zp); };
+    _instructions[0xCC] = [this]() { op_cpy(access_abs); };
 
-    _commandHandlers[0xC6] = [this]() { op_dec(address_zp); };
-    _commandHandlers[0xD6] = [this]() { op_dec(address_zpx); };
-    _commandHandlers[0xCE] = [this]() { op_dec(address_abs); };
-    _commandHandlers[0xDE] = [this]() { op_dec(address_absx); };
-    _commandHandlers[0xCA] = [this]() { op_dex(access_impl); };
-    _commandHandlers[0x88] = [this]() { op_dey(access_impl); };
+    _instructions[0xC6] = [this]() { op_dec(address_zp); };
+    _instructions[0xD6] = [this]() { op_dec(address_zpx); };
+    _instructions[0xCE] = [this]() { op_dec(address_abs); };
+    _instructions[0xDE] = [this]() { op_dec(address_absx); };
+    _instructions[0xCA] = [this]() { op_dex(access_impl); };
+    _instructions[0x88] = [this]() { op_dey(access_impl); };
 
-    _commandHandlers[0x49] = [this]() { op_eor(access_imm); };
-    _commandHandlers[0x45] = [this]() { op_eor(access_zp); };
-    _commandHandlers[0x55] = [this]() { op_eor(access_zpx); };
-    _commandHandlers[0x4D] = [this]() { op_eor(access_abs); };
-    _commandHandlers[0x5D] = [this]() { op_eor(access_absx); };
-    _commandHandlers[0x59] = [this]() { op_eor(access_absy); };
-    _commandHandlers[0x41] = [this]() { op_eor(access_indx); };
-    _commandHandlers[0x51] = [this]() { op_eor(access_indy); };
+    _instructions[0x49] = [this]() { op_eor(access_imm); };
+    _instructions[0x45] = [this]() { op_eor(access_zp); };
+    _instructions[0x55] = [this]() { op_eor(access_zpx); };
+    _instructions[0x4D] = [this]() { op_eor(access_abs); };
+    _instructions[0x5D] = [this]() { op_eor(access_absx); };
+    _instructions[0x59] = [this]() { op_eor(access_absy); };
+    _instructions[0x41] = [this]() { op_eor(access_indx); };
+    _instructions[0x51] = [this]() { op_eor(access_indy); };
 
-    _commandHandlers[0xE6] = [this]() { op_inc(address_zp); };
-    _commandHandlers[0xF6] = [this]() { op_inc(address_zpx); };
-    _commandHandlers[0xEE] = [this]() { op_inc(address_abs); };
-    _commandHandlers[0xFE] = [this]() { op_inc(address_absx); };
-    _commandHandlers[0xE8] = [this]() { op_inx(access_impl); };
-    _commandHandlers[0xC8] = [this]() { op_iny(access_impl); };
+    _instructions[0xE6] = [this]() { op_inc(address_zp); };
+    _instructions[0xF6] = [this]() { op_inc(address_zpx); };
+    _instructions[0xEE] = [this]() { op_inc(address_abs); };
+    _instructions[0xFE] = [this]() { op_inc(address_absx); };
+    _instructions[0xE8] = [this]() { op_inx(access_impl); };
+    _instructions[0xC8] = [this]() { op_iny(access_impl); };
 
-    _commandHandlers[0x4C] = [this]() { op_jmp(address_abs); };
-    _commandHandlers[0x6C] = [this]() { op_jmp(address_ind); };
-    _commandHandlers[0x20] = [this]() { op_jsr(address_abs); };
+    _instructions[0x4C] = [this]() { op_jmp(address_abs); };
+    _instructions[0x6C] = [this]() { op_jmp(address_ind); };
+    _instructions[0x20] = [this]() { op_jsr(address_abs); };
 
-    _commandHandlers[0xA9] = [this]() { op_lda(access_imm); };
-    _commandHandlers[0xA5] = [this]() { op_lda(access_zp); };
-    _commandHandlers[0xB5] = [this]() { op_lda(access_zpx); };
-    _commandHandlers[0xAD] = [this]() { op_lda(access_abs); };
-    _commandHandlers[0xBD] = [this]() { op_lda(access_absx); };
-    _commandHandlers[0xB9] = [this]() { op_lda(access_absy); };
-    _commandHandlers[0xA1] = [this]() { op_lda(access_indx); };
-    _commandHandlers[0xB1] = [this]() { op_lda(access_indy); };
-    _commandHandlers[0xA2] = [this]() { op_ldx(access_imm); };
-    _commandHandlers[0xA6] = [this]() { op_ldx(access_zp); };
-    _commandHandlers[0xB6] = [this]() { op_ldx(access_zpy); };
-    _commandHandlers[0xAE] = [this]() { op_ldx(access_abs); };
-    _commandHandlers[0xBE] = [this]() { op_ldx(access_absy); };
-    _commandHandlers[0xA0] = [this]() { op_ldy(access_imm); };
-    _commandHandlers[0xA4] = [this]() { op_ldy(access_zp); };
-    _commandHandlers[0xB4] = [this]() { op_ldy(access_zpx); };
-    _commandHandlers[0xAC] = [this]() { op_ldy(access_abs); };
-    _commandHandlers[0xBC] = [this]() { op_ldy(access_absx); };
+    _instructions[0xA9] = [this]() { op_lda(access_imm); };
+    _instructions[0xA5] = [this]() { op_lda(access_zp); };
+    _instructions[0xB5] = [this]() { op_lda(access_zpx); };
+    _instructions[0xAD] = [this]() { op_lda(access_abs); };
+    _instructions[0xBD] = [this]() { op_lda(access_absx); };
+    _instructions[0xB9] = [this]() { op_lda(access_absy); };
+    _instructions[0xA1] = [this]() { op_lda(access_indx); };
+    _instructions[0xB1] = [this]() { op_lda(access_indy); };
+    _instructions[0xA2] = [this]() { op_ldx(access_imm); };
+    _instructions[0xA6] = [this]() { op_ldx(access_zp); };
+    _instructions[0xB6] = [this]() { op_ldx(access_zpy); };
+    _instructions[0xAE] = [this]() { op_ldx(access_abs); };
+    _instructions[0xBE] = [this]() { op_ldx(access_absy); };
+    _instructions[0xA0] = [this]() { op_ldy(access_imm); };
+    _instructions[0xA4] = [this]() { op_ldy(access_zp); };
+    _instructions[0xB4] = [this]() { op_ldy(access_zpx); };
+    _instructions[0xAC] = [this]() { op_ldy(access_abs); };
+    _instructions[0xBC] = [this]() { op_ldy(access_absx); };
 }
 
 void CPU::op_adc(CPU::AccessMethod accessMethod)

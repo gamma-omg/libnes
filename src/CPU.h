@@ -117,7 +117,7 @@ private:
 private:
     std::shared_ptr<Memory> _memory;
     Registers _registers;
-    InstructionHandler _commandHandlers[0xFF];
+    InstructionHandler _instructions[0xFF];
 
 };
 

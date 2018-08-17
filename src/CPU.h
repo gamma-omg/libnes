@@ -16,8 +16,6 @@ class CPU
 {
 private:
     using InstructionHandler = cpu_cycle_t (CPU::*)();
-    using AccessMethod = uint8_t (CPU::*)();
-    using AddressReader = uint16_t (CPU::*)();
 
 public:
     struct Registers
@@ -75,7 +73,8 @@ private:
     template <typename AccessMode> cpu_cycle_t op_ldx();
     template <typename AccessMode> cpu_cycle_t op_ldy();
     template <typename AccessMode> cpu_cycle_t op_bit();
-    template <typename AccessMethod> cpu_cycle_t op_lsr();
+    template <typename AccessMode> cpu_cycle_t op_lsr();
+    template <typename AccessMode> cpu_cycle_t op_ora();
 
     cpu_cycle_t op_bcc();
     cpu_cycle_t op_bcs();

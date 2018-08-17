@@ -215,6 +215,15 @@ void CPU::setupInstructions()
     _instructions[0x5E] = CPU::op_lsr<ABSX>;
 
     _instructions[0xEA] = CPU::op_nop;
+
+    _instructions[0x09] = CPU::op_ora<IMM>;
+    _instructions[0x05] = CPU::op_ora<ZP>;
+    _instructions[0x15] = CPU::op_ora<ZPX>;
+    _instructions[0x0D] = CPU::op_ora<ABS>;
+    _instructions[0x1D] = CPU::op_ora<ABSX>;
+    _instructions[0x19] = CPU::op_ora<ABSY>;
+    _instructions[0x01] = CPU::op_ora<INDX>;
+    _instructions[0x11] = CPU::op_ora<INDY>;
 }
 
 template <typename AccessMode>
@@ -393,10 +402,10 @@ cpu_cycle_t CPU::op_ldy()
     return am.getCycles();
 }
 
-template<typename AccessMethod>
+template<typename AccessMode>
 cpu_cycle_t CPU::op_lsr()
 {
-    AccessMethod am(_registers, _memory.get());
+    AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
     uint8_t result = operand >> 1;
 
@@ -405,6 +414,20 @@ cpu_cycle_t CPU::op_lsr()
     _registers.setFlag(Registers::Flags::Z, result == 0);
 
     am.write(result);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_ora()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    uint8_t result = _registers.A | operand;
+
+    _registers.setFlag(Registers::Flags::N, result & 0x80);
+    _registers.setFlag(Registers::Flags::Z, result == 0);
+    _registers.A = result;
+
     return am.getCycles();
 }
 

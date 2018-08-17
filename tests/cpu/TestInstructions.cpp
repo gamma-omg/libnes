@@ -1566,3 +1566,59 @@ TEST(CPU, NOP)
 
     ASSERT_EQ(cpu.getCycle(), 2);
 }
+
+TEST(CPU, ORA)
+{
+    CPU cpu({ 0x09, 0b10101101 });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b10110101;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.A, 0b10111101);
+}
+
+TEST(CPU, ORA_flag_N_positive)
+{
+    CPU cpu({ 0x09, 0b10101101 });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b10110101;
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+
+TEST(CPU, ORA_flag_N_negative)
+{
+    CPU cpu({ 0x09, 0b00101101 });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b00110101;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+TEST(CPU, ORA_flag_Z_positive)
+{
+    CPU cpu({ 0x09, 0b00000000 });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b00000000;
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::Z));
+}
+
+TEST(CPU, ORA_flag_Z_negative)
+{
+    CPU cpu({ 0x09, 0b00000001 });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b00000000;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}

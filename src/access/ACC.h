@@ -20,6 +20,11 @@ public:
         return _registers.A;
     }
 
+    void write(uint8_t value)
+    {
+        _registers.A = value;
+    }
+
     cpu_cycle_t getCycles() const
     {
         return 1;

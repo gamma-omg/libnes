@@ -205,6 +205,12 @@ void CPU::setupInstructions()
     _instructions[0xB4] = CPU::op_ldy<ZPX>;
     _instructions[0xAC] = CPU::op_ldy<ABS>;
     _instructions[0xBC] = CPU::op_ldy<ABSX>;
+
+    _instructions[0x4A] = CPU::op_lsr<ACC>;
+    _instructions[0x46] = CPU::op_lsr<ZP>;
+    _instructions[0x56] = CPU::op_lsr<ZPX>;
+    _instructions[0x4E] = CPU::op_lsr<ABS>;
+    _instructions[0x5E] = CPU::op_lsr<ABSX>;
 }
 
 template <typename AccessMode>
@@ -380,6 +386,21 @@ cpu_cycle_t CPU::op_ldy()
     _registers.setFlag(Registers::Flags::N, _registers.Y & 0x80);
     _registers.setFlag(Registers::Flags::Z, _registers.Y == 0);
 
+    return am.getCycles();
+}
+
+template<typename AccessMethod>
+cpu_cycle_t CPU::op_lsr()
+{
+    AccessMethod am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    uint8_t result = operand >> 1;
+
+    _registers.setFlag(Registers::Flags::C, operand & 1);
+    _registers.setFlag(Registers::Flags::N, false);;
+    _registers.setFlag(Registers::Flags::Z, result == 0);
+
+    am.write(result);
     return am.getCycles();
 }
 

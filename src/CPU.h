@@ -75,6 +75,7 @@ private:
     template <typename AccessMode> cpu_cycle_t op_ldx();
     template <typename AccessMode> cpu_cycle_t op_ldy();
     template <typename AccessMode> cpu_cycle_t op_bit();
+    template <typename AccessMethod> cpu_cycle_t op_lsr();
 
     cpu_cycle_t op_bcc();
     cpu_cycle_t op_bcs();

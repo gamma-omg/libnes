@@ -1502,3 +1502,58 @@ TEST(CPU, LDY_flag_Z_negative)
 
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
+
+TEST(CPU, LSR)
+{
+    CPU cpu({ 0x4A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 4;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.A, 2);
+}
+
+TEST(CPU, LSR_flag_C_positive)
+{
+    CPU cpu({ 0x4A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b11;
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
+}
+
+TEST(CPU, LSR_flag_C_negative)
+{
+    CPU cpu({ 0x4A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b10;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::C));
+}
+
+TEST(CPU, LSR_flag_Z_positive)
+{
+    CPU cpu({ 0x4A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 1;
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::Z));
+}
+
+TEST(CPU, LSR_flag_Z_negative)
+{
+    CPU cpu({ 0x4A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 2;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}

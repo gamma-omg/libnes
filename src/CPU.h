@@ -8,12 +8,14 @@
 namespace nescore
 {
 
+typedef unsigned int cpu_cycle_t;
+
 class Memory;
 
 class CPU
 {
 private:
-    using InstructionHandler = std::function<void()>;
+    using InstructionHandler = cpu_cycle_t (CPU::*)();
     using AccessMethod = uint8_t (CPU::*)();
     using AddressReader = uint16_t (CPU::*)();
 
@@ -55,70 +57,54 @@ public:
     const Registers& getRegisters() const;
     Registers& getRegisters();
     std::shared_ptr<Memory> getMemory();
+    cpu_cycle_t getCycle() const;
 
 private:
     void initHandlers();
 
-    void op_adc(AccessMethod accessMethod);
-    void op_and(AccessMethod accessMethod);
-    void op_asl(AccessMethod accessMethod);
-    void op_bcc(AccessMethod accessMethod);
-    void op_bcs(AccessMethod accessMethod);
-    void op_beq(AccessMethod accessMethod);
-    void op_bit(AccessMethod accessMethod);
-    void op_bmi(AccessMethod accessMethod);
-    void op_bne(AccessMethod accessMethod);
-    void op_bpl(AccessMethod accessMethod);
-    void op_brk(AccessMethod accessMethod);
-    void op_bvc(AccessMethod accessMethod);
-    void op_bvs(AccessMethod accessMethod);
-    void op_clc(AccessMethod accessMethod);
-    void op_cld(AccessMethod accessMethod);
-    void op_cli(AccessMethod accessMethod);
-    void op_clv(AccessMethod accessMethod);
-    void op_cmp(AccessMethod accessMethod);
-    void op_cpx(AccessMethod accessMethod);
-    void op_cpy(AccessMethod accessMethod);
-    void op_dec(AddressReader addressReader);
-    void op_dex(AccessMethod accessMethod);
-    void op_dey(AccessMethod accessMethod);
-    void op_eor(AccessMethod accessMethod);
-    void op_inc(AddressReader addressReader);
-    void op_inx(AccessMethod accessMethod);
-    void op_iny(AccessMethod accessMethod);
-    void op_jmp(AddressReader addressReader);
-    void op_jsr(AddressReader addressReader);
-    void op_lda(AccessMethod accessMethod);
-    void op_ldx(AccessMethod accessMethod);
-    void op_ldy(AccessMethod accessMethod);
+    template <typename AccessMode> cpu_cycle_t op_adc();
+    template <typename AccessMode> cpu_cycle_t op_and();
+    template <typename AccessMode> cpu_cycle_t op_asl();
+    template <typename AccessMode> cpu_cycle_t op_cmp();
+    template <typename AccessMode> cpu_cycle_t op_cpx();
+    template <typename AccessMode> cpu_cycle_t op_cpy();
+    template <typename AccessMode> cpu_cycle_t op_dec();
+    template <typename AccessMode> cpu_cycle_t op_eor();
+    template <typename AccessMode> cpu_cycle_t op_inc();
+    template <typename AccessMode> cpu_cycle_t op_lda();
+    template <typename AccessMode> cpu_cycle_t op_ldx();
+    template <typename AccessMode> cpu_cycle_t op_ldy();
+    template <typename AccessMode> cpu_cycle_t op_bit();
 
-    uint8_t access_acc();
-    uint8_t access_imm();
-    uint8_t access_zp();
-    uint8_t access_zpx();
-    uint8_t access_zpy();
-    uint8_t access_abs();
-    uint8_t access_absx();
-    uint8_t access_absy();
-    uint8_t access_indx();
-    uint8_t access_indy();
-    uint8_t access_rel();
-    uint8_t access_impl();
-
-    uint16_t address_zp();
-    uint16_t address_zpx();
-    uint16_t address_abs();
-    uint16_t address_absx();
-    uint16_t address_ind();
+    cpu_cycle_t op_bcc();
+    cpu_cycle_t op_bcs();
+    cpu_cycle_t op_beq();
+    cpu_cycle_t op_bmi();
+    cpu_cycle_t op_bne();
+    cpu_cycle_t op_bpl();
+    cpu_cycle_t op_brk();
+    cpu_cycle_t op_bvc();
+    cpu_cycle_t op_bvs();
+    cpu_cycle_t op_clc();
+    cpu_cycle_t op_cld();
+    cpu_cycle_t op_cli();
+    cpu_cycle_t op_clv();
+    cpu_cycle_t op_dex();
+    cpu_cycle_t op_dey();
+    cpu_cycle_t op_inx();
+    cpu_cycle_t op_iny();
+    cpu_cycle_t op_jsr();
+    cpu_cycle_t op_jmp_abs();
+    cpu_cycle_t op_jmp_ind();
 
 private:
-    void conditionalJump(Registers::Flags flag, bool state, AccessMethod accessMethod);
+    cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);
 
 private:
     std::shared_ptr<Memory> _memory;
     Registers _registers;
     InstructionHandler _instructions[0xFF];
-
+    cpu_cycle_t _cycle;
 };
 
 }

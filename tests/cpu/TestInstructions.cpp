@@ -163,8 +163,8 @@ TEST(CPU, ADC_INDX)
 
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
-    memory->writeShort(0x07, 0x1010);
-    memory->writeByte(0x1010, 0x3);
+    memory->writeShort(0x05, 0x1000);
+    memory->writeByte(0x1002, 0x3);
     registers.X = 0x02;
 
     cpu.tick(2);
@@ -179,8 +179,8 @@ TEST(CPU, ADC_INDY)
 
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
-    memory->writeShort(0x07, 0x1010);
-    memory->writeByte(0x1010, 0x3);
+    memory->writeShort(0x05, 0x1000);
+    memory->writeByte(0x1002, 0x3);
     registers.Y = 0x02;
 
     cpu.tick(2);
@@ -1347,7 +1347,7 @@ TEST(CPU, JSR)
     cpu.tick();
 
     ASSERT_EQ(registers.PC, 4);
-    ASSERT_EQ(memory->readShortFromStack(registers.S + 2), Memory::ROM_OFFSET + 3);
+    ASSERT_EQ(memory->readShortFromStack(registers.S + 2), Memory::ROM_OFFSET + 2);
 }
 
 TEST(CPU, LDA)

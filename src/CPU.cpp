@@ -235,6 +235,11 @@ void CPU::setupInstructions()
     _instructions[0x36] = CPU::op_rol<ZPX>;
     _instructions[0x2E] = CPU::op_rol<ABS>;
     _instructions[0x3E] = CPU::op_rol<ABSX>;
+    _instructions[0x6A] = CPU::op_ror<ACC>;
+    _instructions[0x66] = CPU::op_ror<ZP>;
+    _instructions[0x76] = CPU::op_ror<ZPX>;
+    _instructions[0x6E] = CPU::op_ror<ABS>;
+    _instructions[0x7E] = CPU::op_ror<ABSX>;
 }
 
 template <typename AccessMode>
@@ -450,6 +455,21 @@ cpu_cycle_t CPU::op_rol()
     uint8_t result = (operand << 1) | (_registers.P & Registers::Flags::C);
 
     _registers.setFlag(Registers::Flags::C, operand >> 7);
+    _registers.setFlag(Registers::Flags::N, result & 0x80);
+    _registers.setFlag(Registers::Flags::Z, result == 0);
+
+    am.write(result);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_ror()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    uint8_t result = (operand >> 1) | ((_registers.P & Registers::Flags::C) << 7);
+
+    _registers.setFlag(Registers::Flags::C, operand & 0x01);
     _registers.setFlag(Registers::Flags::N, result & 0x80);
     _registers.setFlag(Registers::Flags::Z, result == 0);
 

@@ -99,7 +99,7 @@ cpu_cycle_t CPU::getCycle() const
 
 void CPU::initHandlers()
 {
-    memset(&_instructions, 0, 0xFF);
+    memset(&_instructions, 0, sizeof(InstructionHandler) * 0xFF);
 
     _instructions[0x69] = CPU::op_adc<IMM>;
     _instructions[0x65] = CPU::op_adc<ZP>;

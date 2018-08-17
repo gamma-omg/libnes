@@ -104,6 +104,7 @@ private:
     cpu_cycle_t op_pla();
     cpu_cycle_t op_plp();
     cpu_cycle_t op_rti();
+    cpu_cycle_t op_rts();
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);

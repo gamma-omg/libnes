@@ -242,6 +242,7 @@ void CPU::setupInstructions()
     _instructions[0x7E] = CPU::op_ror<ABSX>;
 
     _instructions[0x4D] = CPU::op_rti;
+    _instructions[0x60] = CPU::op_rts;
 }
 
 template <typename AccessMode>
@@ -641,6 +642,14 @@ cpu_cycle_t CPU::op_rti()
     _registers.S++;
     _registers.P = _memory->readByteFromStack(_registers.S++);
     _registers.PC = _memory->readShortFromStack(_registers.S);
+    _registers.S += 2;
+    return 5;
+}
+
+cpu_cycle_t CPU::op_rts()
+{
+    _registers.S++;
+    _registers.PC = _memory->readShortFromStack(_registers.S) + 1;
     _registers.S += 2;
     return 5;
 }

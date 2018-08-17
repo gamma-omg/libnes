@@ -1867,3 +1867,17 @@ TEST(CPU, RTI)
     ASSERT_EQ(registers.P, 0b10110011);
     ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0);
 }
+
+
+TEST(CPU, RTS)
+{
+    CPU cpu({ 0x00, 0x00, 0x60, 0x00 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    memory->writeShortToStack(registers.S--, registers.PC);
+    registers.PC = Memory::ROM_OFFSET + 2;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 1);
+}

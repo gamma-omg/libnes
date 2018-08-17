@@ -1848,3 +1848,22 @@ TEST(CPU, ROR_flag_C_negative)
 
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::C));
 }
+
+TEST(CPU, RTI)
+{
+    CPU cpu({ 0x00, 0x00, 0x4D, 0x00 });
+    auto& registers = cpu.getRegisters();
+    registers.P = 0b10110011;
+
+    auto memory = cpu.getMemory();
+    memory->writeShortToStack(registers.S--, registers.PC);
+    memory->writeByteToStack(registers.S--, registers.P);
+
+    registers.P = 0;
+    registers.PC = Memory::ROM_OFFSET + 2;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.P, 0b10110011);
+    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0);
+}

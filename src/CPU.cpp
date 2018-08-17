@@ -28,7 +28,7 @@ CPU::Registers::Registers()
 void CPU::Registers::reset()
 {
     A = P = X = Y = 0;
-    S = 0xFE;
+    S = 0xFD;
     PC = Memory::ROM_OFFSET;
 }
 
@@ -240,6 +240,8 @@ void CPU::setupInstructions()
     _instructions[0x76] = CPU::op_ror<ZPX>;
     _instructions[0x6E] = CPU::op_ror<ABS>;
     _instructions[0x7E] = CPU::op_ror<ABSX>;
+
+    _instructions[0x4D] = CPU::op_rti;
 }
 
 template <typename AccessMode>
@@ -632,6 +634,15 @@ cpu_cycle_t CPU::op_plp()
 {
     _registers.P = _memory->readShortFromStack(++_registers.S);
     return 3;
+}
+
+cpu_cycle_t CPU::op_rti()
+{
+    _registers.S++;
+    _registers.P = _memory->readByteFromStack(_registers.S++);
+    _registers.PC = _memory->readShortFromStack(_registers.S);
+    _registers.S += 2;
+    return 5;
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

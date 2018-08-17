@@ -1622,3 +1622,29 @@ TEST(CPU, ORA_flag_Z_negative)
 
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
+
+TEST(CPU, PHA)
+{
+    CPU cpu({ 0x48 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.A = 5;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readShortFromStack(registers.S + 1), 5);
+    ASSERT_EQ(cpu.getCycle(), 3);
+}
+
+TEST(CPU, PHP)
+{
+    CPU cpu({ 0x08 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.P = 0b10110101;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readShortFromStack(registers.S + 1), 0b10110101);
+    ASSERT_EQ(cpu.getCycle(), 3);
+}

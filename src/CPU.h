@@ -97,6 +97,8 @@ private:
     cpu_cycle_t op_jmp_abs();
     cpu_cycle_t op_jmp_ind();
     cpu_cycle_t op_nop();
+    cpu_cycle_t op_pha();
+    cpu_cycle_t op_php();
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);

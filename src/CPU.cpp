@@ -224,6 +224,9 @@ void CPU::setupInstructions()
     _instructions[0x19] = CPU::op_ora<ABSY>;
     _instructions[0x01] = CPU::op_ora<INDX>;
     _instructions[0x11] = CPU::op_ora<INDY>;
+
+    _instructions[0x48] = CPU::op_pha;
+    _instructions[0x08] = CPU::op_php;
 }
 
 template <typename AccessMode>
@@ -562,6 +565,18 @@ cpu_cycle_t CPU::op_dey()
 cpu_cycle_t CPU::op_nop()
 {
     return 1;
+}
+
+cpu_cycle_t CPU::op_pha()
+{
+    _memory->writeByteToStack(_registers.S--, _registers.A);
+    return 2;
+}
+
+cpu_cycle_t CPU::op_php()
+{
+    _memory->writeByteToStack(_registers.S--, _registers.P);
+    return 2;
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

@@ -1974,4 +1974,16 @@ TEST(CPU, SEC)
     cpu.tick();
 
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
+    ASSERT_EQ(cpu.getCycle(), 2);
+}
+
+TEST(CPU, SED)
+{
+    CPU cpu({ 0xF8 });
+    auto& registers = cpu.getRegisters();
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::D));
+    ASSERT_EQ(cpu.getCycle(), 2);
 }

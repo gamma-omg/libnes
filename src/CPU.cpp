@@ -254,6 +254,7 @@ void CPU::setupInstructions()
     _instructions[0xF1] = CPU::op_sbc<INDY>;
 
     _instructions[0x38] = CPU::op_sec;
+    _instructions[0xF8] = CPU::op_sed;
 }
 
 template <typename AccessMode>
@@ -668,7 +669,13 @@ cpu_cycle_t CPU::op_rts()
 cpu_cycle_t CPU::op_sec()
 {
     _registers.setFlag(Registers::Flags::C, true);
-    return 2;
+    return 1;
+}
+
+cpu_cycle_t CPU::op_sed()
+{
+    _registers.setFlag(Registers::Flags::D, true);
+    return 1;
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

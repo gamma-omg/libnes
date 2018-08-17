@@ -99,6 +99,7 @@ private:
     cpu_cycle_t op_nop();
     cpu_cycle_t op_pha();
     cpu_cycle_t op_php();
+    cpu_cycle_t op_pla();
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);

@@ -1648,3 +1648,18 @@ TEST(CPU, PHP)
     ASSERT_EQ(memory->readShortFromStack(registers.S + 1), 0b10110101);
     ASSERT_EQ(cpu.getCycle(), 3);
 }
+
+TEST(CPU, PLA)
+{
+    CPU cpu({ 0x48, 0x68 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.A = 5;
+    cpu.tick();
+    registers.A = 0;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.A, 5);
+    ASSERT_EQ(cpu.getCycle(), 3 + 4);
+}

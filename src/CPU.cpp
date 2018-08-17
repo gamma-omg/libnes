@@ -227,6 +227,7 @@ void CPU::setupInstructions()
 
     _instructions[0x48] = CPU::op_pha;
     _instructions[0x08] = CPU::op_php;
+    _instructions[0x68] = CPU::op_pla;
 }
 
 template <typename AccessMode>
@@ -577,6 +578,12 @@ cpu_cycle_t CPU::op_php()
 {
     _memory->writeByteToStack(_registers.S--, _registers.P);
     return 2;
+}
+
+cpu_cycle_t CPU::op_pla()
+{
+    _registers.A = _memory->readByteFromStack(++_registers.S);
+    return 3;
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

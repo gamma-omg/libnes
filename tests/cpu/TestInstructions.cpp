@@ -1965,3 +1965,13 @@ TEST(CPU, SBC_flag_C_negativee)
 
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
 }
+
+TEST(CPU, SEC)
+{
+    CPU cpu({ 0x38 });
+    auto& registers = cpu.getRegisters();
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
+}

@@ -252,6 +252,8 @@ void CPU::setupInstructions()
     _instructions[0xF9] = CPU::op_sbc<ABSY>;
     _instructions[0xE1] = CPU::op_sbc<INDX>;
     _instructions[0xF1] = CPU::op_sbc<INDY>;
+
+    _instructions[0x38] = CPU::op_sec;
 }
 
 template <typename AccessMode>
@@ -661,6 +663,12 @@ cpu_cycle_t CPU::op_rts()
     _registers.PC = _memory->readShortFromStack(_registers.S) + 1;
     _registers.S += 2;
     return 5;
+}
+
+cpu_cycle_t CPU::op_sec()
+{
+    _registers.setFlag(Registers::Flags::C, true);
+    return 2;
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

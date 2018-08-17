@@ -48,7 +48,7 @@ CPU::CPU(std::shared_ptr<Memory> memory)
     : _memory(memory)
 {
    _registers.reset();
-   initHandlers();
+    setupInstructions();
 }
 
 CPU::CPU(const std::vector<uint8_t>& operations)
@@ -97,7 +97,7 @@ cpu_cycle_t CPU::getCycle() const
     return _cycle;
 }
 
-void CPU::initHandlers()
+void CPU::setupInstructions()
 {
     memset(&_instructions, 0, sizeof(InstructionHandler) * 0xFF);
 

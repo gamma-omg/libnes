@@ -60,7 +60,7 @@ public:
     cpu_cycle_t getCycle() const;
 
 private:
-    void initHandlers();
+    void setupInstructions();
 
     template <typename AccessMode> cpu_cycle_t op_adc();
     template <typename AccessMode> cpu_cycle_t op_and();

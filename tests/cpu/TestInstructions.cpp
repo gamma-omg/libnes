@@ -1987,3 +1987,14 @@ TEST(CPU, SED)
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::D));
     ASSERT_EQ(cpu.getCycle(), 2);
 }
+
+TEST(CPU, SEI)
+{
+    CPU cpu({ 0x78 });
+    auto& registers = cpu.getRegisters();
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::I));
+    ASSERT_EQ(cpu.getCycle(), 2);
+}

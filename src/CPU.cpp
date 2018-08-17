@@ -255,6 +255,7 @@ void CPU::setupInstructions()
 
     _instructions[0x38] = CPU::op_sec;
     _instructions[0xF8] = CPU::op_sed;
+    _instructions[0x78] = CPU::op_sei;
 }
 
 template <typename AccessMode>
@@ -675,6 +676,12 @@ cpu_cycle_t CPU::op_sec()
 cpu_cycle_t CPU::op_sed()
 {
     _registers.setFlag(Registers::Flags::D, true);
+    return 1;
+}
+
+cpu_cycle_t CPU::op_sei()
+{
+    _registers.setFlag(Registers::Flags::I, true);
     return 1;
 }
 

@@ -243,21 +243,22 @@ void CPU::setupInstructions()
 
     _instructions[0x4D] = CPU::op_rti;
     _instructions[0x60] = CPU::op_rts;
+
+    _instructions[0xE9] = CPU::op_sbc<IMM>;
+    _instructions[0xE5] = CPU::op_sbc<ZP>;
+    _instructions[0xF5] = CPU::op_sbc<ZPX>;
+    _instructions[0xED] = CPU::op_sbc<ABS>;
+    _instructions[0xFD] = CPU::op_sbc<ABSX>;
+    _instructions[0xF9] = CPU::op_sbc<ABSY>;
+    _instructions[0xE1] = CPU::op_sbc<INDX>;
+    _instructions[0xF1] = CPU::op_sbc<INDY>;
 }
 
 template <typename AccessMode>
 cpu_cycle_t CPU::op_adc()
 {
     AccessMode am(_registers, _memory.get());
-    int8_t operand = am.read();
-    int16_t result = _registers.A + operand;
-
-    _registers.setFlag(Registers::Flags::C, result > 0xFF);
-    _registers.setFlag(Registers::Flags::V, result > 0x7F);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
-    _registers.A = static_cast<uint8_t>(result);
-
+    addToA(am.read());
     return am.getCycles();
 }
 
@@ -480,6 +481,14 @@ cpu_cycle_t CPU::op_ror()
     return am.getCycles();
 }
 
+template<typename AccessMode>
+cpu_cycle_t CPU::op_sbc()
+{
+    AccessMode am(_registers, _memory.get());
+    addToA(~am.read());
+    return am.getCycles();
+}
+
 cpu_cycle_t CPU::op_inx()
 {
     _registers.X++;
@@ -671,6 +680,21 @@ cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)
     }
 
     return 1;
+}
+
+void CPU::addToA(uint8_t value)
+{
+    uint16_t result = _registers.A + value;
+    if (_registers.getFlag(Registers::Flags::C))
+    {
+        result++;
+    }
+
+    _registers.setFlag(Registers::Flags::C, result > 0xFF);
+    _registers.setFlag(Registers::Flags::V, ~(_registers.A ^ value) & (_registers.A ^ result) & 0x80);
+    _registers.setFlag(Registers::Flags::Z, static_cast<uint8_t>(result) == 0);
+    _registers.setFlag(Registers::Flags::N, static_cast<uint8_t>(result) & 0x80);
+    _registers.A = static_cast<uint8_t>(result);
 }
 
 }

@@ -77,6 +77,7 @@ private:
     template <typename AccessMode> cpu_cycle_t op_ora();
     template <typename AccessMode> cpu_cycle_t op_rol();
     template <typename AccessMode> cpu_cycle_t op_ror();
+    template <typename AccessMode> cpu_cycle_t op_sbc();
 
     cpu_cycle_t op_bcc();
     cpu_cycle_t op_bcs();
@@ -108,6 +109,7 @@ private:
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);
+    void addToA(uint8_t value);
 
 private:
     std::shared_ptr<Memory> _memory;

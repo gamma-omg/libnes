@@ -46,6 +46,7 @@ bool CPU::Registers::getFlag(nescore::CPU::Registers::Flags flag) const
 
 CPU::CPU(std::shared_ptr<Memory> memory)
     : _memory(memory)
+    , _cycle(0)
 {
    _registers.reset();
     setupInstructions();
@@ -66,6 +67,7 @@ void CPU::tick()
         throw std::runtime_error("Invalid opcode: " + opcode);
     }
 
+    _cycle++;
     _cycle += (this->*handler)();
 }
 
@@ -211,6 +213,8 @@ void CPU::setupInstructions()
     _instructions[0x56] = CPU::op_lsr<ZPX>;
     _instructions[0x4E] = CPU::op_lsr<ABS>;
     _instructions[0x5E] = CPU::op_lsr<ABSX>;
+
+    _instructions[0xEA] = CPU::op_nop;
 }
 
 template <typename AccessMode>
@@ -529,6 +533,11 @@ cpu_cycle_t CPU::op_dey()
     _registers.Y--;
     _registers.setFlag(Registers::Flags::N, _registers.Y & 0x80);
     _registers.setFlag(Registers::Flags::Z, _registers.Y == 0);
+    return 1;
+}
+
+cpu_cycle_t CPU::op_nop()
+{
     return 1;
 }
 

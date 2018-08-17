@@ -97,6 +97,7 @@ private:
     cpu_cycle_t op_jsr();
     cpu_cycle_t op_jmp_abs();
     cpu_cycle_t op_jmp_ind();
+    cpu_cycle_t op_nop();
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);

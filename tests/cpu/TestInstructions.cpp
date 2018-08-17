@@ -1557,3 +1557,12 @@ TEST(CPU, LSR_flag_Z_negative)
 
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
+
+TEST(CPU, NOP)
+{
+    CPU cpu({ 0xEA });
+
+    cpu.tick();
+
+    ASSERT_EQ(cpu.getCycle(), 2);
+}

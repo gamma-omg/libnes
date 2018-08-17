@@ -1678,3 +1678,94 @@ TEST(CPU, PLP)
     ASSERT_EQ(registers.P, 0b10110101);
     ASSERT_EQ(cpu.getCycle(), 3 + 4);
 }
+
+TEST(CPU, ROL)
+{
+    CPU cpu({ 0x2A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b01010110;
+
+    cpu.tick();
+
+    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(registers.A, 0b10101100);
+}
+
+TEST(CPU, ROL_flag_N_positive)
+{
+    CPU cpu({ 0x2A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b01000000;
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+TEST(CPU, ROL_flag_N_negative)
+{
+    CPU cpu({ 0x2A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b00100000;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+TEST(CPU, ROL_flag_Z_positive)
+{
+    CPU cpu({ 0x2A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b10000000;
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::Z));
+}
+
+TEST(CPU, ROL_flag_Z_negative)
+{
+    CPU cpu({ 0x2A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b01000000;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}
+
+TEST(CPU, ROL_flag_C_positive)
+{
+    CPU cpu({ 0x2A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b10000000;
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
+}
+
+TEST(CPU, ROL_flag_C_negative)
+{
+    CPU cpu({ 0x2A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b01000000;
+    registers.setFlag(CPU::Registers::Flags::C, true);
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::C));
+}
+
+TEST(CPU, ROL_carry_to_low_bit)
+{
+    CPU cpu({ 0x2A });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b01000000;
+    registers.setFlag(CPU::Registers::Flags::C, true);
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.A, 0b10000001);
+}

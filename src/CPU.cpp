@@ -229,6 +229,12 @@ void CPU::setupInstructions()
     _instructions[0x08] = CPU::op_php;
     _instructions[0x68] = CPU::op_pla;
     _instructions[0x28] = CPU::op_plp;
+
+    _instructions[0x2A] = CPU::op_rol<ACC>;
+    _instructions[0x26] = CPU::op_rol<ZP>;
+    _instructions[0x36] = CPU::op_rol<ZPX>;
+    _instructions[0x2E] = CPU::op_rol<ABS>;
+    _instructions[0x3E] = CPU::op_rol<ABSX>;
 }
 
 template <typename AccessMode>
@@ -433,6 +439,21 @@ cpu_cycle_t CPU::op_ora()
     _registers.setFlag(Registers::Flags::Z, result == 0);
     _registers.A = result;
 
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_rol()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    uint8_t result = (operand << 1) | (_registers.P & Registers::Flags::C);
+
+    _registers.setFlag(Registers::Flags::C, operand >> 7);
+    _registers.setFlag(Registers::Flags::N, result & 0x80);
+    _registers.setFlag(Registers::Flags::Z, result == 0);
+
+    am.write(result);
     return am.getCycles();
 }
 

@@ -228,6 +228,7 @@ void CPU::setupInstructions()
     _instructions[0x48] = CPU::op_pha;
     _instructions[0x08] = CPU::op_php;
     _instructions[0x68] = CPU::op_pla;
+    _instructions[0x28] = CPU::op_plp;
 }
 
 template <typename AccessMode>
@@ -583,6 +584,12 @@ cpu_cycle_t CPU::op_php()
 cpu_cycle_t CPU::op_pla()
 {
     _registers.A = _memory->readByteFromStack(++_registers.S);
+    return 3;
+}
+
+cpu_cycle_t CPU::op_plp()
+{
+    _registers.P = _memory->readShortFromStack(++_registers.S);
     return 3;
 }
 

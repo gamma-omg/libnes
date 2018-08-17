@@ -1663,3 +1663,18 @@ TEST(CPU, PLA)
     ASSERT_EQ(registers.A, 5);
     ASSERT_EQ(cpu.getCycle(), 3 + 4);
 }
+
+TEST(CPU, PLP)
+{
+    CPU cpu({ 0x08, 0x28 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.P = 0b10110101;
+    cpu.tick();
+    registers.P = 0;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.P, 0b10110101);
+    ASSERT_EQ(cpu.getCycle(), 3 + 4);
+}

@@ -748,6 +748,8 @@ cpu_cycle_t CPU::op_tay()
 cpu_cycle_t CPU::op_tsx()
 {
     _registers.X = _registers.S;
+    _registers.setFlag(Registers::Flags::N, _registers.X & 0x80);
+    _registers.setFlag(Registers::Flags::Z, _registers.X == 0);
     return 1;
 }
 

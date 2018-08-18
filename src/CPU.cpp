@@ -740,6 +740,8 @@ cpu_cycle_t CPU::op_tax()
 cpu_cycle_t CPU::op_tay()
 {
     _registers.Y = _registers.A;
+    _registers.setFlag(Registers::Flags::N, _registers.Y & 0x80);
+    _registers.setFlag(Registers::Flags::Z, _registers.Y == 0);
     return 1;
 }
 

@@ -2100,6 +2100,49 @@ TEST(CPU, TAY)
     ASSERT_EQ(registers.Y, 0x05);
 }
 
+TEST(CPU, TAY_flag_N_positive)
+{
+    CPU cpu({ 0xA8 });
+    auto& registers = cpu.getRegisters();
+    registers.A = static_cast<uint8_t>(-10);
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+TEST(CPU, TAY_flag_N_negative)
+{
+    CPU cpu({ 0xA8 });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0x10;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+TEST(CPU, TAY_flag_Z_positive)
+{
+    CPU cpu({ 0xA8 });
+    auto& registers = cpu.getRegisters();
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::Z));
+}
+
+TEST(CPU, TAY_flag_Z_negative)
+{
+    CPU cpu({ 0xA8 });
+    auto& registers = cpu.getRegisters();
+    registers.A = 1;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}
+
 TEST(CPU, TSX)
 {
     CPU cpu({ 0xBA });

@@ -2034,3 +2034,14 @@ TEST(CPU, STY)
 
     ASSERT_EQ(memory->readByte(0x05), 0xF0);
 }
+
+TEST(CPU, TAX)
+{
+    CPU cpu({ 0xAA });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0x05;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.X, 0x05);
+}

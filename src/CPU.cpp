@@ -270,6 +270,8 @@ void CPU::setupInstructions()
     _instructions[0x84] = CPU::op_sty<ZP>;
     _instructions[0x94] = CPU::op_sty<ZPX>;
     _instructions[0x8C] = CPU::op_sty<ABS>;
+
+    _instructions[0xAA] = CPU::op_tax;
 }
 
 template <typename AccessMode>
@@ -721,6 +723,12 @@ cpu_cycle_t CPU::op_sei()
 {
     _registers.setFlag(Registers::Flags::I, true);
     return 1;
+}
+
+cpu_cycle_t CPU::op_tax()
+{
+    _registers.X = _registers.A;
+    return 2;
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

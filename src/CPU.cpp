@@ -756,6 +756,8 @@ cpu_cycle_t CPU::op_tsx()
 cpu_cycle_t CPU::op_txa()
 {
     _registers.A = _registers.X;
+    _registers.setFlag(Registers::Flags::N, _registers.A & 0x80);
+    _registers.setFlag(Registers::Flags::Z, _registers.A == 0);
     return 1;
 }
 

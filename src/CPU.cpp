@@ -273,6 +273,7 @@ void CPU::setupInstructions()
 
     _instructions[0xAA] = CPU::op_tax;
     _instructions[0xA8] = CPU::op_tay;
+    _instructions[0xBA] = CPU::op_tsx;
 }
 
 template <typename AccessMode>
@@ -729,13 +730,19 @@ cpu_cycle_t CPU::op_sei()
 cpu_cycle_t CPU::op_tax()
 {
     _registers.X = _registers.A;
-    return 2;
+    return 1;
 }
 
 cpu_cycle_t CPU::op_tay()
 {
     _registers.Y = _registers.A;
-    return 2;
+    return 1;
+}
+
+cpu_cycle_t CPU::op_tsx()
+{
+    _registers.X = _registers.S;
+    return 1;
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

@@ -2056,3 +2056,13 @@ TEST(CPU, TAY)
 
     ASSERT_EQ(registers.Y, 0x05);
 }
+
+TEST(CPU, TSX)
+{
+    CPU cpu({ 0xBA });
+    auto& registers = cpu.getRegisters();
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.X, registers.S);
+}

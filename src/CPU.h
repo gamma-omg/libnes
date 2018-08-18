@@ -114,6 +114,7 @@ private:
     cpu_cycle_t op_sei();
     cpu_cycle_t op_tax();
     cpu_cycle_t op_tay();
+    cpu_cycle_t op_tsx();
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);

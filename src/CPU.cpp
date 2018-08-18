@@ -264,6 +264,10 @@ void CPU::setupInstructions()
     _instructions[0x99] = CPU::op_sta<ABSY>;
     _instructions[0x81] = CPU::op_sta<INDX>;
     _instructions[0x91] = CPU::op_sta<INDY>;
+
+    _instructions[0x86] = CPU::op_stx<ZP>;
+    _instructions[0x96] = CPU::op_stx<ZPY>;
+    _instructions[0x8E] = CPU::op_stx<ABS>;
 }
 
 template <typename AccessMode>
@@ -506,6 +510,14 @@ cpu_cycle_t CPU::op_sta()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_registers.A);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_stx()
+{
+    AccessMode am(_registers, _memory.get());
+    am.write(_registers.X);
     return am.getCycles();
 }
 

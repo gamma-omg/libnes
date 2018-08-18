@@ -2010,3 +2010,15 @@ TEST(CPU, STA)
 
     ASSERT_EQ(memory->readByte(0x05), 0xF0);
 }
+
+TEST(CPU, STX)
+{
+    CPU cpu({ 0x86, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.X = 0xF0;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x05), 0xF0);
+}

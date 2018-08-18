@@ -36,8 +36,7 @@ public:
     uint16_t readShortFromStack(uint8_t top);
 
 private:
-    std::vector<uint8_t> _ram;
-    std::vector<uint8_t> _rom;
+    uint8_t* _memory;
 };
 
 }

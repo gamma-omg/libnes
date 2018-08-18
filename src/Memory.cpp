@@ -1,34 +1,44 @@
 #include <stdexcept>
+#include <memory.h>
 #include "Memory.h"
 
 namespace nescore
 {
 
 Memory::Memory()
+    : _memory(new uint8_t[0xFFFF])
 {
-    _ram.resize(2048);
+    memset(_memory, 0x00, 0xFFFF);
 }
 
 Memory::Memory(const std::vector<uint8_t> &ram)
-    : _ram(ram)
+    : Memory()
 {
-    _ram.resize(2048);
+    uint8_t* address = _memory;
+    memcpy(address, ram.data(), ram.size()); address += RAM_PAGE_SIZE;
+    memcpy(address, ram.data(), ram.size()); address += RAM_PAGE_SIZE;
+    memcpy(address, ram.data(), ram.size()); address += RAM_PAGE_SIZE;
+    memcpy(address, ram.data(), ram.size());
 }
 
 void Memory::loadROM(const std::vector<uint8_t> &rom)
 {
-    _rom = rom;
-    _rom.resize(ROM_SIZE);
+    memcpy(_memory + ROM_OFFSET, rom.data(), rom.size());
 }
 
 void Memory::writeByte(uint16_t offset, uint8_t value)
 {
-    if (offset >= RAM_SIZE)
+    if (offset < RAM_SIZE)
     {
-        throw std::runtime_error("Invalud RAM address: " + offset);
+        uint16_t address = offset % RAM_PAGE_SIZE;
+        _memory[address] = value; address += RAM_PAGE_SIZE;
+        _memory[address] = value; address += RAM_PAGE_SIZE;
+        _memory[address] = value; address += RAM_PAGE_SIZE;
+        _memory[address] = value;
+        return;
     }
 
-    _ram[offset % RAM_PAGE_SIZE] = value;
+    _memory[offset] = value;
 }
 
 void Memory::writeShort(uint16_t offset, uint16_t value)
@@ -49,40 +59,29 @@ void Memory::writeShortToStack(uint8_t top, uint16_t value)
 
 void Memory::writeBytes(uint16_t offset, const uint8_t *src, uint16_t size)
 {
+    memcpy(_memory + offset, src, size);
 }
 
 uint8_t Memory::readByte(uint16_t offset)
 {
-    if (offset < RAM_SIZE)
-    {
-        return _ram[offset % RAM_PAGE_SIZE];
-    }
-    if (offset >= ROM_OFFSET)
-    {
-        return _rom[offset - ROM_OFFSET];
-    }
-
-    return 0;
+    return _memory[offset];
 }
 
 uint16_t Memory::readShort(uint16_t offset)
 {
-    uint8_t l = readByte(offset);
-    uint8_t h = readByte(offset + 1);
+    uint8_t l = _memory[offset];
+    uint8_t h = _memory[offset + 1];
     return l | (h << 8);
 }
 
 void Memory::writeBrkVecor(uint16_t address)
 {
-    _rom[VECTOR_BRK - ROM_OFFSET] = address & 0xFF;
-    _rom[VECTOR_BRK - ROM_OFFSET + 1] = address >> 8;
+    writeShort(VECTOR_BRK, address);
 }
 
 uint16_t Memory::readBrkVector()
 {
-    uint8_t l = _rom[VECTOR_BRK - ROM_OFFSET];
-    uint8_t h = _rom[VECTOR_BRK - ROM_OFFSET + 1];
-    return l | (h << 8);
+    return readShort(VECTOR_BRK);
 }
 
 uint8_t Memory::readByteFromStack(uint8_t top)

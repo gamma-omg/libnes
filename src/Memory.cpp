@@ -47,6 +47,10 @@ void Memory::writeShortToStack(uint8_t top, uint16_t value)
     writeShort(STACK_BOTTOM + top, value);
 }
 
+void Memory::writeBytes(uint16_t offset, const uint8_t *src, uint16_t size)
+{
+}
+
 uint8_t Memory::readByte(uint16_t offset)
 {
     if (offset < RAM_SIZE)

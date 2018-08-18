@@ -8,7 +8,7 @@ const char INESRom::FORMAT[] = { 0x4E, 0x45, 0x53, 0x1A };
 
 INESRom::INESRom()
     : _trainer(0)
-    , _rpgRomBanks(0)
+    , _prgRomBanks(0)
     , _chrRomBanks(0)
     , _playChoice10(0)
 {
@@ -30,11 +30,11 @@ void INESRom::read(std::istream &stream)
         throw nesformat_error("Invalid ROM format type");
     }
 
-    stream >> _header.rpgRomBanks;
+    stream >> _header.prgRomBanks;
     stream >> _header.chrRomBanks;
     stream >> _header.flag6;
     stream >> _header.flag7;
-    stream >> _header.rpgRamBanks;
+    stream >> _header.prgRamBanks;
     stream >> _header.flag9;
     stream.ignore(6);
 
@@ -44,11 +44,11 @@ void INESRom::read(std::istream &stream)
         stream.read(reinterpret_cast<char*>(_trainer), TRAINER_SIZE);
     }
 
-    _rpgRomBanks = new uint8_t*[_header.rpgRomBanks];
-    for (int i = 0; i < _header.rpgRomBanks; ++i)
+    _prgRomBanks = new uint8_t*[_header.prgRomBanks];
+    for (int i = 0; i < _header.prgRomBanks; ++i)
     {
-        _rpgRomBanks[i] = new uint8_t[RPG_ROM_BANK_SIZE];
-        stream.read(reinterpret_cast<char*>(_rpgRomBanks[i]), RPG_ROM_BANK_SIZE);
+        _prgRomBanks[i] = new uint8_t[PRG_ROM_BANK_SIZE];
+        stream.read(reinterpret_cast<char*>(_prgRomBanks[i]), PRG_ROM_BANK_SIZE);
     }
 
     _chrRomBanks = new uint8_t*[_header.chrRomBanks];
@@ -112,9 +112,9 @@ bool INESRom::isNES2Format() const
     return _header.flag7 & Flag7::NES2_FORMAT == 0b1000;
 }
 
-uint8_t INESRom::getRpgRomBanks() const
+uint8_t INESRom::getPrgRomBanks() const
 {
-    return _header.rpgRomBanks;
+    return _header.prgRomBanks;
 }
 
 uint8_t INESRom::getChrRomBanks() const
@@ -127,9 +127,9 @@ const uint8_t* INESRom::getTrainer() const
     return _trainer;
 }
 
-const uint8_t* INESRom::getRpgRomBank(int bank) const
+const uint8_t* INESRom::getPrgRomBank(int bank) const
 {
-    return _rpgRomBanks[bank];
+    return _prgRomBanks[bank];
 }
 
 const uint8_t* INESRom::getChrRomBank(int bank) const
@@ -147,11 +147,11 @@ void INESRom::clear()
     if (_trainer) delete[] _trainer;
     if (_playChoice10) delete[] _playChoice10;
 
-    for (int i = 0; i < _header.rpgRomBanks; ++i)
+    for (int i = 0; i < _header.prgRomBanks; ++i)
     {
-        delete[] _rpgRomBanks[i];
+        delete[] _prgRomBanks[i];
     }
-    delete[] _rpgRomBanks;
+    delete[] _prgRomBanks;
 
     for (int i = 0; i < _header.chrRomBanks; ++i)
     {

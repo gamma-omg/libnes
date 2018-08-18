@@ -19,7 +19,7 @@ class INESRom
 public:
     static const char FORMAT[4];
     static const uint16_t TRAINER_SIZE = 0x200;
-    static const uint16_t RPG_ROM_BANK_SIZE = 0x4000;
+    static const uint16_t PRG_ROM_BANK_SIZE = 0x4000;
     static const uint16_t CHR_ROM_BANK_SIZE = 0x2000;
     static const uint16_t PLAY_CHOICE_10_SIZE = 0x2000;
 
@@ -28,11 +28,11 @@ public:
     struct INESHeader
     {
         char fileFormat[4];
-        uint8_t rpgRomBanks;
+        uint8_t prgRomBanks;
         uint8_t chrRomBanks;
         uint8_t flag6;
         uint8_t flag7;
-        uint8_t rpgRamBanks;
+        uint8_t prgRamBanks;
         uint8_t flag9;
     };
 
@@ -58,11 +58,11 @@ public:
     Mirroring getMirroring() const;
     TVSystem getTVSystem() const;
     uint8_t getMapper() const;
-    uint8_t getRpgRomBanks() const;
+    uint8_t getPrgRomBanks() const;
     uint8_t getChrRomBanks() const;
 
     const uint8_t* getTrainer() const;
-    const uint8_t* getRpgRomBank(int bank) const;
+    const uint8_t* getPrgRomBank(int bank) const;
     const uint8_t* getChrRomBank(int bank) const;
     const uint8_t* getPlayChoice10() const;
 
@@ -103,7 +103,7 @@ private:
     INESHeader _header;
     uint8_t* _trainer;
     uint8_t* _playChoice10;
-    uint8_t** _rpgRomBanks;
+    uint8_t** _prgRomBanks;
     uint8_t** _chrRomBanks;
 };
 

@@ -2022,3 +2022,15 @@ TEST(CPU, STX)
 
     ASSERT_EQ(memory->readByte(0x05), 0xF0);
 }
+
+TEST(CPU, STY)
+{
+    CPU cpu({ 0x84, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.Y = 0xF0;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x05), 0xF0);
+}

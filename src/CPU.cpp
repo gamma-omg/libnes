@@ -274,6 +274,7 @@ void CPU::setupInstructions()
     _instructions[0xAA] = CPU::op_tax;
     _instructions[0xA8] = CPU::op_tay;
     _instructions[0xBA] = CPU::op_tsx;
+    _instructions[0x8A] = CPU::op_txa;
 }
 
 template <typename AccessMode>
@@ -742,6 +743,12 @@ cpu_cycle_t CPU::op_tay()
 cpu_cycle_t CPU::op_tsx()
 {
     _registers.X = _registers.S;
+    return 1;
+}
+
+cpu_cycle_t CPU::op_txa()
+{
+    _registers.A = _registers.X;
     return 1;
 }
 

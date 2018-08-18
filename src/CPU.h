@@ -78,6 +78,7 @@ private:
     template <typename AccessMode> cpu_cycle_t op_rol();
     template <typename AccessMode> cpu_cycle_t op_ror();
     template <typename AccessMode> cpu_cycle_t op_sbc();
+    template <typename AccessMode> cpu_cycle_t op_sta();
 
     cpu_cycle_t op_bcc();
     cpu_cycle_t op_bcs();

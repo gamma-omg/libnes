@@ -1998,3 +1998,15 @@ TEST(CPU, SEI)
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::I));
     ASSERT_EQ(cpu.getCycle(), 2);
 }
+
+TEST(CPU, STA)
+{
+    CPU cpu({ 0x85, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.A = 0xF0;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x05), 0xF0);
+}

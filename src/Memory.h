@@ -28,6 +28,7 @@ public:
     void writeBrkVecor(uint16_t address);
     void writeByteToStack(uint8_t top, uint8_t value);
     void writeShortToStack(uint8_t top, uint16_t value);
+    void writeBytes(uint16_t offset, const uint8_t* src, uint16_t size);
     uint8_t readByte(uint16_t offset);
     uint16_t readShort(uint16_t offset);
     uint16_t readBrkVector();
@@ -35,8 +36,7 @@ public:
     uint16_t readShortFromStack(uint8_t top);
 
 private:
-    std::vector<uint8_t> _ram;
-    std::vector<uint8_t> _rom;
+    uint8_t* _memory;
 };
 
 }

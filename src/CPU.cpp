@@ -276,6 +276,7 @@ void CPU::setupInstructions()
     _instructions[0xBA] = CPU::op_tsx;
     _instructions[0x8A] = CPU::op_txa;
     _instructions[0x9A] = CPU::op_txs;
+    _instructions[0x98] = CPU::op_tya;
 }
 
 template <typename AccessMode>
@@ -756,6 +757,14 @@ cpu_cycle_t CPU::op_tsx()
 cpu_cycle_t CPU::op_txa()
 {
     _registers.A = _registers.X;
+    _registers.setFlag(Registers::Flags::N, _registers.A & 0x80);
+    _registers.setFlag(Registers::Flags::Z, _registers.A == 0);
+    return 1;
+}
+
+cpu_cycle_t CPU::op_tya()
+{
+    _registers.A = _registers.Y;
     _registers.setFlag(Registers::Flags::N, _registers.A & 0x80);
     _registers.setFlag(Registers::Flags::Z, _registers.A == 0);
     return 1;

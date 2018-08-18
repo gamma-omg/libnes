@@ -2262,3 +2262,58 @@ TEST(CPU, TXS)
 
     ASSERT_EQ(registers.S, 0x10);
 }
+
+TEST(CPU, TYA)
+{
+    CPU cpu({ 0x98 });
+    auto& registers = cpu.getRegisters();
+    registers.Y = 0x10;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.A, 0x10);
+}
+
+TEST(CPU, TYA_flag_N_positive)
+{
+    CPU cpu({ 0x98 });
+    auto& registers = cpu.getRegisters();
+    registers.Y = static_cast<uint8_t>(-10);
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+TEST(CPU, TYA_flag_N_negative)
+{
+    CPU cpu({ 0x98 });
+    auto& registers = cpu.getRegisters();
+    registers.Y = 0x10;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+TEST(CPU, TYA_flag_Z_positive)
+{
+    CPU cpu({ 0x98 });
+    auto& registers = cpu.getRegisters();
+    registers.Y = 0;
+
+    cpu.tick();
+
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::Z));
+}
+
+TEST(CPU, TYA_flag_Z_negative)
+{
+    CPU cpu({ 0x98 });
+    auto& registers = cpu.getRegisters();
+    registers.Y = 1;
+
+    cpu.tick();
+
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}

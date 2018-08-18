@@ -732,6 +732,8 @@ cpu_cycle_t CPU::op_sei()
 cpu_cycle_t CPU::op_tax()
 {
     _registers.X = _registers.A;
+    _registers.setFlag(Registers::Flags::N, _registers.X & 0x80);
+    _registers.setFlag(Registers::Flags::Z, _registers.X == 0);
     return 1;
 }
 

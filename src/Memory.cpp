@@ -21,9 +21,10 @@ Memory::Memory(const std::vector<uint8_t> &ram)
     memcpy(address, ram.data(), ram.size());
 }
 
-void Memory::loadROM(const std::vector<uint8_t> &rom)
+void Memory::loadProgram(const std::vector<uint8_t> &program)
 {
-    memcpy(_memory + ROM_OFFSET, rom.data(), rom.size());
+    memcpy(_memory + ROM_OFFSET, program.data(), program.size());
+    writeResetVecor(ROM_OFFSET);
 }
 
 void Memory::writeByte(uint16_t offset, uint8_t value)
@@ -74,12 +75,12 @@ uint16_t Memory::readShort(uint16_t offset)
     return l | (h << 8);
 }
 
-void Memory::writeBrkVecor(uint16_t address)
+void Memory::writeResetVecor(uint16_t address)
 {
     writeShort(RESET_VECTOR, address);
 }
 
-uint16_t Memory::readBrkVector()
+uint16_t Memory::readResetVector()
 {
     return readShort(RESET_VECTOR);
 }

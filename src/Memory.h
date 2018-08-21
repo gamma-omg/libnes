@@ -23,16 +23,16 @@ public:
     Memory();
     Memory(const std::vector<uint8_t>& ram);
 
-    void loadROM(const std::vector<uint8_t>& rom);
+    void loadProgram(const std::vector<uint8_t> &program);
     void writeByte(uint16_t offset, uint8_t value);
     void writeShort(uint16_t offset, uint16_t value);
-    void writeBrkVecor(uint16_t address);
+    void writeResetVecor(uint16_t address);
     void writeByteToStack(uint8_t top, uint8_t value);
     void writeShortToStack(uint8_t top, uint16_t value);
     void writeBytes(uint16_t offset, const uint8_t* src, uint16_t size);
     uint8_t readByte(uint16_t offset);
     uint16_t readShort(uint16_t offset);
-    uint16_t readBrkVector();
+    uint16_t readResetVector();
     uint8_t readByteFromStack(uint8_t top);
     uint16_t readShortFromStack(uint8_t top);
     std::string readString(uint16_t offset);

@@ -56,7 +56,8 @@ CPU::CPU(std::shared_ptr<Memory> memory)
 CPU::CPU(const std::vector<uint8_t>& operations)
     : CPU(std::make_shared<Memory>())
 {
-    _memory->loadROM(operations);
+    _memory->loadProgram(operations);
+    reset();
 }
 
 void CPU::reset()
@@ -619,7 +620,7 @@ cpu_cycle_t CPU::op_bpl()
 
 cpu_cycle_t CPU::op_brk()
 {
-    _registers.PC = _memory->readBrkVector();
+    _registers.PC = _memory->readResetVector();
     _registers.setFlag(Registers::Flags::I, true);
     return 6;
 }

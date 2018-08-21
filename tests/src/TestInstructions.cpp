@@ -581,7 +581,7 @@ TEST(CPU, BRK)
 
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
-    memory->writeBrkVecor(Memory::ROM_OFFSET + 0x03);
+    memory->writeResetVecor(Memory::ROM_OFFSET + 0x03);
 
     cpu.tick();
     cpu.tick();

@@ -123,6 +123,7 @@ private:
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);
     void addToA(uint8_t value);
+    void updateZNFlags(uint8_t value);
 
 private:
     std::shared_ptr<Memory> _memory;

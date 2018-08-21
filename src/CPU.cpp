@@ -304,8 +304,7 @@ cpu_cycle_t CPU::op_and()
     uint8_t operand = am.read();
     uint8_t result = operand & _registers.A;
 
-    _registers.setFlag(Registers::Flags::Z, result == 0);
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
+    updateZNFlags(result);
     _registers.A = result;
 
     return am.getCycles();
@@ -318,9 +317,8 @@ cpu_cycle_t CPU::op_asl()
     uint8_t operand = am.read();
     uint8_t result = operand << 1;
 
+    updateZNFlags(result);
     _registers.setFlag(Registers::Flags::C, operand & 0x80);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
     _registers.A = result;
 
     return am.getCycles();
@@ -347,8 +345,7 @@ cpu_cycle_t CPU::op_cmp()
     uint8_t operand = am.read();
     uint8_t result = _registers.A - operand;
 
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
+    updateZNFlags(result);
     _registers.setFlag(Registers::Flags::C, _registers.A >= operand );
 
     return am.getCycles();
@@ -361,8 +358,7 @@ cpu_cycle_t CPU::op_cpx()
     uint8_t operand = am.read();
     uint8_t result = _registers.X - operand;
 
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
+    updateZNFlags(result);
     _registers.setFlag(Registers::Flags::C, _registers.X >= operand);
 
     return am.getCycles();
@@ -375,8 +371,7 @@ cpu_cycle_t CPU::op_cpy()
     uint8_t operand = am.read();
     uint8_t result = _registers.Y - operand;
 
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
+    updateZNFlags(result);
     _registers.setFlag(Registers::Flags::C, _registers.Y >= operand);
 
     return am.getCycles();
@@ -389,8 +384,7 @@ cpu_cycle_t CPU::op_dec()
     int8_t operand = am.read();
 
     operand--;
-    _registers.setFlag(Registers::Flags::N, operand & 0x80);
-    _registers.setFlag(Registers::Flags::Z, operand == 0);
+    updateZNFlags(operand);
     am.write(operand);
 
     return am.getCycles();
@@ -403,8 +397,7 @@ cpu_cycle_t CPU::op_eor()
     uint8_t operand = am.read();
     uint8_t result = _registers.A ^ operand;
 
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
+    updateZNFlags(result);
     _registers.A = result;
 
     return am.getCycles();
@@ -417,8 +410,7 @@ cpu_cycle_t CPU::op_inc()
     int8_t operand = am.read();
 
     operand++;
-    _registers.setFlag(Registers::Flags::N, operand & 0x80);
-    _registers.setFlag(Registers::Flags::Z, operand == 0);
+    updateZNFlags(operand);
     am.write(operand);
 
     return am.getCycles();
@@ -429,8 +421,7 @@ cpu_cycle_t CPU::op_lda()
 {
     AccessMode am(_registers, _memory.get());
     _registers.A = am.read();
-    _registers.setFlag(Registers::Flags::N, _registers.A & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.A == 0);
+    updateZNFlags(_registers.A);
 
     return am.getCycles();
 }
@@ -440,8 +431,7 @@ cpu_cycle_t CPU::op_ldx()
 {
     AccessMode am(_registers, _memory.get());
     _registers.X = am.read();
-    _registers.setFlag(Registers::Flags::N, _registers.X & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.X == 0);
+    updateZNFlags(_registers.X);
 
     return am.getCycles();
 }
@@ -451,8 +441,7 @@ cpu_cycle_t CPU::op_ldy()
 {
     AccessMode am(_registers, _memory.get());
     _registers.Y = am.read();
-    _registers.setFlag(Registers::Flags::N, _registers.Y & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.Y == 0);
+    updateZNFlags(_registers.Y);
 
     return am.getCycles();
 }
@@ -479,8 +468,7 @@ cpu_cycle_t CPU::op_ora()
     uint8_t operand = am.read();
     uint8_t result = _registers.A | operand;
 
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
+    updateZNFlags(result);
     _registers.A = result;
 
     return am.getCycles();
@@ -494,8 +482,7 @@ cpu_cycle_t CPU::op_rol()
     uint8_t result = (operand << 1) | (_registers.P & Registers::Flags::C);
 
     _registers.setFlag(Registers::Flags::C, operand >> 7);
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
+    updateZNFlags(result);
 
     am.write(result);
     return am.getCycles();
@@ -509,8 +496,7 @@ cpu_cycle_t CPU::op_ror()
     uint8_t result = (operand >> 1) | ((_registers.P & Registers::Flags::C) << 7);
 
     _registers.setFlag(Registers::Flags::C, operand & 0x01);
-    _registers.setFlag(Registers::Flags::N, result & 0x80);
-    _registers.setFlag(Registers::Flags::Z, result == 0);
+    updateZNFlags(result);
 
     am.write(result);
     return am.getCycles();
@@ -551,16 +537,14 @@ cpu_cycle_t CPU::op_sty()
 cpu_cycle_t CPU::op_inx()
 {
     _registers.X++;
-    _registers.setFlag(Registers::Flags::N, _registers.X & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.X == 0);
+    updateZNFlags(_registers.X);
     return 1;
 }
 
 cpu_cycle_t CPU::op_iny()
 {
     _registers.Y++;
-    _registers.setFlag(Registers::Flags::N, _registers.Y & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.Y == 0);
+    updateZNFlags(_registers.Y);
     return 1;
 }
 
@@ -662,16 +646,14 @@ cpu_cycle_t CPU::op_clv()
 cpu_cycle_t CPU::op_dex()
 {
     _registers.X--;
-    _registers.setFlag(Registers::Flags::N, _registers.X & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.X == 0);
+    updateZNFlags(_registers.X);
     return 1;
 }
 
 cpu_cycle_t CPU::op_dey()
 {
     _registers.Y--;
-    _registers.setFlag(Registers::Flags::N, _registers.Y & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.Y == 0);
+    updateZNFlags(_registers.Y);
     return 1;
 }
 
@@ -739,40 +721,35 @@ cpu_cycle_t CPU::op_sei()
 cpu_cycle_t CPU::op_tax()
 {
     _registers.X = _registers.A;
-    _registers.setFlag(Registers::Flags::N, _registers.X & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.X == 0);
+    updateZNFlags(_registers.X);
     return 1;
 }
 
 cpu_cycle_t CPU::op_tay()
 {
     _registers.Y = _registers.A;
-    _registers.setFlag(Registers::Flags::N, _registers.Y & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.Y == 0);
+    updateZNFlags(_registers.Y);
     return 1;
 }
 
 cpu_cycle_t CPU::op_tsx()
 {
     _registers.X = _registers.S;
-    _registers.setFlag(Registers::Flags::N, _registers.X & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.X == 0);
+    updateZNFlags(_registers.X);
     return 1;
 }
 
 cpu_cycle_t CPU::op_txa()
 {
     _registers.A = _registers.X;
-    _registers.setFlag(Registers::Flags::N, _registers.A & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.A == 0);
+    updateZNFlags(_registers.A);
     return 1;
 }
 
 cpu_cycle_t CPU::op_tya()
 {
     _registers.A = _registers.Y;
-    _registers.setFlag(Registers::Flags::N, _registers.A & 0x80);
-    _registers.setFlag(Registers::Flags::Z, _registers.A == 0);
+    updateZNFlags(_registers.A);
     return 1;
 }
 
@@ -815,6 +792,12 @@ void CPU::addToA(uint8_t value)
     _registers.setFlag(Registers::Flags::Z, static_cast<uint8_t>(result) == 0);
     _registers.setFlag(Registers::Flags::N, static_cast<uint8_t>(result) & 0x80);
     _registers.A = static_cast<uint8_t>(result);
+}
+
+void CPU::updateZNFlags(uint8_t value)
+{
+    _registers.setFlag(Registers::Flags::Z, value == 0);
+    _registers.setFlag(Registers::Flags::N, value & 0x80);
 }
 
 }

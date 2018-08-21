@@ -4,11 +4,11 @@ project(nescore-tests)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(../src)
 
-add_executable(test_cpu src/TestInstructions.cpp)
+add_executable(test_cpu src/TestOfficialInstructions.cpp src/TestUnofficialInstructions.cpp)
 add_executable(test_memory src/TestMemory.cpp)
 add_executable(test_rom src/TestRom.cpp)
 add_executable(test_programs src/TestPrograms.cpp)
-add_executable(test_nescore src/TestInstructions.cpp src/TestMemory.cpp src/TestRom.cpp src/TestPrograms.cpp)
+add_executable(test_nescore src/TestOfficialInstructions.cpp src/TestMemory.cpp src/TestRom.cpp src/TestPrograms.cpp src/TestUnofficialInstructions.cpp)
 
 target_link_libraries(test_cpu gtest gtest_main)
 target_link_libraries(test_memory gtest gtest_main)

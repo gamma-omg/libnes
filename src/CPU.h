@@ -120,6 +120,8 @@ private:
     cpu_cycle_t op_txs();
     cpu_cycle_t op_tya();
 
+    template <typename AccessMode> cpu_cycle_t op_alr();
+
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);
     void addToA(uint8_t value);

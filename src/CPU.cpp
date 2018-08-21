@@ -287,6 +287,8 @@ void CPU::setupInstructions()
     _instructions[0x8A] = CPU::op_txa;
     _instructions[0x9A] = CPU::op_txs;
     _instructions[0x98] = CPU::op_tya;
+
+    _instructions[0x4B] = CPU::op_alr<IMM>;
 }
 
 template <typename AccessMode>
@@ -532,6 +534,14 @@ cpu_cycle_t CPU::op_sty()
     AccessMode am(_registers, _memory.get());
     am.write(_registers.Y);
     return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_alr()
+{
+    op_and<AccessMode>();
+    op_lsr<ACC>();
+    return 2;
 }
 
 cpu_cycle_t CPU::op_inx()

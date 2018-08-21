@@ -126,6 +126,7 @@ private:
     template <typename AccessMode> cpu_cycle_t op_isc();
     template <typename AccessMode> cpu_cycle_t op_rla();
     template <typename AccessMode> cpu_cycle_t op_rra();
+    template <typename AccessMode> cpu_cycle_t op_slo();
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();
@@ -136,7 +137,9 @@ private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);
     uint8_t _add(uint8_t value);
     uint8_t _and(uint8_t a, uint8_t b);
+    uint8_t _or(uint8_t a, uint8_t b);
     uint8_t _lsr(uint8_t value);
+    uint8_t _asl(uint8_t value);
     uint8_t _ror(uint8_t value);
     uint8_t _rol(uint8_t value);
     void updateZNFlags(uint8_t value);

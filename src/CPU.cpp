@@ -337,6 +337,14 @@ void CPU::setupInstructions()
     _instructions[0x7B] = CPU::op_rra<ABSY>;
     _instructions[0x63] = CPU::op_rra<INDX>;
     _instructions[0x73] = CPU::op_rra<INDY>;
+
+    _instructions[0x07] = CPU::op_slo<ZP>;
+    _instructions[0x17] = CPU::op_slo<ZPX>;
+    _instructions[0x0F] = CPU::op_slo<ABS>;
+    _instructions[0x1F] = CPU::op_slo<ABSX>;
+    _instructions[0x1B] = CPU::op_slo<ABSY>;
+    _instructions[0x03] = CPU::op_slo<INDX>;
+    _instructions[0x13] = CPU::op_slo<INDY>;
 }
 
 template <typename AccessMode>
@@ -362,12 +370,7 @@ cpu_cycle_t CPU::op_asl()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
-    uint8_t result = operand << 1;
-
-    updateZNFlags(result);
-    _registers.setFlag(Registers::Flags::C, operand & 0x80);
-    _registers.A = result;
-
+    _registers.A = _asl(operand);
     return am.getCycles();
 }
 
@@ -506,11 +509,7 @@ cpu_cycle_t CPU::op_ora()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
-    uint8_t result = _registers.A | operand;
-
-    updateZNFlags(result);
-    _registers.A = result;
-
+    _registers.A = _or(_registers.A, operand);
     return am.getCycles();
 }
 
@@ -628,6 +627,18 @@ cpu_cycle_t CPU::op_rra()
     uint8_t operand = am.read();
     operand = _ror(operand);
     _registers.A = _add(operand);
+
+    am.write(operand);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_slo()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    operand = _asl(operand);
+    _registers.A = _or(_registers.A, operand);
 
     am.write(operand);
     return am.getCycles();
@@ -945,6 +956,13 @@ uint8_t CPU::_and(uint8_t a, uint8_t b)
     return result;
 }
 
+uint8_t CPU::_or(uint8_t a, uint8_t b)
+{
+    uint8_t result = a | b;
+    updateZNFlags(result);
+    return result;
+}
+
 uint8_t CPU::_lsr(uint8_t value)
 {
     uint8_t result = value >> 1;
@@ -952,6 +970,15 @@ uint8_t CPU::_lsr(uint8_t value)
     _registers.setFlag(Registers::Flags::C, value & 1);
     _registers.setFlag(Registers::Flags::N, false);;
     _registers.setFlag(Registers::Flags::Z, result == 0);
+
+    return result;
+}
+
+uint8_t CPU::_asl(uint8_t value)
+{
+    uint8_t result = value << 1;
+    updateZNFlags(result);
+    _registers.setFlag(Registers::Flags::C, value & 0x80);
 
     return result;
 }

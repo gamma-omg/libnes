@@ -288,7 +288,9 @@ void CPU::setupInstructions()
     _instructions[0x9A] = CPU::op_txs;
     _instructions[0x98] = CPU::op_tya;
 
-    _instructions[0x4B] = CPU::op_alr<IMM>;
+    _instructions[0x4B] = CPU::op_alr;
+    _instructions[0x0B] = CPU::op_anc;
+    _instructions[0x2B] = CPU::op_anc;
 }
 
 template <typename AccessMode>
@@ -536,14 +538,6 @@ cpu_cycle_t CPU::op_sty()
     return am.getCycles();
 }
 
-template<typename AccessMode>
-cpu_cycle_t CPU::op_alr()
-{
-    op_and<AccessMode>();
-    op_lsr<ACC>();
-    return 2;
-}
-
 cpu_cycle_t CPU::op_inx()
 {
     _registers.X++;
@@ -766,6 +760,20 @@ cpu_cycle_t CPU::op_tya()
 cpu_cycle_t CPU::op_txs()
 {
     _registers.S = _registers.X;
+    return 1;
+}
+
+cpu_cycle_t CPU::op_alr()
+{
+    op_and<IMM>();
+    op_lsr<ACC>();
+    return 1;
+}
+
+cpu_cycle_t CPU::op_anc()
+{
+    op_and<IMM>();
+    _registers.setFlag(Registers::Flags::C, _registers.getFlag(Registers::Flags::N));
     return 1;
 }
 

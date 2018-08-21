@@ -121,6 +121,7 @@ private:
     cpu_cycle_t op_tya();
 
     template <typename AccessMode> cpu_cycle_t op_lax();
+    template <typename AccessMode> cpu_cycle_t op_sax();
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();

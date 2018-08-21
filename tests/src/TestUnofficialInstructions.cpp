@@ -89,3 +89,17 @@ TEST(CPU, LAX)
     ASSERT_EQ(registers.A, 0xFF);
     ASSERT_EQ(cpu.getCycle(), 3);
 }
+
+TEST(CPU, SAX)
+{
+    CPU cpu({ 0x87, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.A = 0b01011010;
+    registers.X = 0b11010011;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x05), 0b01010010);
+    ASSERT_EQ(cpu.getCycle(), 3);
+}

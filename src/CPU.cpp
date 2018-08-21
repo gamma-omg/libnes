@@ -293,6 +293,13 @@ void CPU::setupInstructions()
     _instructions[0x2B] = CPU::op_anc;
     _instructions[0x6B] = CPU::op_arr;
     _instructions[0xCB] = CPU::op_axs;
+
+    _instructions[0xA7] = CPU::op_lax<ZP>;
+    _instructions[0xB7] = CPU::op_lax<ZPY>;
+    _instructions[0xAF] = CPU::op_lax<ABS>;
+    _instructions[0xBF] = CPU::op_lax<ABSY>;
+    _instructions[0xA3] = CPU::op_lax<INDX>;
+    _instructions[0xB3] = CPU::op_lax<INDY>;
 }
 
 template <typename AccessMode>
@@ -538,6 +545,14 @@ cpu_cycle_t CPU::op_sty()
     AccessMode am(_registers, _memory.get());
     am.write(_registers.Y);
     return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_lax()
+{
+    auto cycles = op_lda<AccessMode>();
+    op_tax();
+    return cycles;
 }
 
 cpu_cycle_t CPU::op_inx()

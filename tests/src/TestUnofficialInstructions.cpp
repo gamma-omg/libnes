@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <CPU.h>
+#include <Memory.h>
 
 using namespace nescore;
 
@@ -73,4 +74,18 @@ TEST(CPU, AXS)
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::C));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+}
+
+TEST(CPU, LAX)
+{
+    CPU cpu({ 0xA7, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    memory->writeByte(0x05, 0xFF);
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.X, 0xFF);
+    ASSERT_EQ(registers.A, 0xFF);
+    ASSERT_EQ(cpu.getCycle(), 3);
 }

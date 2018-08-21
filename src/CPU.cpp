@@ -376,6 +376,14 @@ void CPU::setupInstructions()
     _instructions[0xD4] = CPU::op_skb<ZPX>;
     _instructions[0xE2] = CPU::op_skb<IMM>;
     _instructions[0xF4] = CPU::op_skb<ZPX>;
+
+    _instructions[0x0C] = CPU::op_ign<ABS>;
+    _instructions[0x1C] = CPU::op_ign<ABSX>;
+    _instructions[0x3C] = CPU::op_ign<ABSX>;
+    _instructions[0x5C] = CPU::op_ign<ABSX>;
+    _instructions[0x7C] = CPU::op_ign<ABSX>;
+    _instructions[0xDC] = CPU::op_ign<ABSX>;
+    _instructions[0xFC] = CPU::op_ign<ABSX>;
 }
 
 template <typename AccessMode>
@@ -684,6 +692,14 @@ cpu_cycle_t CPU::op_sre()
 
 template<typename AccessMode>
 cpu_cycle_t CPU::op_skb()
+{
+    AccessMode am(_registers, _memory.get());
+    am.read();
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_ign()
 {
     AccessMode am(_registers, _memory.get());
     am.read();

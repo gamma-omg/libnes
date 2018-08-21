@@ -128,6 +128,7 @@ private:
     template <typename AccessMode> cpu_cycle_t op_rra();
     template <typename AccessMode> cpu_cycle_t op_slo();
     template <typename AccessMode> cpu_cycle_t op_sre();
+    template <typename AccessMode> cpu_cycle_t op_skb();
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();

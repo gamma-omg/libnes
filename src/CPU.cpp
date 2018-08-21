@@ -361,6 +361,21 @@ void CPU::setupInstructions()
     _instructions[0x7A] = CPU::op_nop;
     _instructions[0xDA] = CPU::op_nop;
     _instructions[0xFA] = CPU::op_nop;
+
+    _instructions[0x04] = CPU::op_skb<ZP>;
+    _instructions[0x14] = CPU::op_skb<ZPX>;
+    _instructions[0x34] = CPU::op_skb<ZPX>;
+    _instructions[0x44] = CPU::op_skb<ZP>;
+    _instructions[0x54] = CPU::op_skb<ZPX>;
+    _instructions[0x64] = CPU::op_skb<ZP>;
+    _instructions[0x74] = CPU::op_skb<ZPX>;
+    _instructions[0x80] = CPU::op_skb<IMM>;
+    _instructions[0x82] = CPU::op_skb<IMM>;
+    _instructions[0x89] = CPU::op_skb<IMM>;
+    _instructions[0xC2] = CPU::op_skb<IMM>;
+    _instructions[0xD4] = CPU::op_skb<ZPX>;
+    _instructions[0xE2] = CPU::op_skb<IMM>;
+    _instructions[0xF4] = CPU::op_skb<ZPX>;
 }
 
 template <typename AccessMode>
@@ -664,6 +679,14 @@ cpu_cycle_t CPU::op_sre()
     _registers.A = _eor(_registers.A, operand);
 
     am.write(operand);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_skb()
+{
+    AccessMode am(_registers, _memory.get());
+    am.read();
     return am.getCycles();
 }
 

@@ -122,6 +122,7 @@ private:
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();
+    cpu_cycle_t op_arr();
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);

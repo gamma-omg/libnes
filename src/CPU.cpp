@@ -291,6 +291,7 @@ void CPU::setupInstructions()
     _instructions[0x4B] = CPU::op_alr;
     _instructions[0x0B] = CPU::op_anc;
     _instructions[0x2B] = CPU::op_anc;
+    _instructions[0x6B] = CPU::op_arr;
 }
 
 template <typename AccessMode>
@@ -774,6 +775,20 @@ cpu_cycle_t CPU::op_anc()
 {
     op_and<IMM>();
     _registers.setFlag(Registers::Flags::C, _registers.getFlag(Registers::Flags::N));
+    return 1;
+}
+
+cpu_cycle_t CPU::op_arr()
+{
+    op_and<IMM>();
+    op_ror<ACC>();
+
+    uint8_t bit6 = (_registers.A & 0x40) >> 5;
+    uint8_t bit5 = (_registers.A & 0x20) >> 4;
+
+    _registers.setFlag(Registers::Flags::C, bit6);
+    _registers.setFlag(Registers::Flags::V, bit6 ^ bit5);
+
     return 1;
 }
 

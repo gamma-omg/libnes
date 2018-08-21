@@ -122,6 +122,7 @@ private:
 
     template <typename AccessMode> cpu_cycle_t op_lax();
     template <typename AccessMode> cpu_cycle_t op_sax();
+    template <typename AccessMode> cpu_cycle_t op_dcp();
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();
@@ -130,7 +131,10 @@ private:
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);
-    void addToA(uint8_t value);
+    uint8_t _add(uint8_t value);
+    uint8_t _and(uint8_t a, uint8_t b);
+    uint8_t _lsr(uint8_t value);
+    uint8_t _ror(uint8_t value);
     void updateZNFlags(uint8_t value);
 
 private:

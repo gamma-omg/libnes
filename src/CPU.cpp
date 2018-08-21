@@ -305,13 +305,21 @@ void CPU::setupInstructions()
     _instructions[0x97] = CPU::op_sax<ZPY>;
     _instructions[0x83] = CPU::op_sax<INDX>;
     _instructions[0x8F] = CPU::op_sax<ABS>;
+
+    _instructions[0xC7] = CPU::op_dcp<ZP>;
+    _instructions[0xD7] = CPU::op_dcp<ZPX>;
+    _instructions[0xCF] = CPU::op_dcp<ABS>;
+    _instructions[0xDF] = CPU::op_dcp<ABSX>;
+    _instructions[0xDB] = CPU::op_dcp<ABSY>;
+    _instructions[0xC3] = CPU::op_dcp<INDX>;
+    _instructions[0xD3] = CPU::op_dcp<INDY>;
 }
 
 template <typename AccessMode>
 cpu_cycle_t CPU::op_adc()
 {
     AccessMode am(_registers, _memory.get());
-    addToA(am.read());
+    _registers.A = _add(am.read());
     return am.getCycles();
 }
 
@@ -320,10 +328,7 @@ cpu_cycle_t CPU::op_and()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
-    uint8_t result = operand & _registers.A;
-
-    updateZNFlags(result);
-    _registers.A = result;
+    _registers.A = _and(operand, _registers.A);
 
     return am.getCycles();
 }
@@ -468,14 +473,7 @@ template<typename AccessMode>
 cpu_cycle_t CPU::op_lsr()
 {
     AccessMode am(_registers, _memory.get());
-    uint8_t operand = am.read();
-    uint8_t result = operand >> 1;
-
-    _registers.setFlag(Registers::Flags::C, operand & 1);
-    _registers.setFlag(Registers::Flags::N, false);;
-    _registers.setFlag(Registers::Flags::Z, result == 0);
-
-    am.write(result);
+    am.write(_lsr(am.read()));
     return am.getCycles();
 }
 
@@ -510,13 +508,7 @@ template<typename AccessMode>
 cpu_cycle_t CPU::op_ror()
 {
     AccessMode am(_registers, _memory.get());
-    uint8_t operand = am.read();
-    uint8_t result = (operand >> 1) | ((_registers.P & Registers::Flags::C) << 7);
-
-    _registers.setFlag(Registers::Flags::C, operand & 0x01);
-    updateZNFlags(result);
-
-    am.write(result);
+    am.write(_ror(am.read()));
     return am.getCycles();
 }
 
@@ -524,7 +516,7 @@ template<typename AccessMode>
 cpu_cycle_t CPU::op_sbc()
 {
     AccessMode am(_registers, _memory.get());
-    addToA(~am.read());
+    _registers.A = _add(~am.read());
     return am.getCycles();
 }
 
@@ -555,9 +547,13 @@ cpu_cycle_t CPU::op_sty()
 template<typename AccessMode>
 cpu_cycle_t CPU::op_lax()
 {
-    auto cycles = op_lda<AccessMode>();
-    op_tax();
-    return cycles;
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    _registers.A = operand;
+    _registers.X = operand;
+    updateZNFlags(operand);
+
+    return am.getCycles();
 }
 
 template<typename AccessMode>
@@ -565,6 +561,21 @@ cpu_cycle_t CPU::op_sax()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_registers.A & _registers.X);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_dcp()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    operand--;
+
+    uint8_t diff = _registers.A - operand;
+    updateZNFlags(diff);
+    _registers.setFlag(Registers::Flags::C, _registers.A >= operand);
+
+    am.write(operand);
     return am.getCycles();
 }
 
@@ -795,22 +806,26 @@ cpu_cycle_t CPU::op_txs()
 
 cpu_cycle_t CPU::op_alr()
 {
-    op_and<IMM>();
-    op_lsr<ACC>();
+    IMM am(_registers, _memory.get());
+    _registers.A = _and(_registers.A, am.read());
+    _registers.A = _lsr(_registers.A);
+
     return 1;
 }
 
 cpu_cycle_t CPU::op_anc()
 {
-    op_and<IMM>();
+    IMM am(_registers, _memory.get());
+    _registers.A = _and(am.read(), _registers.A);
     _registers.setFlag(Registers::Flags::C, _registers.getFlag(Registers::Flags::N));
     return 1;
 }
 
 cpu_cycle_t CPU::op_arr()
 {
-    op_and<IMM>();
-    op_ror<ACC>();
+    IMM am(_registers, _memory.get());
+    _registers.A = _and(am.read(), _registers.A);
+    _registers.A = _ror(_registers.A);
 
     uint8_t bit6 = (_registers.A & 0x40) >> 5;
     uint8_t bit5 = (_registers.A & 0x20) >> 4;
@@ -854,7 +869,7 @@ cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)
     return 1;
 }
 
-void CPU::addToA(uint8_t value)
+uint8_t CPU::_add(uint8_t value)
 {
     uint16_t result = _registers.A + value;
     if (_registers.getFlag(Registers::Flags::C))
@@ -866,7 +881,34 @@ void CPU::addToA(uint8_t value)
     _registers.setFlag(Registers::Flags::V, ~(_registers.A ^ value) & (_registers.A ^ result) & 0x80);
     _registers.setFlag(Registers::Flags::Z, static_cast<uint8_t>(result) == 0);
     _registers.setFlag(Registers::Flags::N, static_cast<uint8_t>(result) & 0x80);
-    _registers.A = static_cast<uint8_t>(result);
+    return static_cast<uint8_t>(result);
+}
+
+uint8_t CPU::_and(uint8_t a, uint8_t b)
+{
+    uint8_t result = a & b;
+    updateZNFlags(result);
+    return result;
+}
+
+uint8_t CPU::_lsr(uint8_t value)
+{
+    uint8_t result = value >> 1;
+
+    _registers.setFlag(Registers::Flags::C, value & 1);
+    _registers.setFlag(Registers::Flags::N, false);;
+    _registers.setFlag(Registers::Flags::Z, result == 0);
+
+    return result;
+}
+
+uint8_t CPU::_ror(uint8_t value)
+{
+    uint8_t result = (value >> 1) | ((_registers.P & Registers::Flags::C) << 7);
+
+    _registers.setFlag(Registers::Flags::C, value & 0x01);
+    updateZNFlags(result);
+    return result;
 }
 
 void CPU::updateZNFlags(uint8_t value)

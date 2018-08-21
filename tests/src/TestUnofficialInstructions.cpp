@@ -103,3 +103,19 @@ TEST(CPU, SAX)
     ASSERT_EQ(memory->readByte(0x05), 0b01010010);
     ASSERT_EQ(cpu.getCycle(), 3);
 }
+
+TEST(CPU, DCP)
+{
+    CPU cpu({ 0xC7, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    memory->writeByte(0x05, 20);
+    registers.A = 10;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x05), 19);
+    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}

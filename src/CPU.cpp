@@ -345,6 +345,14 @@ void CPU::setupInstructions()
     _instructions[0x1B] = CPU::op_slo<ABSY>;
     _instructions[0x03] = CPU::op_slo<INDX>;
     _instructions[0x13] = CPU::op_slo<INDY>;
+
+    _instructions[0x47] = CPU::op_sre<ZP>;
+    _instructions[0x57] = CPU::op_sre<ZPX>;
+    _instructions[0x4F] = CPU::op_sre<ABS>;
+    _instructions[0x5F] = CPU::op_sre<ABSX>;
+    _instructions[0x5B] = CPU::op_sre<ABSY>;
+    _instructions[0x43] = CPU::op_sre<INDX>;
+    _instructions[0x53] = CPU::op_sre<INDY>;
 }
 
 template <typename AccessMode>
@@ -444,12 +452,7 @@ template <typename AccessMode>
 cpu_cycle_t CPU::op_eor()
 {
     AccessMode am(_registers, _memory.get());
-    uint8_t operand = am.read();
-    uint8_t result = _registers.A ^ operand;
-
-    updateZNFlags(result);
-    _registers.A = result;
-
+    _registers.A = _eor(_registers.A, am.read());
     return am.getCycles();
 }
 
@@ -639,6 +642,18 @@ cpu_cycle_t CPU::op_slo()
     uint8_t operand = am.read();
     operand = _asl(operand);
     _registers.A = _or(_registers.A, operand);
+
+    am.write(operand);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_sre()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    operand = _lsr(operand);
+    _registers.A = _eor(_registers.A, operand);
 
     am.write(operand);
     return am.getCycles();
@@ -952,6 +967,13 @@ uint8_t CPU::_add(uint8_t value)
 uint8_t CPU::_and(uint8_t a, uint8_t b)
 {
     uint8_t result = a & b;
+    updateZNFlags(result);
+    return result;
+}
+
+uint8_t CPU::_eor(uint8_t a, uint8_t b)
+{
+    uint8_t result = a ^ b;
     updateZNFlags(result);
     return result;
 }

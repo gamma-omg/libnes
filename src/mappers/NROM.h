@@ -9,6 +9,7 @@ namespace nescore
 class NROM : public IRomMapper
 {
 public:
+    NROM(std::shared_ptr<Memory> memory);
     void map(INESRom &rom) override;
 };
 

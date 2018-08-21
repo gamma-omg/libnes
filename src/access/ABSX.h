@@ -37,6 +37,7 @@ public:
         if (!_rw)
         {
             _address = _memory->readShort(_registers.PC) + _registers.X;
+            _registers.PC += 2;
         }
 
         _cycles = _rw ? 6 : 4;

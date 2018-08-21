@@ -12,9 +12,10 @@ class Memory
 public:
     static const uint16_t RAM_PAGE_SIZE = 0x0800;
     static const uint16_t RAM_SIZE = 0x2000;
+    static const uint16_t PRG_RAM_OFFSET = 0x6000;
     static const uint16_t ROM_OFFSET = 0x8000;
     static const uint16_t ROM_SIZE = 0x7FFF;
-    static const uint16_t VECTOR_BRK = 0xFFFE;
+    static const uint16_t RESET_VECTOR = 0xFFFC;
     static const uint16_t STACK_TOP = 0x01FF;
     static const uint16_t STACK_BOTTOM = 0x0100;
 
@@ -34,6 +35,7 @@ public:
     uint16_t readBrkVector();
     uint8_t readByteFromStack(uint8_t top);
     uint16_t readShortFromStack(uint8_t top);
+    std::string readString(uint16_t offset);
 
 private:
     uint8_t* _memory;

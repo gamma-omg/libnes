@@ -76,12 +76,12 @@ uint16_t Memory::readShort(uint16_t offset)
 
 void Memory::writeBrkVecor(uint16_t address)
 {
-    writeShort(VECTOR_BRK, address);
+    writeShort(RESET_VECTOR, address);
 }
 
 uint16_t Memory::readBrkVector()
 {
-    return readShort(VECTOR_BRK);
+    return readShort(RESET_VECTOR);
 }
 
 uint8_t Memory::readByteFromStack(uint8_t top)
@@ -92,6 +92,11 @@ uint8_t Memory::readByteFromStack(uint8_t top)
 uint16_t Memory::readShortFromStack(uint8_t top)
 {
     return readShort(STACK_BOTTOM + top);
+}
+
+std::string Memory::readString(uint16_t offset)
+{
+    return std::string(reinterpret_cast<char*>(_memory + offset));
 }
 
 }

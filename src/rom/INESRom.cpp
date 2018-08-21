@@ -44,19 +44,8 @@ void INESRom::read(std::istream &stream)
         stream.read(reinterpret_cast<char*>(_trainer), TRAINER_SIZE);
     }
 
-    _prgRomBanks = new uint8_t*[_header.prgRomBanks];
-    for (int i = 0; i < _header.prgRomBanks; ++i)
-    {
-        _prgRomBanks[i] = new uint8_t[PRG_ROM_BANK_SIZE];
-        stream.read(reinterpret_cast<char*>(_prgRomBanks[i]), PRG_ROM_BANK_SIZE);
-    }
-
-    _chrRomBanks = new uint8_t*[_header.chrRomBanks];
-    for (int i = 0; i < _header.chrRomBanks; ++i)
-    {
-        _chrRomBanks[i] = new uint8_t[CHR_ROM_BANK_SIZE];
-        stream.read(reinterpret_cast<char*>(_chrRomBanks[i]), CHR_ROM_BANK_SIZE);
-    }
+    _prgRomBanks = readBankedMemory(stream, _header.prgRomBanks, PRG_ROM_BANK_SIZE);
+    _chrRomBanks = readBankedMemory(stream, _header.chrRomBanks, CHR_ROM_BANK_SIZE);
 
     if (hasPlayChoice10())
     {
@@ -122,6 +111,11 @@ uint8_t INESRom::getChrRomBanks() const
     return _header.chrRomBanks;
 }
 
+uint8_t INESRom::getPrgRamBanks() const
+{
+    return _header.prgRamBanks;
+}
+
 const uint8_t* INESRom::getTrainer() const
 {
     return _trainer;
@@ -147,19 +141,33 @@ void INESRom::clear()
     if (_trainer) delete[] _trainer;
     if (_playChoice10) delete[] _playChoice10;
 
-    for (int i = 0; i < _header.prgRomBanks; ++i)
-    {
-        delete[] _prgRomBanks[i];
-    }
-    delete[] _prgRomBanks;
-
-    for (int i = 0; i < _header.chrRomBanks; ++i)
-    {
-        delete[] _chrRomBanks[i];
-    }
-    delete[] _chrRomBanks;
+    deleteBankedMemory(_prgRomBanks, _header.prgRomBanks);
+    deleteBankedMemory(_chrRomBanks, _header.chrRomBanks);
 
     memset(&_header, sizeof(INESHeader), 0x00);
+}
+
+void INESRom::deleteBankedMemory(uint8_t **ptr, int size)
+{
+    if (ptr == 0) return;
+
+    for (int i = 0; i < size; ++i)
+    {
+        delete[] ptr[i];
+    }
+    delete[] ptr;
+}
+
+uint8_t** INESRom::readBankedMemory(std::istream &stream, int banks, int bankSize)
+{
+    uint8_t **ptr = new uint8_t *[banks];
+    for (int i = 0; i < banks; ++i)
+    {
+        ptr[i] = new uint8_t[bankSize];
+        stream.read(reinterpret_cast<char*>(ptr[i]), bankSize);
+    }
+
+    return ptr;
 }
 
 std::istream &operator>>(std::istream &stream, INESRom &rom)

@@ -30,7 +30,8 @@ public:
     {
         if (!_rw)
         {
-            _address = _memory->readByte(_registers.PC++);
+            _address = _memory->readShort(_registers.PC);
+            _registers.PC += 2;
         }
 
         _cycles = _rw ? 5 : 3;

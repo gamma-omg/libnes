@@ -21,15 +21,16 @@ namespace nescore
 {
 
 CPU::Registers::Registers()
-: A(0), S(0xFE), P(0), X(0), Y(0), PC(Memory::ROM_OFFSET)
+: A(0), S(0xFF), P(Flags::I | Flags::B), X(0), Y(0), PC(0)
 {
 }
 
 void CPU::Registers::reset()
 {
-    A = P = X = Y = 0;
-    S = 0xFD;
-    PC = Memory::ROM_OFFSET;
+    A = X = Y = 0;
+    P = Flags::I | Flags::B;
+    S = 0xFF;
+    PC = 0;
 }
 
 void CPU::Registers::setFlag(nescore::CPU::Registers::Flags flag, bool value)
@@ -56,6 +57,12 @@ CPU::CPU(const std::vector<uint8_t>& operations)
     : CPU(std::make_shared<Memory>())
 {
     _memory->loadROM(operations);
+}
+
+void CPU::reset()
+{
+    _registers.reset();
+    _registers.PC = _memory->readShort(Memory::RESET_VECTOR);
 }
 
 void CPU::tick()
@@ -215,6 +222,7 @@ void CPU::setupInstructions()
     _instructions[0x5E] = CPU::op_lsr<ABSX>;
 
     _instructions[0xEA] = CPU::op_nop;
+    _instructions[0x80] = CPU::op_nop;
 
     _instructions[0x09] = CPU::op_ora<IMM>;
     _instructions[0x05] = CPU::op_ora<ZP>;
@@ -245,6 +253,7 @@ void CPU::setupInstructions()
     _instructions[0x60] = CPU::op_rts;
 
     _instructions[0xE9] = CPU::op_sbc<IMM>;
+    _instructions[0xEB] = CPU::op_sbc<IMM>;
     _instructions[0xE5] = CPU::op_sbc<ZP>;
     _instructions[0xF5] = CPU::op_sbc<ZPX>;
     _instructions[0xED] = CPU::op_sbc<ABS>;
@@ -323,8 +332,8 @@ cpu_cycle_t CPU::op_bit()
     uint8_t operand = am.read();
     uint8_t result = _registers.A & operand;
 
-    _registers.setFlag(Registers::Flags::N, result & 0b10000000);
-    _registers.setFlag(Registers::Flags::V, result & 0b01000000);
+    _registers.setFlag(Registers::Flags::N, operand & 0x80);
+    _registers.setFlag(Registers::Flags::V, operand & 0x40);
     _registers.setFlag(Registers::Flags::Z, result == 0);
 
     return am.getCycles();
@@ -390,8 +399,8 @@ template <typename AccessMode>
 cpu_cycle_t CPU::op_eor()
 {
     AccessMode am(_registers, _memory.get());
-    int8_t operand = am.read();
-    int8_t result = _registers.A ^ operand;
+    uint8_t operand = am.read();
+    uint8_t result = _registers.A ^ operand;
 
     _registers.setFlag(Registers::Flags::N, result & 0x80);
     _registers.setFlag(Registers::Flags::Z, result == 0);
@@ -572,8 +581,7 @@ cpu_cycle_t CPU::op_jmp_ind()
 
 cpu_cycle_t CPU::op_jsr()
 {
-    _memory->writeShortToStack(_registers.S, _registers.PC + 1);
-    _registers.S -= 2;
+    pushShort(_registers.PC + 2);
     _registers.PC = _memory->readShort(_registers.PC);
 
     return 6;
@@ -673,42 +681,39 @@ cpu_cycle_t CPU::op_nop()
 
 cpu_cycle_t CPU::op_pha()
 {
-    _memory->writeByteToStack(_registers.S--, _registers.A);
+    pushByte(_registers.A);
     return 2;
 }
 
 cpu_cycle_t CPU::op_php()
 {
-    _memory->writeByteToStack(_registers.S--, _registers.P);
+    pushByte(_registers.P);
     return 2;
 }
 
 cpu_cycle_t CPU::op_pla()
 {
-    _registers.A = _memory->readByteFromStack(++_registers.S);
+    _registers.A = popByte();
     return 3;
 }
 
 cpu_cycle_t CPU::op_plp()
 {
-    _registers.P = _memory->readShortFromStack(++_registers.S);
+    _registers.P = popByte();
     return 3;
 }
 
 cpu_cycle_t CPU::op_rti()
 {
-    _registers.S++;
-    _registers.P = _memory->readByteFromStack(_registers.S++);
-    _registers.PC = _memory->readShortFromStack(_registers.S);
-    _registers.S += 2;
+    _registers.P = popByte();
+    _registers.PC = popShort();
     return 5;
 }
 
 cpu_cycle_t CPU::op_rts()
 {
-    _registers.S++;
-    _registers.PC = _memory->readShortFromStack(_registers.S) + 1;
-    _registers.S += 2;
+    _registers.PC = popShort();
+
     return 5;
 }
 
@@ -780,7 +785,8 @@ cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)
 {
     if (_registers.getFlag(flag) == state)
     {
-        auto jump = _registers.PC + _memory->readByte(_registers.PC) - 1;
+        auto offset = static_cast<int8_t>(_memory->readByte(_registers.PC++));
+        auto jump = _registers.PC + offset;
         auto page = _registers.PC & 0xFF00;
         auto jumpPage = jump & 0xFF00;
         _registers.PC = jump;
@@ -808,6 +814,33 @@ void CPU::addToA(uint8_t value)
     _registers.setFlag(Registers::Flags::Z, static_cast<uint8_t>(result) == 0);
     _registers.setFlag(Registers::Flags::N, static_cast<uint8_t>(result) & 0x80);
     _registers.A = static_cast<uint8_t>(result);
+}
+
+void CPU::pushByte(uint8_t value)
+{
+    _memory->writeByteToStack(_registers.S, value);
+    _registers.S--;
+}
+
+void CPU::pushShort(uint16_t value)
+{
+    uint8_t l = value & 0xFF;
+    uint8_t h = value >> 8;
+    pushByte(h);
+    pushByte(l);
+}
+
+uint8_t CPU::popByte()
+{
+    _registers.S++;
+    return _memory->readByteFromStack(_registers.S);
+}
+
+uint16_t CPU::popShort()
+{
+    uint8_t l = popByte();
+    uint8_t h = popByte();
+    return static_cast<uint16_t>(h << 8) | l;
 }
 
 }

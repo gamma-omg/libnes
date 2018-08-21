@@ -22,6 +22,7 @@ public:
     static const uint16_t PRG_ROM_BANK_SIZE = 0x4000;
     static const uint16_t CHR_ROM_BANK_SIZE = 0x2000;
     static const uint16_t PLAY_CHOICE_10_SIZE = 0x2000;
+    static const uint16_t PRG_RAM_BANK_SIZE = 0x2000;
 
 public:
 
@@ -60,6 +61,7 @@ public:
     uint8_t getMapper() const;
     uint8_t getPrgRomBanks() const;
     uint8_t getChrRomBanks() const;
+    uint8_t getPrgRamBanks() const;
 
     const uint8_t* getTrainer() const;
     const uint8_t* getPrgRomBank(int bank) const;
@@ -98,6 +100,8 @@ private:
 
 private:
     void clear();
+    void deleteBankedMemory(uint8_t** ptr, int size);
+    uint8_t** readBankedMemory(std::istream& stream, int banks, int bankSize);
 
 private:
     INESHeader _header;

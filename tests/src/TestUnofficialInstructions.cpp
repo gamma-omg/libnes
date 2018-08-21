@@ -137,3 +137,20 @@ TEST(CPU, ISC)
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
+
+TEST(CPU, RLA)
+{
+    CPU cpu({ 0x27, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    memory->writeByte(0x05, 0b11010011);
+    registers.A = 0b01001100;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x05), 0b10100110);
+    ASSERT_EQ(registers.A, 0b00000100);
+    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}

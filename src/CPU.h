@@ -124,6 +124,7 @@ private:
     template <typename AccessMode> cpu_cycle_t op_sax();
     template <typename AccessMode> cpu_cycle_t op_dcp();
     template <typename AccessMode> cpu_cycle_t op_isc();
+    template <typename AccessMode> cpu_cycle_t op_rla();
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();
@@ -136,6 +137,7 @@ private:
     uint8_t _and(uint8_t a, uint8_t b);
     uint8_t _lsr(uint8_t value);
     uint8_t _ror(uint8_t value);
+    uint8_t _rol(uint8_t value);
     void updateZNFlags(uint8_t value);
 
 private:

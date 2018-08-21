@@ -329,6 +329,14 @@ void CPU::setupInstructions()
     _instructions[0x3B] = CPU::op_rla<ABSY>;
     _instructions[0x23] = CPU::op_rla<INDX>;
     _instructions[0x33] = CPU::op_rla<INDY>;
+
+    _instructions[0x67] = CPU::op_rra<ZP>;
+    _instructions[0x77] = CPU::op_rra<ZPX>;
+    _instructions[0x6F] = CPU::op_rra<ABS>;
+    _instructions[0x7F] = CPU::op_rra<ABSX>;
+    _instructions[0x7B] = CPU::op_rra<ABSY>;
+    _instructions[0x63] = CPU::op_rra<INDX>;
+    _instructions[0x73] = CPU::op_rra<INDY>;
 }
 
 template <typename AccessMode>
@@ -608,6 +616,18 @@ cpu_cycle_t CPU::op_rla()
     uint8_t operand = am.read();
     operand = _rol(operand);
     _registers.A = _and(_registers.A, operand);
+
+    am.write(operand);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_rra()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    operand = _ror(operand);
+    _registers.A = _add(operand);
 
     am.write(operand);
     return am.getCycles();

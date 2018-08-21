@@ -125,6 +125,7 @@ private:
     template <typename AccessMode> cpu_cycle_t op_dcp();
     template <typename AccessMode> cpu_cycle_t op_isc();
     template <typename AccessMode> cpu_cycle_t op_rla();
+    template <typename AccessMode> cpu_cycle_t op_rra();
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();

@@ -123,6 +123,7 @@ private:
     template <typename AccessMode> cpu_cycle_t op_lax();
     template <typename AccessMode> cpu_cycle_t op_sax();
     template <typename AccessMode> cpu_cycle_t op_dcp();
+    template <typename AccessMode> cpu_cycle_t op_isc();
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();
@@ -140,7 +141,7 @@ private:
 private:
     std::shared_ptr<Memory> _memory;
     Registers _registers;
-    InstructionHandler _instructions[0xFF];
+    InstructionHandler _instructions[0x100];
     cpu_cycle_t _cycle;
 };
 

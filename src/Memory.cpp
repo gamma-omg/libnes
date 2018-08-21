@@ -21,6 +21,11 @@ Memory::Memory(const std::vector<uint8_t> &ram)
     memcpy(address, ram.data(), ram.size());
 }
 
+Memory::~Memory()
+{
+    delete[] _memory;
+}
+
 void Memory::loadProgram(const std::vector<uint8_t> &program)
 {
     memcpy(_memory + ROM_OFFSET, program.data(), program.size());

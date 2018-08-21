@@ -22,6 +22,7 @@ public:
 public:
     Memory();
     Memory(const std::vector<uint8_t>& ram);
+    ~Memory();
 
     void loadProgram(const std::vector<uint8_t> &program);
     void writeByte(uint16_t offset, uint8_t value);

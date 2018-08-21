@@ -119,3 +119,21 @@ TEST(CPU, DCP)
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
+
+TEST(CPU, ISC)
+{
+    CPU cpu({ 0xE7, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    memory->writeByte(0x05, 5);
+    registers.A = 10;
+    registers.setFlag(CPU::Registers::Flags::C, true);
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x05), 6);
+    ASSERT_EQ(registers.A, 4);
+    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}

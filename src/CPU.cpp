@@ -313,6 +313,14 @@ void CPU::setupInstructions()
     _instructions[0xDB] = CPU::op_dcp<ABSY>;
     _instructions[0xC3] = CPU::op_dcp<INDX>;
     _instructions[0xD3] = CPU::op_dcp<INDY>;
+
+    _instructions[0xE7] = CPU::op_isc<ZP>;
+    _instructions[0xF7] = CPU::op_isc<ZPX>;
+    _instructions[0xEF] = CPU::op_isc<ABS>;
+    _instructions[0xFF] = CPU::op_isc<ABSX>;
+    _instructions[0xFB] = CPU::op_isc<ABSY>;
+    _instructions[0xE3] = CPU::op_isc<INDX>;
+    _instructions[0xF3] = CPU::op_isc<INDY>;
 }
 
 template <typename AccessMode>
@@ -575,6 +583,18 @@ cpu_cycle_t CPU::op_dcp()
     updateZNFlags(diff);
     _registers.setFlag(Registers::Flags::C, _registers.A >= operand);
 
+    am.write(operand);
+    return am.getCycles();
+}
+
+template<typename AccessMode>
+cpu_cycle_t CPU::op_isc()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t operand = am.read();
+    operand++;
+
+    _registers.A = _add(~operand);
     am.write(operand);
     return am.getCycles();
 }

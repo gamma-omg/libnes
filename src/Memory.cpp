@@ -48,16 +48,6 @@ void Memory::writeShort(uint16_t offset, uint16_t value)
     writeByte(offset + 1, value >> 8);
 }
 
-void Memory::writeByteToStack(uint8_t top, uint8_t value)
-{
-    writeByte(STACK_BOTTOM + top, value);
-}
-
-void Memory::writeShortToStack(uint8_t top, uint16_t value)
-{
-    writeShort(STACK_BOTTOM + top, value);
-}
-
 void Memory::writeBytes(uint16_t offset, const uint8_t *src, uint16_t size)
 {
     memcpy(_memory + offset, src, size);
@@ -85,19 +75,36 @@ uint16_t Memory::readResetVector()
     return readShort(RESET_VECTOR);
 }
 
-uint8_t Memory::readByteFromStack(uint8_t top)
-{
-    return readByte(STACK_BOTTOM + top);
-}
-
-uint16_t Memory::readShortFromStack(uint8_t top)
-{
-    return readShort(STACK_BOTTOM + top);
-}
-
 std::string Memory::readString(uint16_t offset)
 {
     return std::string(reinterpret_cast<char*>(_memory + offset));
+}
+
+void Memory::pushByte(uint8_t &s, uint8_t value)
+{
+    _memory[STACK_BOTTOM + s] = value;
+    s--;
+}
+
+void Memory::pushShort(uint8_t &s, uint16_t value)
+{
+    uint8_t l = value & 0xFF;
+    uint8_t h = value >> 8;
+    pushByte(s, h);
+    pushByte(s, l);
+}
+
+uint8_t Memory::popByte(uint8_t &s)
+{
+    s++;
+    return _memory[STACK_BOTTOM + s];
+}
+
+uint16_t Memory::popShort(uint8_t &s)
+{
+    uint8_t l = popByte(s);
+    uint8_t h = popByte(s);
+    return (h << 8) | l;
 }
 
 }

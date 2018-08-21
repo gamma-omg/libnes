@@ -123,10 +123,6 @@ private:
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);
     void addToA(uint8_t value);
-    void pushByte(uint8_t value);
-    void pushShort(uint16_t value);
-    uint8_t popByte();
-    uint16_t popShort();
 
 private:
     std::shared_ptr<Memory> _memory;

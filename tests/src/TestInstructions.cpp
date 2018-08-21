@@ -337,7 +337,7 @@ TEST(CPU, ASL_ACC_flag_C_negative)
 
 TEST(CPU, BCC_jump)
 {
-    CPU cpu({ 0x90, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0x90, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::C, false);
@@ -363,7 +363,7 @@ TEST(CPU, BCC_dont_jump)
 
 TEST(CPU, BCS_jump)
 {
-    CPU cpu({ 0xB0, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0xB0, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::C, true);
@@ -376,7 +376,7 @@ TEST(CPU, BCS_jump)
 
 TEST(CPU, BCS_dont_jump)
 {
-    CPU cpu({ 0xB0, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0xB0, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::C, false);
@@ -389,7 +389,7 @@ TEST(CPU, BCS_dont_jump)
 
 TEST(CPU, BEQ_jump)
 {
-    CPU cpu({ 0xF0, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0xF0, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::Z, true);
@@ -402,7 +402,7 @@ TEST(CPU, BEQ_jump)
 
 TEST(CPU, BEQ_dont_jump)
 {
-    CPU cpu({ 0xF0, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0xF0, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::Z, false);
@@ -433,8 +433,8 @@ TEST(CPU, BIT_ZP_flag_N_negative)
 
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
-    registers.A = 0b01001111;
-    memory->writeByte(0x01, 0b11001010);
+    registers.A = 0b11001111;
+    memory->writeByte(0x01, 0b01001010);
 
     cpu.tick();
 
@@ -461,8 +461,8 @@ TEST(CPU, BIT_ZP_flag_V_negative)
 
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
-    registers.A = 0b10001111;
-    memory->writeByte(0x01, 0b11001010);
+    registers.A = 0b11001111;
+    memory->writeByte(0x01, 0b10001010);
 
     cpu.tick();
 
@@ -499,7 +499,7 @@ TEST(CPU, BIT_ZP_flag_Z_negative)
 
 TEST(CPU, BMI_jump)
 {
-    CPU cpu({ 0x30, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0x30, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::N, true);
@@ -512,7 +512,7 @@ TEST(CPU, BMI_jump)
 
 TEST(CPU, BMI_dont_jump)
 {
-    CPU cpu({ 0xF0, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0xF0, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::N, false);
@@ -525,7 +525,7 @@ TEST(CPU, BMI_dont_jump)
 
 TEST(CPU, BNE_jump)
 {
-    CPU cpu({ 0xD0, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0xD0, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::Z, false);
@@ -538,7 +538,7 @@ TEST(CPU, BNE_jump)
 
 TEST(CPU, BNE_dont_jump)
 {
-    CPU cpu({ 0xD0, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0xD0, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::Z, true);
@@ -551,7 +551,7 @@ TEST(CPU, BNE_dont_jump)
 
 TEST(CPU, BPL_jump)
 {
-    CPU cpu({ 0x10, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0x10, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::N, false);
@@ -564,7 +564,7 @@ TEST(CPU, BPL_jump)
 
 TEST(CPU, BPL_dont_jump)
 {
-    CPU cpu({ 0x10, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0x10, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::N, true);
@@ -591,7 +591,7 @@ TEST(CPU, BRK)
 
 TEST(CPU, BVC_jump)
 {
-    CPU cpu({ 0x50, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0x50, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::V, false);
@@ -604,7 +604,7 @@ TEST(CPU, BVC_jump)
 
 TEST(CPU, BVC_dont_jump)
 {
-    CPU cpu({ 0x50, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0x50, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::V, true);
@@ -617,7 +617,7 @@ TEST(CPU, BVC_dont_jump)
 
 TEST(CPU, BVS_jump)
 {
-    CPU cpu({ 0x70, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0x70, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::V, true);
@@ -630,7 +630,7 @@ TEST(CPU, BVS_jump)
 
 TEST(CPU, BVS_dont_jump)
 {
-    CPU cpu({ 0x70, 0x05, 0x69, 0x01, 0x00, 0x69, 0x02 });
+    CPU cpu({ 0x70, 0x03, 0x69, 0x01, 0x00, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
     registers.setFlag(CPU::Registers::Flags::V, false);
@@ -1347,7 +1347,7 @@ TEST(CPU, JSR)
     cpu.tick();
 
     ASSERT_EQ(registers.PC, 4);
-    ASSERT_EQ(memory->readShortFromStack(registers.S + 2), Memory::ROM_OFFSET + 2);
+    ASSERT_EQ(memory->popShort(registers.S), Memory::ROM_OFFSET + 3);
 }
 
 TEST(CPU, LDA)
@@ -1632,7 +1632,7 @@ TEST(CPU, PHA)
 
     cpu.tick();
 
-    ASSERT_EQ(memory->readShortFromStack(registers.S + 1), 5);
+    ASSERT_EQ(memory->popShort(registers.S), 5);
     ASSERT_EQ(cpu.getCycle(), 3);
 }
 
@@ -1645,7 +1645,7 @@ TEST(CPU, PHP)
 
     cpu.tick();
 
-    ASSERT_EQ(memory->readShortFromStack(registers.S + 1), 0b10110101);
+    ASSERT_EQ(memory->popShort(registers.S), 0b10110101);
     ASSERT_EQ(cpu.getCycle(), 3);
 }
 
@@ -1856,8 +1856,8 @@ TEST(CPU, RTI)
     registers.P = 0b10110011;
 
     auto memory = cpu.getMemory();
-    memory->writeShortToStack(registers.S--, registers.PC);
-    memory->writeByteToStack(registers.S--, registers.P);
+    memory->pushShort(registers.S, registers.PC);
+    memory->pushByte(registers.S, registers.P);
 
     registers.P = 0;
     registers.PC = Memory::ROM_OFFSET + 2;
@@ -1874,12 +1874,12 @@ TEST(CPU, RTS)
     CPU cpu({ 0x00, 0x00, 0x60, 0x00 });
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
-    memory->writeShortToStack(registers.S--, registers.PC);
+    memory->pushShort(registers.S, registers.PC);
     registers.PC = Memory::ROM_OFFSET + 2;
 
     cpu.tick();
 
-    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 1);
+    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0);
 }
 
 TEST(CPU, SBC)

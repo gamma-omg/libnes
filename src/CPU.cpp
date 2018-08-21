@@ -582,7 +582,7 @@ cpu_cycle_t CPU::op_jmp_ind()
 
 cpu_cycle_t CPU::op_jsr()
 {
-    pushShort(_registers.PC + 2);
+    _memory->pushShort(_registers.S, _registers.PC + 2);
     _registers.PC = _memory->readShort(_registers.PC);
 
     return 6;
@@ -682,38 +682,38 @@ cpu_cycle_t CPU::op_nop()
 
 cpu_cycle_t CPU::op_pha()
 {
-    pushByte(_registers.A);
+    _memory->pushByte(_registers.S, _registers.A);
     return 2;
 }
 
 cpu_cycle_t CPU::op_php()
 {
-    pushByte(_registers.P);
+    _memory->pushByte(_registers.S, _registers.P);
     return 2;
 }
 
 cpu_cycle_t CPU::op_pla()
 {
-    _registers.A = popByte();
+    _registers.A = _memory->popByte(_registers.S);
     return 3;
 }
 
 cpu_cycle_t CPU::op_plp()
 {
-    _registers.P = popByte();
+    _registers.P = _memory->popByte(_registers.S);
     return 3;
 }
 
 cpu_cycle_t CPU::op_rti()
 {
-    _registers.P = popByte();
-    _registers.PC = popShort();
+    _registers.P = _memory->popByte(_registers.S);
+    _registers.PC = _memory->popShort(_registers.S);
     return 5;
 }
 
 cpu_cycle_t CPU::op_rts()
 {
-    _registers.PC = popShort();
+    _registers.PC = _memory->popShort(_registers.S);
 
     return 5;
 }
@@ -815,33 +815,6 @@ void CPU::addToA(uint8_t value)
     _registers.setFlag(Registers::Flags::Z, static_cast<uint8_t>(result) == 0);
     _registers.setFlag(Registers::Flags::N, static_cast<uint8_t>(result) & 0x80);
     _registers.A = static_cast<uint8_t>(result);
-}
-
-void CPU::pushByte(uint8_t value)
-{
-    _memory->writeByteToStack(_registers.S, value);
-    _registers.S--;
-}
-
-void CPU::pushShort(uint16_t value)
-{
-    uint8_t l = value & 0xFF;
-    uint8_t h = value >> 8;
-    pushByte(h);
-    pushByte(l);
-}
-
-uint8_t CPU::popByte()
-{
-    _registers.S++;
-    return _memory->readByteFromStack(_registers.S);
-}
-
-uint16_t CPU::popShort()
-{
-    uint8_t l = popByte();
-    uint8_t h = popByte();
-    return static_cast<uint16_t>(h << 8) | l;
 }
 
 }

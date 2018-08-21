@@ -58,3 +58,19 @@ TEST(CPU, ARR)
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::V));
 }
+
+TEST(CPU, AXS)
+{
+    CPU cpu({ 0xCB, static_cast<uint8_t>(-5) });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b11110101;
+    registers.X = 0b10100110;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.X, 0b10100100 + 5);
+    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::C));
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+}

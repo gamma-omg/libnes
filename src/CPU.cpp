@@ -292,6 +292,7 @@ void CPU::setupInstructions()
     _instructions[0x0B] = CPU::op_anc;
     _instructions[0x2B] = CPU::op_anc;
     _instructions[0x6B] = CPU::op_arr;
+    _instructions[0xCB] = CPU::op_axs;
 }
 
 template <typename AccessMode>
@@ -788,6 +789,19 @@ cpu_cycle_t CPU::op_arr()
 
     _registers.setFlag(Registers::Flags::C, bit6);
     _registers.setFlag(Registers::Flags::V, bit6 ^ bit5);
+
+    return 1;
+}
+
+cpu_cycle_t CPU::op_axs()
+{
+    IMM am(_registers, _memory.get());
+    int8_t operand = am.read();
+    int16_t result = (_registers.A & _registers.X) - operand;
+
+    _registers.X = result;
+    _registers.setFlag(Registers::Flags::C, result > 0xFF);
+    updateZNFlags(_registers.X);
 
     return 1;
 }

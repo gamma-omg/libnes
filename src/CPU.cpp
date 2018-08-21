@@ -223,7 +223,6 @@ void CPU::setupInstructions()
     _instructions[0x5E] = CPU::op_lsr<ABSX>;
 
     _instructions[0xEA] = CPU::op_nop;
-    _instructions[0x80] = CPU::op_nop;
 
     _instructions[0x09] = CPU::op_ora<IMM>;
     _instructions[0x05] = CPU::op_ora<ZP>;
@@ -353,6 +352,15 @@ void CPU::setupInstructions()
     _instructions[0x5B] = CPU::op_sre<ABSY>;
     _instructions[0x43] = CPU::op_sre<INDX>;
     _instructions[0x53] = CPU::op_sre<INDY>;
+
+    _instructions[0xEB] = CPU::op_sbc<IMM>;
+
+    _instructions[0x1A] = CPU::op_nop;
+    _instructions[0x3A] = CPU::op_nop;
+    _instructions[0x5A] = CPU::op_nop;
+    _instructions[0x7A] = CPU::op_nop;
+    _instructions[0xDA] = CPU::op_nop;
+    _instructions[0xFA] = CPU::op_nop;
 }
 
 template <typename AccessMode>

@@ -21,8 +21,8 @@ namespace nescore
 {
 
 CPU::Registers::Registers()
-: A(0), S(0xFF), P(Flags::I | Flags::B), X(0), Y(0), PC(0)
 {
+    reset();
 }
 
 void CPU::Registers::reset()

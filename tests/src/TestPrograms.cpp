@@ -70,7 +70,7 @@ private:
 
 TEST(CPU, immediate)
 {
-    TestRunner testRunner("tests/cpu/data/02-immediate.nes");
+    TestRunner testRunner("tests/data/02-immediate.nes");
 
     try
     {

@@ -21,14 +21,10 @@ public:
     {
         _cycles = 4;
         _address = _memory->readByte(_registers.PC++);
-        _address = _memory->readShort(_address);
-        if (_address & 0xFF + _registers.Y > 0xFF)
-        {
-            _cycles++;
-        }
+        _address = _memory->readShort(_address) + _registers.Y;
 
         _rw = true;
-        return _memory->readByte(_address + _registers.Y);
+        return _memory->readByte(_address);
     }
 
     void write(uint8_t value)

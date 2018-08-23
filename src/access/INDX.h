@@ -20,23 +20,25 @@ public:
     uint8_t read()
     {
         _cycles = 4;
-        _address = _memory->readByte(_registers.PC++);
-        _address = _memory->readShort(_address);
-        if (_address & 0xFF + _registers.X > 0xFF)
+        _address = _memory->readByte(_registers.PC++) + _registers.X;
+        if (_address > 0xFF)
         {
             _cycles++;
+            _address &= 0xFF;
         }
 
+        _address = _memory->readByte(_address);
+
         _rw = true;
-        return _memory->readByte(_address + _registers.X);
+        return _memory->readByte(_address);
     }
 
     void write(uint8_t value)
     {
         if (!_rw)
         {
-            _address = _memory->readByte(_registers.PC++);
-            _address = _memory->readShort(_address) + _registers.X;
+            _address = (_memory->readByte(_registers.PC++) + _registers.X) & 0xFF;
+            _address = _memory->readByte(_address);
         }
 
         _cycles = _rw ? 7 : 5;

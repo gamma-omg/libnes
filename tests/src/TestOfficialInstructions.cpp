@@ -163,8 +163,8 @@ TEST(CPU, ADC_INDX)
 
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
-    memory->writeShort(0x05, 0x1000);
-    memory->writeByte(0x1002, 0x3);
+    memory->writeShort(0x07, 0x1000);
+    memory->writeByte(0x1000, 0x3);
     registers.X = 0x02;
 
     cpu.tick(2);

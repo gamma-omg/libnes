@@ -407,6 +407,8 @@ void CPU::setupInstructions()
     _instructions[0xB2] = CPU::op_kil;
     _instructions[0xD2] = CPU::op_kil;
     _instructions[0xF2] = CPU::op_kil;
+
+    _instructions[0xBB] = CPU::op_las;
 }
 
 template <typename AccessMode>
@@ -1023,6 +1025,17 @@ cpu_cycle_t CPU::op_kil()
 {
     _killed = true;
     return 0;
+}
+
+cpu_cycle_t CPU::op_las()
+{
+    ABSY am(_registers, _memory.get());
+    uint8_t result = _and(am.read(), _registers.S);
+    _registers.A = result;
+    _registers.X = result;
+    _registers.S = result;
+
+    return am.getCycles();
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

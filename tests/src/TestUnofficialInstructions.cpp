@@ -233,3 +233,21 @@ TEST(CPU, KIL)
     ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 1);
     ASSERT_EQ(registers.A, 0);
 }
+
+TEST(CPU, LAS)
+{
+    CPU cpu({ 0xBB, 0x05 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.Y = 3;
+    registers.S = 0b10001011;
+    memory->writeByte(0x08, 0b11001101);
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.A, 0b10001001);
+    ASSERT_EQ(registers.S, 0b10001001);
+    ASSERT_EQ(registers.X, 0b10001001);
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}

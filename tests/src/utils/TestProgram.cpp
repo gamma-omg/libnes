@@ -14,7 +14,7 @@ TestProgram::TestProgram(const std::string &fileName)
     loadRom(fileName);
 }
 
-void TestProgram::run()
+int TestProgram::run()
 {
     // Set PPU status
     _memory->writeByte(0x2002, 0b10000000);
@@ -30,13 +30,15 @@ void TestProgram::run()
             _started = status == 0x80;
             continue;
         }
-        if (status == 0x00)
+
+        if (status != 0x80)
         {
-            break;
+            _output = _memory->readString(0x6004);
+            return status;
         }
     }
 
-    _output = _memory->readString(0x6004);
+    return -1;
 }
 
 const std::string &TestProgram::getOutput() const

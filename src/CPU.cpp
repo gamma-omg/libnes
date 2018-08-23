@@ -298,8 +298,8 @@ void CPU::setupInstructions()
     _instructions[0x2B] = CPU::op_anc;
     _instructions[0x6B] = CPU::op_arr;
     _instructions[0xCB] = CPU::op_axs;
-    _instructions[0xAB] = CPU::op_oal;
 
+    _instructions[0xAB] = CPU::op_lax<IMM>;
     _instructions[0xA7] = CPU::op_lax<ZP>;
     _instructions[0xB7] = CPU::op_lax<ZPY>;
     _instructions[0xAF] = CPU::op_lax<ABS>;
@@ -1008,21 +1008,12 @@ cpu_cycle_t CPU::op_arr()
 cpu_cycle_t CPU::op_axs()
 {
     IMM am(_registers, _memory.get());
-    int8_t operand = am.read();
-    int16_t result = (_registers.A & _registers.X) - operand;
+    uint8_t operand = am.read();
+    uint16_t result = (_registers.A & _registers.X) - operand;
 
-    _registers.X = result;
-    _registers.setFlag(Registers::Flags::C, result > 0xFF);
+    _registers.X = result & 0xFF;
+    _registers.setFlag(Registers::Flags::C, (result & 0x100) == 0);
     updateZNFlags(_registers.X);
-
-    return 1;
-}
-
-cpu_cycle_t CPU::op_oal()
-{
-    IMM am(_registers, _memory.get());
-    _registers.A = _and(_registers.A, am.read());
-    _registers.X = _registers.A;
 
     return 1;
 }

@@ -14,7 +14,7 @@ class TestProgram
 public:
     TestProgram(const std::string& fileName);
 
-    void run();
+    int run();
     const std::string& getOutput() const;
 
 private:

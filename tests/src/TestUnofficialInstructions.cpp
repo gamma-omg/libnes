@@ -220,3 +220,16 @@ TEST(CPU, OAL)
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
+
+TEST(CPU, KIL)
+{
+    CPU cpu({ 0x02,
+              0x69, 0x02 });
+    auto& registers = cpu.getRegisters();
+
+    cpu.tick();
+    cpu.tick();
+
+    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 1);
+    ASSERT_EQ(registers.A, 0);
+}

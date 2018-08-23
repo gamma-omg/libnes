@@ -20,10 +20,9 @@ public:
     uint8_t read()
     {
         _cycles = 4;
-        _address = _memory->readByte(_registers.PC++);
-        _address = _memory->readShort(_address) + _registers.Y;
-
+        _address = getAddress();
         _rw = true;
+
         return _memory->readByte(_address);
     }
 
@@ -31,8 +30,7 @@ public:
     {
         if (!_rw)
         {
-            _address = _memory->readByte(_registers.PC++);
-            _address = _memory->readShort(_address) + _registers.Y;
+            _address = getAddress();
         }
 
         _cycles = _rw ? 7 : 5;
@@ -42,6 +40,33 @@ public:
     cpu_cycle_t getCycles() const
     {
         return _cycles;
+    }
+
+private:
+    uint16_t getAddress()
+    {
+        uint8_t base = _memory->readByte(_registers.PC++);
+        uint16_t address = 0;
+        if (base == 0xFF)
+        {
+            address = _memory->readByte(0xFF) | _memory->readByte(0x00) << 8;
+        }
+        else
+        {
+            address = _memory->readShort(base);
+        }
+
+        if (isPageCrossed(address, _registers.Y))
+        {
+            _cycles++;
+        }
+
+        return address + _registers.Y;
+    }
+
+    bool isPageCrossed(uint16_t address, uint16_t offset)
+    {
+        return (address + offset) & 0xFF00 != address & 0xFF00;
     }
 
 private:

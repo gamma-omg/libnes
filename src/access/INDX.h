@@ -20,16 +20,9 @@ public:
     uint8_t read()
     {
         _cycles = 4;
-        _address = _memory->readByte(_registers.PC++) + _registers.X;
-        if (_address > 0xFF)
-        {
-            _cycles++;
-            _address &= 0xFF;
-        }
-
-        _address = _memory->readByte(_address);
-
+        _address = getAddress();
         _rw = true;
+
         return _memory->readByte(_address);
     }
 
@@ -37,8 +30,7 @@ public:
     {
         if (!_rw)
         {
-            _address = (_memory->readByte(_registers.PC++) + _registers.X) & 0xFF;
-            _address = _memory->readByte(_address);
+            _address = getAddress();
         }
 
         _cycles = _rw ? 7 : 5;
@@ -48,6 +40,18 @@ public:
     cpu_cycle_t getCycles() const
     {
         return _cycles;
+    }
+
+private:
+    uint16_t getAddress()
+    {
+        uint8_t address = _memory->readByte(_registers.PC++) + _registers.X;
+        if (address == 0xFF)
+        {
+            return _memory->readByte(0xFF) | _memory->readByte(0x00) << 8;
+        }
+
+        return _memory->readShort(address);
     }
 
 private:

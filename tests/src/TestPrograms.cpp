@@ -20,7 +20,6 @@ TEST(CPU, Implied)
     ASSERT_EQ(status, 0);
 }
 
-
 TEST(CPU, Immediate)
 {
     TestProgram test("tests/data/02-immediate.nes");
@@ -44,8 +43,6 @@ TEST(CPU, ZeroPage)
     out.flush();
     ASSERT_EQ(status, 0);
 }
-
-
 
 TEST(CPU, ZeroPage_XY)
 {

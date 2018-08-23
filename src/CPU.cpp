@@ -255,7 +255,7 @@ void CPU::setupInstructions()
     _instructions[0x6E] = CPU::op_ror<ABS>;
     _instructions[0x7E] = CPU::op_ror<ABSX>;
 
-    _instructions[0x4D] = CPU::op_rti;
+    _instructions[0x40] = CPU::op_rti;
     _instructions[0x60] = CPU::op_rts;
 
     _instructions[0xE9] = CPU::op_sbc<IMM>;
@@ -1037,22 +1037,28 @@ cpu_cycle_t CPU::op_las()
 
 cpu_cycle_t CPU::op_sxa()
 {
-    ABSY am(_registers, _memory.get());
-    uint16_t operand = am.getAddress() >> 8;
-    operand++;
-    am.write(_registers.X & operand);
+    uint16_t address = _memory->readShort(_registers.PC) + _registers.Y;
+    _registers.PC += 2;
 
-    return am.getCycles();
+    uint8_t al = address & 0xFF;
+    uint8_t ah = address >> 8;
+    uint8_t result = _registers.X & (ah + 1);
+
+    _memory->writeByte((result << 8) | al, result);
+    return 4;
 }
 
 cpu_cycle_t CPU::op_sya()
 {
-    ABSX am(_registers, _memory.get());
-    uint16_t operand = am.getAddress() >> 8;
-    operand++;
-    am.write(_registers.Y & operand);
+    uint16_t address = _memory->readShort(_registers.PC) + _registers.X;
+    _registers.PC += 2;
 
-    return am.getCycles();
+    uint8_t al = address & 0xFF;
+    uint8_t ah = address >> 8;
+    uint8_t result = _registers.Y & (ah + 1);
+
+    _memory->writeByte((result << 8) | al, result);
+    return 4;
 }
 
 cpu_cycle_t CPU::op_xaa()

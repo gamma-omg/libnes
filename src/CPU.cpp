@@ -409,6 +409,7 @@ void CPU::setupInstructions()
     _instructions[0xF2] = CPU::op_kil;
 
     _instructions[0xBB] = CPU::op_las;
+    _instructions[0x9E] = CPU::op_sxa;
 }
 
 template <typename AccessMode>
@@ -1034,6 +1035,16 @@ cpu_cycle_t CPU::op_las()
     _registers.A = result;
     _registers.X = result;
     _registers.S = result;
+
+    return am.getCycles();
+}
+
+cpu_cycle_t CPU::op_sxa()
+{
+    ABSY am(_registers, _memory.get());
+    uint16_t operand = am.getAddress() >> 8;
+    operand++;
+    am.write(_registers.Y & operand);
 
     return am.getCycles();
 }

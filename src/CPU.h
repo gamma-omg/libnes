@@ -139,6 +139,7 @@ private:
     cpu_cycle_t op_oal();
     cpu_cycle_t op_kil();
     cpu_cycle_t op_las();
+    cpu_cycle_t op_sxa();
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);

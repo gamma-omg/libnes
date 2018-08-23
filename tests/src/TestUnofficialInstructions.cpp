@@ -251,3 +251,16 @@ TEST(CPU, LAS)
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
+
+TEST(CPU, SXA)
+{
+    CPU cpu({ 0x9E, 0x05, 0x10 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.Y = 3;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x1008), 1);
+    ASSERT_EQ(cpu.getCycle(), 5);
+}

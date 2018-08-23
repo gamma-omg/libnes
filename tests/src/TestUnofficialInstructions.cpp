@@ -205,3 +205,18 @@ TEST(CPU, SRE)
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
+
+TEST(CPU, ATX)
+{
+    CPU cpu({ 0xAB, 0b10100101 });
+    auto& registers = cpu.getRegisters();
+    registers.A = 0b11010110;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.A, 0b10000100);
+    ASSERT_EQ(registers.X, 0b10000100);
+    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
+    ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
+}

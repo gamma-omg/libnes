@@ -82,6 +82,12 @@ void CPU::tick()
     }
 
     _cycle++;
+
+    if (opcode == 0x06)
+    {
+        _cycle += (this->*handler)();
+        return;
+    }
     _cycle += (this->*handler)();
 }
 
@@ -438,7 +444,7 @@ cpu_cycle_t CPU::op_asl()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
-    _registers.A = _asl(operand);
+    am.write(_asl(operand));
     return am.getCycles();
 }
 

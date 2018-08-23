@@ -44,9 +44,8 @@ public:
 private:
     uint16_t readAddress()
     {
-        auto address = _memory->readByte(_registers.PC++);
-        address += _registers.Y;
-        address %= 0xFF;
+        uint16_t address = _memory->readByte(_registers.PC++) + _registers.Y;
+        address = address & 0xFF;
         return address;
     }
 

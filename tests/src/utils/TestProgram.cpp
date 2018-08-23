@@ -30,7 +30,11 @@ int TestProgram::run()
             _started = status == 0x80;
             continue;
         }
-
+        if (status == 0x81)
+        {
+            int a;
+            a++;
+        }
         if (status != 0x80)
         {
             _output = _memory->readString(0x6004);

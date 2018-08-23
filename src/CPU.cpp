@@ -82,12 +82,6 @@ void CPU::tick()
     }
 
     _cycle++;
-
-    if (opcode == 0x06)
-    {
-        _cycle += (this->*handler)();
-        return;
-    }
     _cycle += (this->*handler)();
 }
 

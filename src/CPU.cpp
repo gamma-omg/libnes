@@ -411,7 +411,8 @@ void CPU::setupInstructions()
     _instructions[0xBB] = CPU::op_las;
     _instructions[0x9E] = CPU::op_sxa;
     _instructions[0x9C] = CPU::op_sya;
-    _instructions[0xBB] = CPU::op_xaa;
+    _instructions[0x8B] = CPU::op_xaa;
+    _instructions[0x9B] = CPU::op_xas;
 }
 
 template <typename AccessMode>
@@ -1067,6 +1068,18 @@ cpu_cycle_t CPU::op_xaa()
     am.read();
 
     // exact operation unknown
+    return am.getCycles();
+}
+
+cpu_cycle_t CPU::op_xas()
+{
+    ABSY am(_registers, _memory.get());
+    uint16_t operand = am.getAddress() >> 8;
+    operand++;
+
+    _registers.S = _registers.X & _registers.A;
+    am.write(_registers.S & operand);
+
     return am.getCycles();
 }
 

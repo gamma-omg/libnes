@@ -257,6 +257,21 @@ TEST(CPU, SXA)
     CPU cpu({ 0x9E, 0x05, 0x10 });
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
+    registers.X = 3;
+    registers.Y = 3;
+
+    cpu.tick();
+
+    ASSERT_EQ(memory->readByte(0x1008), 1);
+    ASSERT_EQ(cpu.getCycle(), 5);
+}
+
+TEST(CPU, SYA)
+{
+    CPU cpu({ 0x9C, 0x05, 0x10 });
+    auto& registers = cpu.getRegisters();
+    auto memory = cpu.getMemory();
+    registers.X = 3;
     registers.Y = 3;
 
     cpu.tick();

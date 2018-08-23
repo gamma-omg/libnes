@@ -44,6 +44,11 @@ public:
         _memory->writeByte(_address, value);
     }
 
+    uint16_t getAddress()
+    {
+        return _memory->readShort(_registers.PC) + _registers.X;
+    }
+
     cpu_cycle_t getCycles() const
     {
         return _cycles;

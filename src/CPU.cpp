@@ -461,9 +461,9 @@ cpu_cycle_t CPU::op_cmp()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
-    uint8_t result = _registers.A - operand;
+    uint8_t diff = _registers.A - operand;
 
-    updateZNFlags(result);
+    updateZNFlags(diff);
     _registers.setFlag(Registers::Flags::C, _registers.A >= operand );
 
     return am.getCycles();
@@ -895,12 +895,14 @@ cpu_cycle_t CPU::op_pla()
 cpu_cycle_t CPU::op_plp()
 {
     _registers.P = _memory->popByte(_registers.S);
+    _registers.P |= Registers::Flags::B | Registers::Flags::L;
     return 3;
 }
 
 cpu_cycle_t CPU::op_rti()
 {
     _registers.P = _memory->popByte(_registers.S);
+    _registers.P |= Registers::Flags::B | Registers::Flags::L;
     _registers.PC = _memory->popShort(_registers.S);
     return 5;
 }

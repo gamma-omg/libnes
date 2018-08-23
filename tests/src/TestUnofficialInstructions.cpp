@@ -206,7 +206,7 @@ TEST(CPU, SRE)
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
 
-TEST(CPU, ATX)
+TEST(CPU, OAL)
 {
     CPU cpu({ 0xAB, 0b10100101 });
     auto& registers = cpu.getRegisters();

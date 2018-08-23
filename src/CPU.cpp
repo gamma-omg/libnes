@@ -292,7 +292,7 @@ void CPU::setupInstructions()
     _instructions[0x2B] = CPU::op_anc;
     _instructions[0x6B] = CPU::op_arr;
     _instructions[0xCB] = CPU::op_axs;
-    _instructions[0xAB] = CPU::op_atx;
+    _instructions[0xAB] = CPU::op_oal;
 
     _instructions[0xA7] = CPU::op_lax<ZP>;
     _instructions[0xB7] = CPU::op_lax<ZPY>;
@@ -977,7 +977,7 @@ cpu_cycle_t CPU::op_axs()
     return 1;
 }
 
-cpu_cycle_t CPU::op_atx()
+cpu_cycle_t CPU::op_oal()
 {
     IMM am(_registers, _memory.get());
     _registers.A = _and(_registers.A, am.read());

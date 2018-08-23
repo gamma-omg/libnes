@@ -62,12 +62,18 @@ CPU::CPU(const std::vector<uint8_t>& operations)
 
 void CPU::reset()
 {
+    _killed = false;
     _registers.reset();
     _registers.PC = _memory->readShort(Memory::RESET_VECTOR);
 }
 
 void CPU::tick()
 {
+    if (_killed)
+    {
+        return;
+    }
+
     auto opcode = _memory->readByte(_registers.PC++);
     auto handler = _instructions[opcode];
     if (!handler)
@@ -385,6 +391,22 @@ void CPU::setupInstructions()
     _instructions[0x7C] = CPU::op_ign<ABSX>;
     _instructions[0xDC] = CPU::op_ign<ABSX>;
     _instructions[0xFC] = CPU::op_ign<ABSX>;
+
+    _instructions[0x9F] = CPU::op_axa<ABSY>;
+    _instructions[0x93] = CPU::op_axa<INDY>;
+
+    _instructions[0x02] = CPU::op_kil;
+    _instructions[0x12] = CPU::op_kil;
+    _instructions[0x22] = CPU::op_kil;
+    _instructions[0x32] = CPU::op_kil;
+    _instructions[0x42] = CPU::op_kil;
+    _instructions[0x52] = CPU::op_kil;
+    _instructions[0x62] = CPU::op_kil;
+    _instructions[0x72] = CPU::op_kil;
+    _instructions[0x92] = CPU::op_kil;
+    _instructions[0xB2] = CPU::op_kil;
+    _instructions[0xD2] = CPU::op_kil;
+    _instructions[0xF2] = CPU::op_kil;
 }
 
 template <typename AccessMode>
@@ -707,6 +729,17 @@ cpu_cycle_t CPU::op_ign()
     return am.getCycles();
 }
 
+template<typename AccessMode>
+cpu_cycle_t CPU::op_axa()
+{
+    AccessMode am(_registers, _memory.get());
+    uint8_t result = _registers.X & _registers.A;
+    result &= 7;
+    am.write(result);
+
+    return am.getCycles();
+}
+
 cpu_cycle_t CPU::op_inx()
 {
     _registers.X++;
@@ -984,6 +1017,12 @@ cpu_cycle_t CPU::op_oal()
     _registers.X = _registers.A;
 
     return 1;
+}
+
+cpu_cycle_t CPU::op_kil()
+{
+    _killed = true;
+    return 0;
 }
 
 cpu_cycle_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)

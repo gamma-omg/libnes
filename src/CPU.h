@@ -130,12 +130,14 @@ private:
     template <typename AccessMode> cpu_cycle_t op_sre();
     template <typename AccessMode> cpu_cycle_t op_skb();
     template <typename AccessMode> cpu_cycle_t op_ign();
+    template <typename AccessMode> cpu_cycle_t op_axa();
 
     cpu_cycle_t op_alr();
     cpu_cycle_t op_anc();
     cpu_cycle_t op_arr();
     cpu_cycle_t op_axs();
     cpu_cycle_t op_oal();
+    cpu_cycle_t op_kil();
 
 private:
     cpu_cycle_t branchOnFlag(Registers::Flags flag, bool state);
@@ -154,6 +156,7 @@ private:
     Registers _registers;
     InstructionHandler _instructions[0x100];
     cpu_cycle_t _cycle;
+    bool _killed;
 };
 
 }

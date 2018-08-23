@@ -889,6 +889,7 @@ cpu_cycle_t CPU::op_php()
 cpu_cycle_t CPU::op_pla()
 {
     _registers.A = _memory->popByte(_registers.S);
+    updateZNFlags(_registers.A);
     return 3;
 }
 

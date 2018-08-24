@@ -247,7 +247,7 @@ TEST(CPU, SXA)
 
     cpu.tick();
 
-    ASSERT_EQ(memory->readByte(0x1008), 1);
+    ASSERT_EQ(memory->readByte(0x1108), 1);
     ASSERT_EQ(cpu.getCycle(), 5);
 }
 
@@ -261,7 +261,7 @@ TEST(CPU, SYA)
 
     cpu.tick();
 
-    ASSERT_EQ(memory->readByte(0x1008), 1);
+    ASSERT_EQ(memory->readByte(0x1108), 1);
     ASSERT_EQ(cpu.getCycle(), 5);
 }
 

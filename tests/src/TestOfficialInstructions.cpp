@@ -580,13 +580,19 @@ TEST(CPU, BRK)
     CPU cpu({ 0x00, 0xFF, 0xFF, 0x69, 0x02 });
 
     auto& registers = cpu.getRegisters();
+    registers.setFlag(CPU::Registers::Flags::N, true);
+    registers.setFlag(CPU::Registers::Flags::C, true);
+    auto p = registers.P;
+
     auto memory = cpu.getMemory();
-    memory->writeResetVecor(Memory::ROM_OFFSET + 0x03);
+    memory->writeIrqVector(Memory::ROM_OFFSET + 0x03);
 
     cpu.tick();
-    cpu.tick();
 
-    ASSERT_EQ(registers.A, 2);
+    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0x03);
+    ASSERT_EQ(memory->popByte(registers.S), p);
+    ASSERT_EQ(memory->popShort(registers.S), Memory::ROM_OFFSET + 2);
+    ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::I));
 }
 
 TEST(CPU, BVC_jump)
@@ -1347,7 +1353,7 @@ TEST(CPU, JSR)
     cpu.tick();
 
     ASSERT_EQ(registers.PC, 4);
-    ASSERT_EQ(memory->popShort(registers.S), Memory::ROM_OFFSET + 3);
+    ASSERT_EQ(memory->popShort(registers.S), Memory::ROM_OFFSET + 2);
 }
 
 TEST(CPU, LDA)
@@ -1851,9 +1857,28 @@ TEST(CPU, ROR_flag_C_negative)
 
 TEST(CPU, RTI)
 {
-    CPU cpu({ 0x00, 0x00, 0x4D, 0x00 });
+    CPU cpu({ 0x00, 0x00, 0x40, 0x00 });
     auto& registers = cpu.getRegisters();
-    registers.P = 0b10110011;
+    registers.P = 0b10111011;
+
+    auto memory = cpu.getMemory();
+    memory->pushShort(registers.S, registers.PC);
+    memory->pushByte(registers.S, registers.P);
+
+    registers.P = 0;
+    registers.PC = Memory::ROM_OFFSET + 2;
+
+    cpu.tick();
+
+    ASSERT_EQ(registers.P, 0b10111011);
+    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0);
+}
+
+TEST(CPU, RTI_set_BL)
+{
+    CPU cpu({ 0x00, 0x00, 0x40, 0x00 });
+    auto& registers = cpu.getRegisters();
+    registers.P = 0b10100011;
 
     auto memory = cpu.getMemory();
     memory->pushShort(registers.S, registers.PC);
@@ -1868,7 +1893,6 @@ TEST(CPU, RTI)
     ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0);
 }
 
-
 TEST(CPU, RTS)
 {
     CPU cpu({ 0x00, 0x00, 0x60, 0x00 });
@@ -1879,7 +1903,7 @@ TEST(CPU, RTS)
 
     cpu.tick();
 
-    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0);
+    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 1);
 }
 
 TEST(CPU, SBC)

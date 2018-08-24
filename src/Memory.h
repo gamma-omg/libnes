@@ -30,6 +30,7 @@ public:
     void writeByte(uint16_t offset, uint8_t value);
     void writeShort(uint16_t offset, uint16_t value);
     void writeResetVecor(uint16_t address);
+    void writeIrqVector(uint16_t address);
     void writeBytes(uint16_t offset, const uint8_t* src, uint16_t size);
     uint8_t readByte(uint16_t offset);
     uint16_t readShort(uint16_t offset);

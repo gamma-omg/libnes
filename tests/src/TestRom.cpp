@@ -12,7 +12,7 @@ using namespace nescore;
 
 TEST(ROM, Load)
 {
-    READ_ROM(rom, "tests/data/01-basics.nes");
+    READ_ROM(rom, "tests/data/01-implied.nes");
 
     ASSERT_EQ(rom.getPrgRomBanks(), 2);
     ASSERT_EQ(rom.getChrRomBanks(), 1);

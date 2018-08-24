@@ -75,6 +75,11 @@ void Memory::writeResetVecor(uint16_t address)
     writeShort(RESET_VECTOR, address);
 }
 
+void Memory::writeIrqVector(uint16_t address)
+{
+    writeShort(IRQ_VECTOR, address);
+}
+
 uint16_t Memory::readResetVector()
 {
     return readShort(RESET_VECTOR);

@@ -770,15 +770,26 @@ cpu_cycle_t CPU::op_jmp_abs()
 
 cpu_cycle_t CPU::op_jmp_ind()
 {
-    auto address = _memory->readShort(_registers.PC);
-    _registers.PC = _memory->readShort(address);
+    uint16_t base = _memory->readShort(_registers.PC);
+    uint16_t address = 0;
+    if ((base & 0xFF) == 0xFF)
+    {
+        uint8_t l = _memory->readByte(base);
+        uint8_t h = _memory->readByte(base - 0xFF);
+        address = l | (h << 8);
+    }
+    else
+    {
+        address = _memory->readShort(base);
+    }
 
+    _registers.PC = address;
     return 5;
 }
 
 cpu_cycle_t CPU::op_jsr()
 {
-    _memory->pushShort(_registers.S, _registers.PC + 2);
+    _memory->pushShort(_registers.S, _registers.PC + 1);
     _registers.PC = _memory->readShort(_registers.PC);
 
     return 6;
@@ -816,8 +827,11 @@ cpu_cycle_t CPU::op_bpl()
 
 cpu_cycle_t CPU::op_brk()
 {
-    _registers.PC = _memory->readResetVector();
+    _memory->pushShort(_registers.S, _registers.PC + 1);
+    _memory->pushByte(_registers.S, _registers.P);
+    _registers.PC = _memory->readShort(Memory::IRQ_VECTOR);
     _registers.setFlag(Registers::Flags::I, true);
+    _registers.setFlag(Registers::Flags::D, true);
     return 6;
 }
 
@@ -910,8 +924,7 @@ cpu_cycle_t CPU::op_rti()
 
 cpu_cycle_t CPU::op_rts()
 {
-    _registers.PC = _memory->popShort(_registers.S);
-
+    _registers.PC = _memory->popShort(_registers.S) + 1;
     return 5;
 }
 

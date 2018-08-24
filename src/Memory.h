@@ -16,6 +16,8 @@ public:
     static const uint16_t ROM_OFFSET = 0x8000;
     static const uint16_t ROM_SIZE = 0x7FFF;
     static const uint16_t RESET_VECTOR = 0xFFFC;
+    static const uint16_t IRQ_VECTOR = 0xFFFE;
+    static const uint16_t NMI_VECTOR = 0xFFFA;
     static const uint16_t STACK_TOP = 0x01FF;
     static const uint16_t STACK_BOTTOM = 0x0100;
 

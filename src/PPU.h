@@ -16,6 +16,7 @@ public:
     static const uint16_t OAMDATA = 0x2004;
     static const uint16_t PPUSCROLL = 0x2005;
     static const uint16_t PPUADDR = 0x2006;
+    static const uint16_t PPUDATA = 0x2007;
 
 public:
     class Control
@@ -153,6 +154,7 @@ public:
     void setPPUStatus(uint8_t value);
     void setPPUScroll(uint8_t value);
     void setPPUAddress(uint8_t value);
+    void setPPUData(uint8_t value);
     void setOamAddr(uint8_t value);
     void setOamData(uint8_t value);
 
@@ -161,6 +163,7 @@ public:
     const Status& getPPUStatus() const;
     const Scroll& getPPUScroll() const;
     const Address& getPPUAddress() const;
+    uint8_t getPPUData() const;
     uint8_t getOamAddr() const;
     uint8_t getOamData() const;
 

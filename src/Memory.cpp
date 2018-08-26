@@ -50,6 +50,7 @@ void Memory::writeByte(uint16_t offset, uint8_t value)
         case PPU::OAMDATA: _ppu->setOamData(value); return;
         case PPU::PPUSCROLL: _ppu->setPPUScroll(value); return;
         case PPU::PPUADDR: _ppu->setPPUAddress(value); return;
+        case PPU::PPUDATA: _ppu->setPPUData(value); return;
     }
 
     if (offset < RAM_SIZE)
@@ -87,6 +88,7 @@ uint8_t Memory::readByte(uint16_t offset)
         case PPU::OAMDATA: return _ppu->getOamData();
         case PPU::PPUSCROLL: return _ppu->getPPUScroll();
         case PPU::PPUADDR: return _ppu->getPPUAddress();
+        case PPU::PPUDATA: return _ppu->getPPUData();
     }
 
     return _memory[offset];

@@ -240,6 +240,11 @@ void PPU::setPPUAddress(uint8_t value)
     _ppuAddress = value;
 }
 
+void PPU::setPPUData(uint8_t value)
+{
+    // TODO: implement
+}
+
 const PPU::Control& PPU::getPPUControl() const
 {
     return _ppuControl;
@@ -255,6 +260,16 @@ const PPU::Status& PPU::getPPUStatus() const
     return _ppuStatus;
 }
 
+const PPU::Scroll &PPU::getPPUScroll() const
+{
+    return _ppuScroll;
+}
+
+const PPU::Address &PPU::getPPUAddress() const
+{
+    return _ppuAddress;
+}
+
 uint8_t PPU::getOamAddr() const
 {
     return _oamAddr;
@@ -266,14 +281,10 @@ uint8_t PPU::getOamData() const
     return 0;
 }
 
-const PPU::Scroll &PPU::getPPUScroll() const
+uint8_t PPU::getPPUData() const
 {
-    return _ppuScroll;
-}
-
-const PPU::Address &PPU::getPPUAddress() const
-{
-    return _ppuAddress;
+    // TODO: implement
+    return 0;
 }
 
 }

@@ -2,7 +2,7 @@
 #define NESCORE_ACCESSACC_H
 
 #include "../CPU.h"
-#include "../Memory.h"
+#include "../IMemoryAccessor.h"
 
 namespace nescore
 {
@@ -10,7 +10,7 @@ namespace nescore
 class ACC
 {
 public:
-    ACC(CPU::Registers& registers, Memory* memory)
+    ACC(CPU::Registers& registers, IMemoryAccessor* memory)
         : _registers(registers)
         , _memory(memory)
     {}
@@ -32,7 +32,7 @@ public:
 
 private:
     CPU::Registers& _registers;
-    Memory* _memory;
+    IMemoryAccessor* _memory;
 };
 
 }

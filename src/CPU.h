@@ -10,7 +10,7 @@ namespace nescore
 
 typedef unsigned int cpu_cycle_t;
 
-class Memory;
+class IMemoryAccessor;
 
 class CPU
 {
@@ -47,7 +47,7 @@ public:
     };
 
 public:
-    CPU(std::shared_ptr<Memory> memory);
+    CPU(std::shared_ptr<IMemoryAccessor>);
     CPU(const std::vector<uint8_t>& operations);
 
     void reset();
@@ -56,7 +56,7 @@ public:
     void startDmaTransfer();
     const Registers& getRegisters() const;
     Registers& getRegisters();
-    std::shared_ptr<Memory> getMemory();
+    std::shared_ptr<IMemoryAccessor> getMemory();
     cpu_cycle_t getCycle() const;
 
 private:
@@ -157,7 +157,7 @@ private:
     void updateZNFlags(uint8_t value);
 
 private:
-    std::shared_ptr<Memory> _memory;
+    std::shared_ptr<IMemoryAccessor> _memory;
     Registers _registers;
     InstructionHandler _instructions[0x100];
     cpu_cycle_t _cycle;

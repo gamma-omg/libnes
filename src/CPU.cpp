@@ -3,6 +3,7 @@
 #include <memory.h>
 #include <functional>
 #include "CPU.h"
+#include "IMemoryAccessor.h"
 #include "Memory.h"
 
 #include "access/ABS.h"
@@ -45,7 +46,7 @@ bool CPU::Registers::getFlag(nescore::CPU::Registers::Flags flag) const
 }
 
 
-CPU::CPU(std::shared_ptr<Memory> memory)
+CPU::CPU(std::shared_ptr<IMemoryAccessor> memory)
     : _memory(memory)
     , _cycle(0)
     , _dmaCycle(0)
@@ -55,9 +56,12 @@ CPU::CPU(std::shared_ptr<Memory> memory)
 }
 
 CPU::CPU(const std::vector<uint8_t>& operations)
-    : CPU(std::make_shared<Memory>())
+    : CPU(nullptr)
 {
-    _memory->loadProgram(operations);
+    auto memory = std::make_shared<Memory>();
+    memory->loadProgram(operations);
+
+    _memory = memory;
     reset();
 }
 
@@ -115,7 +119,7 @@ CPU::Registers &CPU::getRegisters()
     return _registers;
 }
 
-std::shared_ptr<Memory> CPU::getMemory()
+std::shared_ptr<IMemoryAccessor> CPU::getMemory()
 {
     return _memory;
 }

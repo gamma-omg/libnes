@@ -585,7 +585,7 @@ TEST(CPU, BRK)
     auto p = registers.P;
 
     auto memory = cpu.getMemory();
-    memory->writeIrqVector(Memory::ROM_OFFSET + 0x03);
+    memory->writeShort(Memory::IRQ_VECTOR, Memory::ROM_OFFSET + 0x03);
 
     cpu.tick();
 

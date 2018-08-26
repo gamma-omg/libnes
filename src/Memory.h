@@ -4,13 +4,14 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+#include "IMemoryAccessor.h"
 
 namespace nescore
 {
 
 class PPU;
 
-class Memory
+class Memory : public IMemoryAccessor
 {
 public:
     static const uint16_t RAM_PAGE_SIZE = 0x0800;
@@ -30,23 +31,15 @@ public:
     Memory(const std::vector<uint8_t>& ram);
     ~Memory();
 
+    uint8_t readByte(uint16_t offset) override;
+    uint8_t popByte(uint8_t& s) override;
+    void readBytes(uint8_t *dst, uint16_t offset, uint16_t size) override;
+    void writeByte(uint16_t offset, uint8_t value) override;
+    void writeBytes(uint16_t offset, const uint8_t* src, uint16_t size) override;
+    void pushByte(uint8_t& s, uint8_t value) override;
+
     void loadProgram(const std::vector<uint8_t> &program);
-    void writeByte(uint16_t offset, uint8_t value);
-    void writeShort(uint16_t offset, uint16_t value);
-    void writeResetVecor(uint16_t address);
-    void writeIrqVector(uint16_t address);
-    void writeBytes(uint16_t offset, const uint8_t* src, uint16_t size);
-    uint8_t readByte(uint16_t offset);
-    uint16_t readShort(uint16_t offset);
-    uint16_t readResetVector();
     std::string readString(uint16_t offset);
-
-    void pushByte(uint8_t& s, uint8_t value);
-    void pushShort(uint8_t& s, uint16_t value);
-    uint8_t popByte(uint8_t& s);
-    uint16_t popShort(uint8_t& s);
-
-    uint8_t* getRaw(uint16_t offset);
 
 private:
     uint8_t* _memory;

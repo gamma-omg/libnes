@@ -2,7 +2,7 @@
 #define NESCORE_ACCESSZPY_H
 
 #include "../CPU.h"
-#include "../Memory.h"
+#include "../IMemoryAccessor.h"
 
 namespace nescore
 {
@@ -10,7 +10,7 @@ namespace nescore
 class ZPY
 {
 public:
-    ZPY(CPU::Registers& registers, Memory* memory)
+    ZPY(CPU::Registers& registers, IMemoryAccessor* memory)
         : _registers(registers)
         , _memory(memory)
         , _cycles(0)
@@ -51,7 +51,7 @@ private:
 
 private:
     CPU::Registers& _registers;
-    Memory* _memory;
+    IMemoryAccessor* _memory;
     uint16_t _address;
     cpu_cycle_t _cycles;
     bool _rw;

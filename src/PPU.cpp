@@ -252,7 +252,7 @@ void PPU::setPPUData(uint8_t value)
 
 void PPU::setOamDma(uint8_t value)
 {
-    memcpy(_oam + _oamAddr, _cpu->getMemory()->getRaw(value << 8), 0xFF);
+    _cpu->getMemory()->readBytes(&_oam[_oamAddr], value << 8, 0xFF);
     _cpu->startDmaTransfer();
 }
 

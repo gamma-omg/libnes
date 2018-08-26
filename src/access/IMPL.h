@@ -2,7 +2,7 @@
 #define NESCORE_ACCESSIMPL_H
 
 #include "../CPU.h"
-#include "../Memory.h"
+#include "../IMemoryAccessor.h"
 
 namespace nescore
 {
@@ -10,7 +10,7 @@ namespace nescore
 class IMPL
 {
 public:
-    IMPL(CPU::Registers& registers, Memory* memory)
+    IMPL(CPU::Registers& registers, IMemoryAccessor* memory)
         : _registers(registers)
         , _memory(memory)
     {}
@@ -27,7 +27,7 @@ public:
 
 private:
     CPU::Registers& _registers;
-    Memory* _memory;
+    IMemoryAccessor* _memory;
 };
 
 }

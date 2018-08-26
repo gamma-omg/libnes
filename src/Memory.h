@@ -3,9 +3,12 @@
 
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 namespace nescore
 {
+
+class PPU;
 
 class Memory
 {
@@ -23,6 +26,7 @@ public:
 
 public:
     Memory();
+    Memory(std::shared_ptr<PPU> ppu);
     Memory(const std::vector<uint8_t>& ram);
     ~Memory();
 
@@ -44,6 +48,7 @@ public:
 
 private:
     uint8_t* _memory;
+    std::shared_ptr<PPU> _ppu;
 };
 
 }

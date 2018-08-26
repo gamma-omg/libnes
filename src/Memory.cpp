@@ -1,12 +1,19 @@
 #include <stdexcept>
 #include <memory.h>
 #include "Memory.h"
+#include "PPU.h"
 
 namespace nescore
 {
 
 Memory::Memory()
-    : _memory(new uint8_t[0xFFFF])
+    : Memory(std::make_shared<PPU>())
+{
+}
+
+Memory::Memory(std::shared_ptr<PPU> ppu)
+    : _ppu(ppu)
+    , _memory(new uint8_t[0xFFFF])
 {
     memset(_memory, 0x00, 0xFFFF);
 }
@@ -34,6 +41,11 @@ void Memory::loadProgram(const std::vector<uint8_t> &program)
 
 void Memory::writeByte(uint16_t offset, uint8_t value)
 {
+    switch (offset)
+    {
+        case PPU::Control::ADDR: _ppu->getPPUControl() = value; return;
+    }
+
     if (offset < RAM_SIZE)
     {
         uint16_t address = offset % RAM_PAGE_SIZE;

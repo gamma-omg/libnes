@@ -160,6 +160,35 @@ PPU::Status::operator uint8_t() const
     return _register;
 }
 
+
+PPU::Scroll::Scroll() : _component(0)
+{
+    _scrolls[0] = 0;
+    _scrolls[1] = 0;
+}
+
+uint8_t PPU::Scroll::getX() const
+{
+    return _scrolls[0];
+}
+
+uint8_t PPU::Scroll::getY() const
+{
+    return _scrolls[1];
+}
+
+PPU::Scroll &PPU::Scroll::operator=(uint8_t value)
+{
+    _scrolls[_component] = value;
+    _component = (_component + 1) % 2;
+}
+
+PPU::Scroll::operator uint8_t() const
+{
+    return _scrolls[_component];
+}
+
+
 void PPU::setPPUControl(uint8_t value)
 {
     _ppuControl = value;

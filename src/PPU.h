@@ -14,6 +14,7 @@ public:
     static const uint16_t PPUSTATUS = 0x2002;
     static const uint16_t OAMADDR = 0x2003;
     static const uint16_t OAMDATA = 0x2004;
+    static const uint16_t PPUSCROLL = 0x2005;
 
 public:
     class Control
@@ -115,17 +116,35 @@ public:
         uint8_t _register;
     };
 
+    class Scroll
+    {
+    public:
+        Scroll();
+
+        uint8_t getX() const;
+        uint8_t getY() const;
+
+        Scroll& operator=(uint8_t value);
+        operator uint8_t() const;
+
+    private:
+        uint8_t _scrolls[2];
+        uint8_t _component;
+    };
+
 public:
 
     void setPPUControl(uint8_t value);
     void setPPUMask(uint8_t value);
     void setPPUStatus(uint8_t value);
+    void setPPUScroll(uint8_t value);
     void setOamAddr(uint8_t value);
     void setOamData(uint8_t value);
 
     const Control& getPPUControl() const;
     const Mask& getPPUMask() const ;
     const Status& getPPUStatus() const;
+    const Scroll& getPPUScroll() const;
     uint8_t getOamAddr() const;
     uint8_t getOamData() const;
 
@@ -133,6 +152,7 @@ private:
     Control _ppuControl;
     Mask _ppuMask;
     Status _ppuStatus;
+    Scroll _ppuScroll;
     uint8_t _oamAddr;
 
 };

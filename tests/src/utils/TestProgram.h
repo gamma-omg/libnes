@@ -2,12 +2,15 @@
 #define NESCORE_TESTPROGRAM_H
 
 #include <string>
-#include <CPU.h>
-#include <Memory.h>
 #include <mappers/MapperFactory.h>
 
 namespace nescore
 {
+
+class CPU;
+class Memory;
+class INESRom;
+class IRomMapper;
 
 class TestProgram
 {
@@ -23,6 +26,7 @@ private:
 private:
     std::shared_ptr<Memory> _memory;
     std::shared_ptr<CPU> _cpu;
+    std::shared_ptr<INESRom> _rom;
     std::string _output;
     MapperFactory _mapperFactory;
     bool _started;

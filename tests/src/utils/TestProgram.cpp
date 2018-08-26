@@ -1,4 +1,6 @@
 #include <fstream>
+#include <CPU.h>
+#include <Memory.h>
 #include <rom/INESRom.h>
 #include "TestProgram.h"
 
@@ -6,8 +8,9 @@ namespace nescore
 {
 
 TestProgram::TestProgram(const std::string &fileName)
-    : _memory(new Memory)
-    , _cpu(new CPU(_memory))
+    : _memory(new Memory())
+    , _cpu(nullptr)
+    , _rom(nullptr)
     , _mapperFactory(_memory)
     , _started(false)
 {
@@ -17,14 +20,14 @@ TestProgram::TestProgram(const std::string &fileName)
 int TestProgram::run()
 {
     // Set PPU status
-    _memory->writeByte(0x2002, 0b10000000);
+    _cpu->getMemory()->writeByte(0x2002, 0b10000000);
     _cpu->reset();
 
     while (true)
     {
         _cpu->tick();
 
-        auto status = _memory->readByte(0x6000);
+        auto status = _cpu->getMemory()->readByte(0x6000);
         if (!_started)
         {
             _started = status == 0x80;
@@ -36,8 +39,6 @@ int TestProgram::run()
             return status;
         }
     }
-
-    return -1;
 }
 
 const std::string &TestProgram::getOutput() const
@@ -47,13 +48,14 @@ const std::string &TestProgram::getOutput() const
 
 void TestProgram::loadRom(const std::string &fileName)
 {
+    _rom = std::make_shared<INESRom>();
+
     std::ifstream fin;
     fin.open(fileName, std::ios::binary);
-    INESRom rom;
-    fin >> rom;
+    _rom->read(fin);
 
-    auto mapper = _mapperFactory.createMapper(rom.getMapper());
-    mapper->map(rom);
+    auto mapper = _mapperFactory.createMapper(_rom);
+    _cpu = std::make_shared<CPU>(mapper->getCPUMemory());
 }
 
 }

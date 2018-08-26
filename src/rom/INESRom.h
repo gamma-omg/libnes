@@ -67,6 +67,8 @@ public:
     const uint8_t* getPrgRomBank(int bank) const;
     const uint8_t* getChrRomBank(int bank) const;
     const uint8_t* getPlayChoice10() const;
+    uint8_t* getPrgRom();
+    uint8_t* getChrRom();
 
     bool hasPersistentMemory() const;
     bool hasTrainer() const;
@@ -100,15 +102,13 @@ private:
 
 private:
     void clear();
-    void deleteBankedMemory(uint8_t** ptr, int size);
-    uint8_t** readBankedMemory(std::istream& stream, int banks, int bankSize);
 
 private:
     INESHeader _header;
     uint8_t* _trainer;
     uint8_t* _playChoice10;
-    uint8_t** _prgRomBanks;
-    uint8_t** _chrRomBanks;
+    uint8_t* _prgRom;
+    uint8_t* _chrRom;
 };
 
 std::istream& operator >>(std::istream& stream, INESRom& rom);

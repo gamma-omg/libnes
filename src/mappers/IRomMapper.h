@@ -6,18 +6,16 @@
 namespace nescore
 {
 
-class Memory;
+class IMemoryAccessor;
 class INESRom;
+class Memory;
 
 class IRomMapper
 {
 public:
-    IRomMapper(std::shared_ptr<Memory> memory) : _memory(memory) { }
-
-    virtual void map(INESRom& rom) = 0;
-
-protected:
-    std::shared_ptr<Memory> _memory;
+    virtual ~IRomMapper() {}
+    virtual std::shared_ptr<IMemoryAccessor> getCPUMemory() = 0;
+    virtual std::shared_ptr<IMemoryAccessor> getPPUMemory() = 0;
 };
 
 }

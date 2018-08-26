@@ -181,7 +181,7 @@ private:
     Address _ppuAddress;
     uint8_t _oamAddr;
 
-    uint8_t _oam[0xFF];
+    uint8_t _oam[0x100];
 };
 
 }

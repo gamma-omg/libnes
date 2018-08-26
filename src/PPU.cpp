@@ -207,7 +207,7 @@ PPU::Address::operator uint16_t() const
 PPU::PPU(std::shared_ptr<CPU> cpu)
     : _cpu(cpu)
 {
-    memset(&_oam, sizeof(uint8_t), 0xFF);
+    memset(&_oam, 0x100, sizeof(uint8_t));
 }
 
 void PPU::setPPUControl(uint8_t value)

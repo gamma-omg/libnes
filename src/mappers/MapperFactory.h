@@ -21,12 +21,11 @@ public:
     {
     }
 
-    std::shared_ptr<IRomMapper> createMapper(uint8_t mapperType)
+    std::shared_ptr<IRomMapper> createMapper(std::shared_ptr<INESRom> rom)
     {
-        switch (mapperType)
+        switch (rom->getMapper())
         {
-            case MapperNROM:
-                return std::make_shared<NROM>(_memory);
+            case MapperNROM: return std::make_shared<NROM>(rom, _memory);
         }
 
         return nullptr;

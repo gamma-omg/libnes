@@ -12,9 +12,9 @@ Memory::Memory() : Memory(nullptr)
 
 Memory::Memory(std::shared_ptr<PPU> ppu)
     : _ppu(ppu)
-    , _memory(new uint8_t[0xFFFF])
+    , _memory(new uint8_t[0x10000])
 {
-    memset(_memory, 0x00, 0xFFFF);
+    memset(_memory, 0x00, 0x10000);
 }
 
 Memory::Memory(const std::vector<uint8_t> &ram)
@@ -68,11 +68,6 @@ void Memory::writeByte(uint16_t offset, uint8_t value)
     _memory[offset] = value;
 }
 
-void Memory::writeBytes(uint16_t offset, const uint8_t *src, uint16_t size)
-{
-    memcpy(_memory + offset, src, size);
-}
-
 uint8_t Memory::readByte(uint16_t offset)
 {
     if (_ppu != nullptr)
@@ -96,21 +91,9 @@ std::string Memory::readString(uint16_t offset)
     return std::string(reinterpret_cast<char*>(_memory + offset));
 }
 
-void Memory::pushByte(uint8_t &s, uint8_t value)
+uint16_t Memory::getStackOffset()
 {
-    _memory[STACK_BOTTOM + s] = value;
-    s--;
-}
-
-uint8_t Memory::popByte(uint8_t &s)
-{
-    s++;
-    return _memory[STACK_BOTTOM + s];
-}
-
-void Memory::readBytes(uint8_t *dst, uint16_t offset, uint16_t size)
-{
-    memcpy(dst, _memory + offset, size);
+    return STACK_BOTTOM;
 }
 
 }

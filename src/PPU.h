@@ -15,6 +15,7 @@ public:
     static const uint16_t OAMADDR = 0x2003;
     static const uint16_t OAMDATA = 0x2004;
     static const uint16_t PPUSCROLL = 0x2005;
+    static const uint16_t PPUADDR = 0x2006;
 
 public:
     class Control
@@ -132,12 +133,26 @@ public:
         uint8_t _component;
     };
 
+    class Address
+    {
+    public:
+        Address();
+
+        Address& operator=(uint8_t value);
+        operator uint16_t() const;
+
+    private:
+        uint16_t _register;
+        uint16_t _writeMask;
+    };
+
 public:
 
     void setPPUControl(uint8_t value);
     void setPPUMask(uint8_t value);
     void setPPUStatus(uint8_t value);
     void setPPUScroll(uint8_t value);
+    void setPPUAddress(uint8_t value);
     void setOamAddr(uint8_t value);
     void setOamData(uint8_t value);
 
@@ -145,6 +160,7 @@ public:
     const Mask& getPPUMask() const ;
     const Status& getPPUStatus() const;
     const Scroll& getPPUScroll() const;
+    const Address& getPPUAddress() const;
     uint8_t getOamAddr() const;
     uint8_t getOamData() const;
 
@@ -153,6 +169,7 @@ private:
     Mask _ppuMask;
     Status _ppuStatus;
     Scroll _ppuScroll;
+    Address _ppuAddress;
     uint8_t _oamAddr;
 
 };

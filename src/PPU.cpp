@@ -189,6 +189,22 @@ PPU::Scroll::operator uint8_t() const
 }
 
 
+PPU::Address::Address() : _register(0), _writeMask(0xFF00)
+{
+}
+
+PPU::Address &PPU::Address::operator=(uint8_t value)
+{
+    _register = value & _writeMask;
+    _writeMask = _writeMask > 0xFF ? _writeMask >> 8 : 0xFF00;
+}
+
+PPU::Address::operator uint16_t() const
+{
+    return _register;
+}
+
+
 void PPU::setPPUControl(uint8_t value)
 {
     _ppuControl = value;
@@ -212,6 +228,16 @@ void PPU::setOamData(uint8_t value)
 void PPU::setOamAddr(uint8_t value)
 {
     _oamAddr = value;
+}
+
+void PPU::setPPUScroll(uint8_t value)
+{
+    _ppuScroll = value;
+}
+
+void PPU::setPPUAddress(uint8_t value)
+{
+    _ppuAddress = value;
 }
 
 const PPU::Control& PPU::getPPUControl() const
@@ -238,6 +264,16 @@ uint8_t PPU::getOamData() const
 {
     // TODO: implement
     return 0;
+}
+
+const PPU::Scroll &PPU::getPPUScroll() const
+{
+    return _ppuScroll;
+}
+
+const PPU::Address &PPU::getPPUAddress() const
+{
+    return _ppuAddress;
 }
 
 }

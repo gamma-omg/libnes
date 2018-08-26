@@ -43,9 +43,11 @@ void Memory::writeByte(uint16_t offset, uint8_t value)
 {
     switch (offset)
     {
-        case PPU::Control::ADDR: _ppu->setPPUControl(value); return;
-        case PPU::Mask::ADDR: _ppu->setPPUMask(value); return;
-        case PPU::Status::ADDR: _ppu->setPPUStatus(value); return;
+        case PPU::PPUCTRL: _ppu->setPPUControl(value); return;
+        case PPU::PPUMASK: _ppu->setPPUMask(value); return;
+        case PPU::PPUSTATUS: _ppu->setPPUStatus(value); return;
+        case PPU::OAMADDR: _ppu->setOamAddr(value); return;
+        case PPU::OAMDATA: _ppu->setOamData(value); return;
     }
 
     if (offset < RAM_SIZE)
@@ -76,9 +78,11 @@ uint8_t Memory::readByte(uint16_t offset)
 {
     switch (offset)
     {
-        case PPU::Control::ADDR: return _ppu->getPPUControl();
-        case PPU::Mask::ADDR: return _ppu->getPPUMask();
-        case PPU::Status::ADDR: return _ppu->getPPUStatus();
+        case PPU::PPUCTRL: return _ppu->getPPUControl();
+        case PPU::PPUMASK: return _ppu->getPPUMask();
+        case PPU::PPUSTATUS: return _ppu->getPPUStatus();
+        case PPU::OAMADDR: return _ppu->getOamAddr();
+        case PPU::OAMDATA: return _ppu->getOamData();
     }
 
     return _memory[offset];

@@ -9,11 +9,15 @@ namespace nescore
 class PPU
 {
 public:
+    static const uint16_t PPUCTRL = 0x2000;
+    static const uint16_t PPUMASK = 0x2001;
+    static const uint16_t PPUSTATUS = 0x2002;
+    static const uint16_t OAMADDR = 0x2003;
+    static const uint16_t OAMDATA = 0x2004;
+
+public:
     class Control
     {
-    public:
-        static const uint16_t ADDR = 0x2000;
-
     public:
         struct SpriteSize
         {
@@ -55,9 +59,6 @@ public:
 
     class Mask
     {
-    public:
-        static const uint16_t ADDR = 0x2001;
-
     private:
         enum Bits
         {
@@ -92,9 +93,6 @@ public:
 
     class Status
     {
-    public:
-        static const uint16_t ADDR = 0x2002;
-
     private:
         enum Bits
         {
@@ -122,15 +120,20 @@ public:
     void setPPUControl(uint8_t value);
     void setPPUMask(uint8_t value);
     void setPPUStatus(uint8_t value);
+    void setOamAddr(uint8_t value);
+    void setOamData(uint8_t value);
 
     const Control& getPPUControl() const;
     const Mask& getPPUMask() const ;
     const Status& getPPUStatus() const;
+    uint8_t getOamAddr() const;
+    uint8_t getOamData() const;
 
 private:
     Control _ppuControl;
     Mask _ppuMask;
     Status _ppuStatus;
+    uint8_t _oamAddr;
 
 };
 

@@ -175,6 +175,16 @@ void PPU::setPPUStatus(uint8_t value)
     _ppuStatus = value;
 }
 
+void PPU::setOamData(uint8_t value)
+{
+    // TODO: implement
+}
+
+void PPU::setOamAddr(uint8_t value)
+{
+    _oamAddr = value;
+}
+
 const PPU::Control& PPU::getPPUControl() const
 {
     return _ppuControl;
@@ -188,6 +198,17 @@ const PPU::Mask& PPU::getPPUMask() const
 const PPU::Status& PPU::getPPUStatus() const
 {
     return _ppuStatus;
+}
+
+uint8_t PPU::getOamAddr() const
+{
+    return _oamAddr;
+}
+
+uint8_t PPU::getOamData() const
+{
+    // TODO: implement
+    return 0;
 }
 
 }

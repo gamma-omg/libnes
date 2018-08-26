@@ -118,9 +118,14 @@ public:
     };
 
 public:
-    Control& getPPUControl();
-    Mask& getPPUMask();
-    Status& getPPUStatus();
+
+    void setPPUControl(uint8_t value);
+    void setPPUMask(uint8_t value);
+    void setPPUStatus(uint8_t value);
+
+    const Control& getPPUControl() const;
+    const Mask& getPPUMask() const ;
+    const Status& getPPUStatus() const;
 
 private:
     Control _ppuControl;

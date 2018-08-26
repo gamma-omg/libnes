@@ -43,9 +43,9 @@ void Memory::writeByte(uint16_t offset, uint8_t value)
 {
     switch (offset)
     {
-        case PPU::Control::ADDR: _ppu->getPPUControl() = value; return;
-        case PPU::Mask::ADDR: _ppu->getPPUMask() = value; return;
-        case PPU::Status::ADDR: _ppu->getPPUStatus() = value; return;
+        case PPU::Control::ADDR: _ppu->setPPUControl(value); return;
+        case PPU::Mask::ADDR: _ppu->setPPUMask(value); return;
+        case PPU::Status::ADDR: _ppu->setPPUStatus(value); return;
     }
 
     if (offset < RAM_SIZE)

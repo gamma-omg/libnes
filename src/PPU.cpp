@@ -160,15 +160,34 @@ PPU::Status::operator uint8_t() const
     return _register;
 }
 
+void PPU::setPPUControl(uint8_t value)
+{
+    _ppuControl = value;
+}
 
-PPU::Control& PPU::getPPUControl()
+void PPU::setPPUMask(uint8_t value)
+{
+    _ppuMask = value;
+}
+
+void PPU::setPPUStatus(uint8_t value)
+{
+    _ppuStatus = value;
+}
+
+const PPU::Control& PPU::getPPUControl() const
 {
     return _ppuControl;
 }
 
-PPU::Mask &PPU::getPPUMask()
+const PPU::Mask& PPU::getPPUMask() const
 {
     return _ppuMask;
+}
+
+const PPU::Status& PPU::getPPUStatus() const
+{
+    return _ppuStatus;
 }
 
 }

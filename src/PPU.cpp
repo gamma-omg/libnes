@@ -127,6 +127,40 @@ PPU::Mask::operator uint8_t() const
 }
 
 
+PPU::Status::Status() : _register(0)
+{
+}
+
+void PPU::Status::setSpriteOverflow(bool value)
+{
+    auto bit = value ? 1 : 0;
+    _register ^= (-bit ^ _register) & Bits::SPRITE_OVERFLOW;
+}
+
+void PPU::Status::setSprite0Hit(bool value)
+{
+    auto bit = value ? 1 : 0;
+    _register ^= (-bit ^ _register) & Bits::SPRITE_0_HIT;
+}
+
+void PPU::Status::setVBlank(bool value)
+{
+    auto bit = value ? 1 : 0;
+    _register ^= (-bit ^ _register) & Bits::VBLANK;
+}
+
+PPU::Status &PPU::Status::operator=(uint8_t value)
+{
+    _register = value;
+    return *this;
+}
+
+PPU::Status::operator uint8_t() const
+{
+    return _register;
+}
+
+
 PPU::Control& PPU::getPPUControl()
 {
     return _ppuControl;
@@ -134,7 +168,7 @@ PPU::Control& PPU::getPPUControl()
 
 PPU::Mask &PPU::getPPUMask()
 {
-    return <#initializer#>_ppuMask;
+    return _ppuMask;
 }
 
 }

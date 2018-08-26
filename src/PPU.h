@@ -58,7 +58,7 @@ public:
     public:
         static const uint16_t ADDR = 0x2001;
 
-    public:
+    private:
         enum Bits
         {
             GRAYSCALE = 0x00000001,
@@ -90,13 +90,42 @@ public:
         uint8_t _register;
     };
 
+    class Status
+    {
+    public:
+        static const uint16_t ADDR = 0x2002;
+
+    private:
+        enum Bits
+        {
+            SPRITE_OVERFLOW = 0x00100000,
+            SPRITE_0_HIT = 0x01000000,
+            VBLANK = 0x10000000
+        };
+
+    public:
+        Status();
+
+        void setSpriteOverflow(bool value);
+        void setSprite0Hit(bool value);
+        void setVBlank(bool value);
+
+        Status& operator=(uint8_t value);
+        operator uint8_t() const;
+
+    private:
+        uint8_t _register;
+    };
+
 public:
     Control& getPPUControl();
     Mask& getPPUMask();
+    Status& getPPUStatus();
 
 private:
     Control _ppuControl;
     Mask _ppuMask;
+    Status _ppuStatus;
 
 };
 

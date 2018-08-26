@@ -1,4 +1,7 @@
+#include <memory.h>
 #include "PPU.h"
+#include "CPU.h"
+#include "Memory.h"
 
 namespace nescore
 {
@@ -181,13 +184,8 @@ PPU::Scroll &PPU::Scroll::operator=(uint8_t value)
 {
     _scrolls[_component] = value;
     _component = (_component + 1) % 2;
+    return *this;
 }
-
-PPU::Scroll::operator uint8_t() const
-{
-    return _scrolls[_component];
-}
-
 
 PPU::Address::Address() : _register(0), _writeMask(0xFF00)
 {
@@ -197,6 +195,7 @@ PPU::Address &PPU::Address::operator=(uint8_t value)
 {
     _register = value & _writeMask;
     _writeMask = _writeMask > 0xFF ? _writeMask >> 8 : 0xFF00;
+    return *this;
 }
 
 PPU::Address::operator uint16_t() const
@@ -204,6 +203,12 @@ PPU::Address::operator uint16_t() const
     return _register;
 }
 
+
+PPU::PPU(std::shared_ptr<CPU> cpu)
+    : _cpu(cpu)
+{
+    memset(&_oam, sizeof(uint8_t), 0xFF);
+}
 
 void PPU::setPPUControl(uint8_t value)
 {
@@ -222,7 +227,7 @@ void PPU::setPPUStatus(uint8_t value)
 
 void PPU::setOamData(uint8_t value)
 {
-    // TODO: implement
+    _oam[_oamAddr++] = value;
 }
 
 void PPU::setOamAddr(uint8_t value)
@@ -245,6 +250,12 @@ void PPU::setPPUData(uint8_t value)
     // TODO: implement
 }
 
+void PPU::setOamDma(uint8_t value)
+{
+    memcpy(_oam + _oamAddr, _cpu->getMemory()->getRaw(value << 8), 0xFF);
+    _cpu->startDmaTransfer();
+}
+
 const PPU::Control& PPU::getPPUControl() const
 {
     return _ppuControl;
@@ -260,16 +271,6 @@ const PPU::Status& PPU::getPPUStatus() const
     return _ppuStatus;
 }
 
-const PPU::Scroll &PPU::getPPUScroll() const
-{
-    return _ppuScroll;
-}
-
-const PPU::Address &PPU::getPPUAddress() const
-{
-    return _ppuAddress;
-}
-
 uint8_t PPU::getOamAddr() const
 {
     return _oamAddr;
@@ -277,8 +278,7 @@ uint8_t PPU::getOamAddr() const
 
 uint8_t PPU::getOamData() const
 {
-    // TODO: implement
-    return 0;
+    return _oam[_oamAddr];
 }
 
 uint8_t PPU::getPPUData() const

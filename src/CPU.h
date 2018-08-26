@@ -53,6 +53,7 @@ public:
     void reset();
     void tick();
     void tick(int count);
+    void startDmaTransfer();
     const Registers& getRegisters() const;
     Registers& getRegisters();
     std::shared_ptr<Memory> getMemory();
@@ -160,6 +161,7 @@ private:
     Registers _registers;
     InstructionHandler _instructions[0x100];
     cpu_cycle_t _cycle;
+    cpu_cycle_t _dmaCycle;
     bool _killed;
 };
 

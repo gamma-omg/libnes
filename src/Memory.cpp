@@ -6,8 +6,7 @@
 namespace nescore
 {
 
-Memory::Memory()
-    : Memory(std::make_shared<PPU>())
+Memory::Memory() : Memory(nullptr)
 {
 }
 
@@ -41,16 +40,19 @@ void Memory::loadProgram(const std::vector<uint8_t> &program)
 
 void Memory::writeByte(uint16_t offset, uint8_t value)
 {
-    switch (offset)
+    if (_ppu != nullptr)
     {
-        case PPU::PPUCTRL: _ppu->setPPUControl(value); return;
-        case PPU::PPUMASK: _ppu->setPPUMask(value); return;
-        case PPU::PPUSTATUS: _ppu->setPPUStatus(value); return;
-        case PPU::OAMADDR: _ppu->setOamAddr(value); return;
-        case PPU::OAMDATA: _ppu->setOamData(value); return;
-        case PPU::PPUSCROLL: _ppu->setPPUScroll(value); return;
-        case PPU::PPUADDR: _ppu->setPPUAddress(value); return;
-        case PPU::PPUDATA: _ppu->setPPUData(value); return;
+        switch (offset)
+        {
+            case PPU::PPUCTRL: _ppu->setPPUControl(value); return;
+            case PPU::PPUMASK: _ppu->setPPUMask(value); return;
+            case PPU::PPUSTATUS: _ppu->setPPUStatus(value); return;
+            case PPU::OAMADDR: _ppu->setOamAddr(value); return;
+            case PPU::OAMDATA: _ppu->setOamData(value); return;
+            case PPU::PPUSCROLL: _ppu->setPPUScroll(value); return;
+            case PPU::PPUADDR: _ppu->setPPUAddress(value); return;
+            case PPU::PPUDATA: _ppu->setPPUData(value); return;
+        }
     }
 
     if (offset < RAM_SIZE)
@@ -79,16 +81,17 @@ void Memory::writeBytes(uint16_t offset, const uint8_t *src, uint16_t size)
 
 uint8_t Memory::readByte(uint16_t offset)
 {
-    switch (offset)
+    if (_ppu != nullptr)
     {
-        case PPU::PPUCTRL: return _ppu->getPPUControl();
-        case PPU::PPUMASK: return _ppu->getPPUMask();
-        case PPU::PPUSTATUS: return _ppu->getPPUStatus();
-        case PPU::OAMADDR: return _ppu->getOamAddr();
-        case PPU::OAMDATA: return _ppu->getOamData();
-        case PPU::PPUSCROLL: return _ppu->getPPUScroll();
-        case PPU::PPUADDR: return _ppu->getPPUAddress();
-        case PPU::PPUDATA: return _ppu->getPPUData();
+        switch (offset)
+        {
+            case PPU::PPUCTRL: return _ppu->getPPUControl();
+            case PPU::PPUMASK: return _ppu->getPPUMask();
+            case PPU::PPUSTATUS: return _ppu->getPPUStatus();
+            case PPU::OAMADDR: return _ppu->getOamAddr();
+            case PPU::OAMDATA: return _ppu->getOamData();
+            case PPU::PPUDATA: return _ppu->getPPUData();
+        }
     }
 
     return _memory[offset];
@@ -146,6 +149,11 @@ uint16_t Memory::popShort(uint8_t &s)
     uint8_t l = popByte(s);
     uint8_t h = popByte(s);
     return (h << 8) | l;
+}
+
+uint8_t *Memory::getRaw(uint16_t offset)
+{
+    return _memory + offset;
 }
 
 }

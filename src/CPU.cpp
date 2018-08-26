@@ -48,6 +48,7 @@ bool CPU::Registers::getFlag(nescore::CPU::Registers::Flags flag) const
 CPU::CPU(std::shared_ptr<Memory> memory)
     : _memory(memory)
     , _cycle(0)
+    , _dmaCycle(0)
 {
    _registers.reset();
     setupInstructions();
@@ -74,6 +75,12 @@ void CPU::tick()
         return;
     }
 
+    if (_dmaCycle > 0)
+    {
+        _dmaCycle--;
+        return;
+    }
+
     auto opcode = _memory->readByte(_registers.PC++);
     auto handler = _instructions[opcode];
     if (!handler)
@@ -91,6 +98,11 @@ void CPU::tick(int count)
     {
         tick();
     }
+}
+
+void CPU::startDmaTransfer()
+{
+    _dmaCycle = _cycle % 2 == 0 ? 513 : 514;
 }
 
 const CPU::Registers& CPU::getRegisters() const

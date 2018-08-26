@@ -46,6 +46,8 @@ public:
     uint8_t popByte(uint8_t& s);
     uint16_t popShort(uint8_t& s);
 
+    uint8_t* getRaw(uint16_t offset);
+
 private:
     uint8_t* _memory;
     std::shared_ptr<PPU> _ppu;

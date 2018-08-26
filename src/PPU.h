@@ -2,9 +2,12 @@
 #define NESCORE_PPU_H
 
 #include <stdint-gcc.h>
+#include <memory>
 
 namespace nescore
 {
+
+class CPU;
 
 class PPU
 {
@@ -17,6 +20,7 @@ public:
     static const uint16_t PPUSCROLL = 0x2005;
     static const uint16_t PPUADDR = 0x2006;
     static const uint16_t PPUDATA = 0x2007;
+    static const uint16_t OAMDMA = 0x4014;
 
 public:
     class Control
@@ -28,6 +32,7 @@ public:
             uint8_t height;
 
             SpriteSize(uint8_t width, uint8_t height);
+            SpriteSize();
         };
 
     private:
@@ -51,7 +56,7 @@ public:
         uint8_t getVRAMIncrement() const;
         bool getMasterSlave() const;
         bool getGenerateNMI() const;
-        SpriteSize getSpriteSize() const();
+        SpriteSize getSpriteSize() const;
 
         Control& operator=(uint8_t value);
         operator uint8_t() const;
@@ -127,7 +132,6 @@ public:
         uint8_t getY() const;
 
         Scroll& operator=(uint8_t value);
-        operator uint8_t() const;
 
     private:
         uint8_t _scrolls[2];
@@ -148,6 +152,7 @@ public:
     };
 
 public:
+    PPU(std::shared_ptr<CPU> cpu);
 
     void setPPUControl(uint8_t value);
     void setPPUMask(uint8_t value);
@@ -157,17 +162,18 @@ public:
     void setPPUData(uint8_t value);
     void setOamAddr(uint8_t value);
     void setOamData(uint8_t value);
+    void setOamDma(uint8_t value);
 
     const Control& getPPUControl() const;
     const Mask& getPPUMask() const ;
     const Status& getPPUStatus() const;
-    const Scroll& getPPUScroll() const;
-    const Address& getPPUAddress() const;
     uint8_t getPPUData() const;
     uint8_t getOamAddr() const;
     uint8_t getOamData() const;
 
 private:
+    std::shared_ptr<CPU> _cpu;
+
     Control _ppuControl;
     Mask _ppuMask;
     Status _ppuStatus;
@@ -175,6 +181,7 @@ private:
     Address _ppuAddress;
     uint8_t _oamAddr;
 
+    uint8_t _oam[0xFF];
 };
 
 }

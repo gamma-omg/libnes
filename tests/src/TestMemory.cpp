@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Memory.h"
+#include <Memory.h>
 
 using namespace nescore;
 

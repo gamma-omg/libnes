@@ -1,23 +1,28 @@
-#ifndef NESCORE_ACCESSIMM_H
-#define NESCORE_ACCESSIMM_H
+#ifndef NESCORE_ACCESSACC_H
+#define NESCORE_ACCESSACC_H
 
 #include "../CPU.h"
-#include "../memory/CPUMemory.h"
+#include "../../memory/CPUMemory.h"
 
 namespace nescore
 {
 
-class IMM
+class ACC
 {
 public:
-    IMM(CPU::Registers& registers, CPUMemory* memory)
+    ACC(CPU::Registers& registers, CPUMemory* memory)
         : _registers(registers)
         , _memory(memory)
     {}
 
     uint8_t read()
     {
-        return _memory->readByte(_registers.PC++);
+        return _registers.A;
+    }
+
+    void write(uint8_t value)
+    {
+        _registers.A = value;
     }
 
     cpu_cycle_t getCycles() const
@@ -32,4 +37,4 @@ private:
 
 }
 
-#endif //NESCORE_ACCESSIMM_H
+#endif //NESCORE_ACCESSACC_H

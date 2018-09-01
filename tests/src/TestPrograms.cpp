@@ -2,7 +2,7 @@
 #include <fstream>
 #include <rom/INESRom.h>
 #include <mappers/MapperFactory.h>
-#include <CPU.h>
+#include <cpu/CPU.h>
 #include <Memory.h>
 #include "utils/TestProgram.h"
 

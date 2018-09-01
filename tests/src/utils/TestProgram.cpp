@@ -1,5 +1,5 @@
 #include <fstream>
-#include <CPU.h>
+#include <cpu/CPU.h>
 #include <memory/CPUMemory.h>
 #include <rom/INESRom.h>
 #include "TestProgram.h"

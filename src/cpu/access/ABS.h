@@ -1,16 +1,16 @@
-#ifndef NESCORE_ACCESSABSY_H
-#define NESCORE_ACCESSABSY_H
+#ifndef NESCORE_ACCESSABS_H
+#define NESCORE_ACCESSABS_H
 
 #include "../CPU.h"
-#include "../memory/CPUMemory.h"
+#include "../../memory/CPUMemory.h"
 
 namespace nescore
 {
 
-class ABSY
+class ABS
 {
 public:
-    ABSY(CPU::Registers& registers, CPUMemory* memory)
+    ABS(CPU::Registers& registers, CPUMemory* memory)
         : _registers(registers)
         , _memory(memory)
         , _cycles(0)
@@ -19,14 +19,8 @@ public:
 
     uint8_t read()
     {
-        _cycles = 3;
+        _cycles= 3;
         _address = _memory->readShort(_registers.PC);
-        if (_address & 0xFF + _registers.Y > 0xFF)
-        {
-            _cycles++;
-        }
-
-        _address += +_registers.Y;
         _registers.PC += 2;
         _rw = true;
         return _memory->readByte(_address);
@@ -36,17 +30,12 @@ public:
     {
         if (!_rw)
         {
-            _address = _memory->readShort(_registers.PC) + _registers.Y;
+            _address = _memory->readShort(_registers.PC);
             _registers.PC += 2;
         }
 
-        _cycles = _rw ? 6 : 4;
+        _cycles = _rw ? 5 : 3;
         _memory->writeByte(_address, value);
-    }
-
-    uint16_t getAddress()
-    {
-        return _memory->readShort(_registers.PC) + _registers.Y;
     }
 
     cpu_cycle_t getCycles() const
@@ -64,4 +53,4 @@ private:
 
 }
 
-#endif //NESCORE_ACCESSABSY_H
+#endif //NESCORE_ACCESSABS_H

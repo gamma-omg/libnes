@@ -1,16 +1,16 @@
-#ifndef NESCORE_ACCESSINDY_H
-#define NESCORE_ACCESSINDY_H
+#ifndef NESCORE_ACCESSINDX_H
+#define NESCORE_ACCESSINDX_H
 
 #include "../CPU.h"
-#include "../memory/CPUMemory.h"
+#include "../../memory/CPUMemory.h"
 
 namespace nescore
 {
 
-class INDY
+class INDX
 {
 public:
-    INDY(CPU::Registers& registers, CPUMemory* memory)
+    INDX(CPU::Registers& registers, CPUMemory* memory)
         : _registers(registers)
         , _memory(memory)
         , _cycles(0)
@@ -45,28 +45,13 @@ public:
 private:
     uint16_t getAddress()
     {
-        uint8_t base = _memory->readByte(_registers.PC++);
-        uint16_t address = 0;
-        if (base == 0xFF)
+        uint8_t address = _memory->readByte(_registers.PC++) + _registers.X;
+        if (address == 0xFF)
         {
-            address = _memory->readByte(0xFF) | _memory->readByte(0x00) << 8;
-        }
-        else
-        {
-            address = _memory->readShort(base);
+            return _memory->readByte(0xFF) | _memory->readByte(0x00) << 8;
         }
 
-        if (isPageCrossed(address, _registers.Y))
-        {
-            _cycles++;
-        }
-
-        return address + _registers.Y;
-    }
-
-    bool isPageCrossed(uint16_t address, uint16_t offset)
-    {
-        return (address + offset) & 0xFF00 != address & 0xFF00;
+        return _memory->readShort(address);
     }
 
 private:
@@ -79,4 +64,4 @@ private:
 
 }
 
-#endif //NESCORE_ACCESSINDY_H
+#endif //NESCORE_ACCESSINDX_H

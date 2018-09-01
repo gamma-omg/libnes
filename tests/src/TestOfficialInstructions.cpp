@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <CPU.h>
+#include <cpu/CPU.h>
 #include <memory/CPUMemory.h>
 
 using namespace nescore;

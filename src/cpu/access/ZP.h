@@ -1,16 +1,16 @@
-#ifndef NESCORE_ACCESSABS_H
-#define NESCORE_ACCESSABS_H
+#ifndef NESCORE_ACCESSZP_H
+#define NESCORE_ACCESSZP_H
 
 #include "../CPU.h"
-#include "../memory/CPUMemory.h"
+#include "../../memory/CPUMemory.h"
 
 namespace nescore
 {
 
-class ABS
+class ZP
 {
 public:
-    ABS(CPU::Registers& registers, CPUMemory* memory)
+    ZP(CPU::Registers& registers, CPUMemory* memory)
         : _registers(registers)
         , _memory(memory)
         , _cycles(0)
@@ -19,9 +19,8 @@ public:
 
     uint8_t read()
     {
-        _cycles= 3;
-        _address = _memory->readShort(_registers.PC);
-        _registers.PC += 2;
+        _cycles = 2;
+        _address = _memory->readByte(_registers.PC++);
         _rw = true;
         return _memory->readByte(_address);
     }
@@ -30,11 +29,10 @@ public:
     {
         if (!_rw)
         {
-            _address = _memory->readShort(_registers.PC);
-            _registers.PC += 2;
+            _address = _memory->readByte(_registers.PC++);
         }
 
-        _cycles = _rw ? 5 : 3;
+        _cycles = _rw ? 4 : 2;
         _memory->writeByte(_address, value);
     }
 
@@ -53,4 +51,4 @@ private:
 
 }
 
-#endif //NESCORE_ACCESSABS_H
+#endif //NESCORE_ACCESSZP_H

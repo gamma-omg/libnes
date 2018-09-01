@@ -1,16 +1,16 @@
-#ifndef NESCORE_ACCESSZP_H
-#define NESCORE_ACCESSZP_H
+#ifndef NESCORE_ACCESSZPY_H
+#define NESCORE_ACCESSZPY_H
 
 #include "../CPU.h"
-#include "../memory/CPUMemory.h"
+#include "../../memory/CPUMemory.h"
 
 namespace nescore
 {
 
-class ZP
+class ZPY
 {
 public:
-    ZP(CPU::Registers& registers, CPUMemory* memory)
+    ZPY(CPU::Registers& registers, CPUMemory* memory)
         : _registers(registers)
         , _memory(memory)
         , _cycles(0)
@@ -19,8 +19,8 @@ public:
 
     uint8_t read()
     {
-        _cycles = 2;
-        _address = _memory->readByte(_registers.PC++);
+        _cycles = 3;
+        _address = readAddress();
         _rw = true;
         return _memory->readByte(_address);
     }
@@ -29,16 +29,24 @@ public:
     {
         if (!_rw)
         {
-            _address = _memory->readByte(_registers.PC++);
+            _address = readAddress();
         }
 
-        _cycles = _rw ? 4 : 2;
+        _cycles = _rw ? 5 : 3;
         _memory->writeByte(_address, value);
     }
 
     cpu_cycle_t getCycles() const
     {
         return _cycles;
+    }
+
+private:
+    uint16_t readAddress()
+    {
+        uint16_t address = _memory->readByte(_registers.PC++) + _registers.Y;
+        address = address & 0xFF;
+        return address;
     }
 
 private:
@@ -51,4 +59,4 @@ private:
 
 }
 
-#endif //NESCORE_ACCESSZP_H
+#endif //NESCORE_ACCESSZPY_H

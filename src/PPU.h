@@ -1,8 +1,8 @@
 #ifndef NESCORE_PPU_H
 #define NESCORE_PPU_H
 
-#include <stdint-gcc.h>
 #include <memory>
+#include "memory/Memory.h"
 
 namespace nescore
 {
@@ -12,17 +12,46 @@ class CPU;
 class PPU
 {
 public:
-    static const uint16_t PPUCTRL = 0x2000;
-    static const uint16_t PPUMASK = 0x2001;
-    static const uint16_t PPUSTATUS = 0x2002;
-    static const uint16_t OAMADDR = 0x2003;
-    static const uint16_t OAMDATA = 0x2004;
-    static const uint16_t PPUSCROLL = 0x2005;
-    static const uint16_t PPUADDR = 0x2006;
-    static const uint16_t PPUDATA = 0x2007;
-    static const uint16_t OAMDMA = 0x4014;
+    class PPURegisters : public IMemoryAccessor
+    {
+    public:
+        static const Memory::Range RANGE;
+        static const Memory::Range MIRROR;
 
-public:
+        static const uint16_t PPUCTRL = 0x0;
+        static const uint16_t PPUMASK = 0x1;
+        static const uint16_t PPUSTATUS = 0x2;
+        static const uint16_t OAMADDR = 0x3;
+        static const uint16_t OAMDATA = 0x4;
+        static const uint16_t PPUSCROLL = 0x5;
+        static const uint16_t PPUADDR = 0x6;
+        static const uint16_t PPUDATA = 0x7;
+
+    public:
+        PPURegisters(PPU& ppu);
+
+        void writeByte(uint16_t offset, uint8_t value) override;
+        uint8_t readByte(uint16_t offset) override;
+
+    private:
+        PPU& _ppu;
+    };
+
+    class OamDma : public IMemoryAccessor
+    {
+    public:
+        static const Memory::Range ADDRESS;
+
+    public:
+        OamDma(PPU& ppu);
+
+        void writeByte(uint16_t offset, uint8_t value) override;
+        uint8_t readByte(uint16_t offset) override;
+
+    private:
+        PPU& _ppu;
+    };
+
     class Control
     {
     public:
@@ -174,6 +203,8 @@ public:
 private:
     std::shared_ptr<CPU> _cpu;
 
+    PPURegisters _registers;
+    OamDma _oamDma;
     Control _ppuControl;
     Mask _ppuMask;
     Status _ppuStatus;

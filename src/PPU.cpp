@@ -6,6 +6,63 @@
 namespace nescore
 {
 
+const Memory::Range PPU::PPURegisters::RANGE = Memory::Range(0x2000, 0x2007);
+const Memory::Range PPU::PPURegisters::MIRROR = Memory::Range(0x2008, 0x3FFF);
+
+PPU::PPURegisters::PPURegisters(PPU &ppu)
+    : _ppu(ppu)
+{
+}
+
+void PPU::PPURegisters::writeByte(uint16_t offset, uint8_t value)
+{
+    switch (offset)
+    {
+        case PPUCTRL: _ppu.setPPUControl(value); return;
+        case PPUMASK: _ppu.setPPUMask(value); return;
+        case PPUSTATUS: _ppu.setPPUStatus(value); return;
+        case OAMADDR: _ppu.setOamAddr(value); return;
+        case OAMDATA: _ppu.setOamData(value); return;
+        case PPUSCROLL: _ppu.setPPUScroll(value); return;
+        case PPUADDR: _ppu.setPPUAddress(value); return;
+        case PPUDATA: _ppu.setPPUData(value); return;
+    }
+}
+
+uint8_t PPU::PPURegisters::readByte(uint16_t offset)
+{
+    switch (offset)
+    {
+        case PPUCTRL: return _ppu.getPPUControl();
+        case PPUMASK: return _ppu.getPPUMask();
+        case PPUSTATUS: return _ppu.getPPUStatus();
+        case OAMADDR: return _ppu.getOamAddr();
+        case OAMDATA: return _ppu.getOamData();
+        case PPUDATA: return _ppu.getPPUData();
+    }
+
+    return 0;
+}
+
+
+const Memory::Range PPU::OamDma::ADDRESS = Memory::Range(0x4014, 0x4014);
+
+PPU::OamDma::OamDma(PPU &ppu)
+    : _ppu(ppu)
+{
+}
+
+void PPU::OamDma::writeByte(uint16_t offset, uint8_t value)
+{
+    _ppu.setOamDma(value);
+}
+
+uint8_t PPU::OamDma::readByte(uint16_t offset)
+{
+    return 0;
+}
+
+
 PPU::Control::SpriteSize::SpriteSize(uint8_t width, uint8_t height)
     : width(width)
     , height(height)
@@ -206,7 +263,13 @@ PPU::Address::operator uint16_t() const
 
 PPU::PPU(std::shared_ptr<CPU> cpu)
     : _cpu(cpu)
+    , _registers(*this)
+    , _oamDma(*this)
 {
+    _cpu->getMemory()->mount(OamDma::ADDRESS, &_oamDma);
+    _cpu->getMemory()->mount(PPURegisters::RANGE, &_registers);
+    _cpu->getMemory()->mirror(PPURegisters::RANGE, PPURegisters::MIRROR);
+
     memset(&_oam, 0x100, sizeof(uint8_t));
 }
 
@@ -286,5 +349,6 @@ uint8_t PPU::getPPUData() const
     // TODO: implement
     return 0;
 }
+
 
 }

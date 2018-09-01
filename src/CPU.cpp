@@ -3,8 +3,7 @@
 #include <memory.h>
 #include <functional>
 #include "CPU.h"
-#include "IMemoryAccessor.h"
-#include "Memory.h"
+#include "memory/CPUMemory.h"
 
 #include "access/ABS.h"
 #include "access/ABSX.h"
@@ -46,8 +45,8 @@ bool CPU::Registers::getFlag(nescore::CPU::Registers::Flags flag) const
 }
 
 
-CPU::CPU(std::shared_ptr<IMemoryAccessor> memory)
-    : _memory(memory)
+CPU::CPU()
+    : _memory(std::make_shared<CPUMemory>())
     , _cycle(0)
     , _dmaCycle(0)
 {
@@ -56,12 +55,10 @@ CPU::CPU(std::shared_ptr<IMemoryAccessor> memory)
 }
 
 CPU::CPU(const std::vector<uint8_t>& operations)
-    : CPU(nullptr)
+    : CPU()
 {
-    auto memory = std::make_shared<Memory>();
-    memory->loadProgram(operations);
-
-    _memory = memory;
+    _memory->loadProgram(operations);
+    _memory->setResetVector(CPUMemory::ROM_OFFSET);
     reset();
 }
 
@@ -69,7 +66,7 @@ void CPU::reset()
 {
     _killed = false;
     _registers.reset();
-    _registers.PC = _memory->readShort(Memory::RESET_VECTOR);
+    _registers.PC = _memory->readShort(CPUMemory::RESET_VECTOR);
 }
 
 void CPU::tick()
@@ -109,17 +106,12 @@ void CPU::startDmaTransfer()
     _dmaCycle = _cycle % 2 == 0 ? 513 : 514;
 }
 
-const CPU::Registers& CPU::getRegisters() const
-{
-    return _registers;
-}
-
 CPU::Registers &CPU::getRegisters()
 {
     return _registers;
 }
 
-std::shared_ptr<IMemoryAccessor> CPU::getMemory()
+std::shared_ptr<CPUMemory> CPU::getMemory()
 {
     return _memory;
 }
@@ -845,7 +837,7 @@ cpu_cycle_t CPU::op_brk()
 {
     _memory->pushShort(_registers.S, _registers.PC + 1);
     _memory->pushByte(_registers.S, _registers.P);
-    _registers.PC = _memory->readShort(Memory::IRQ_VECTOR);
+    _registers.PC = _memory->readShort(CPUMemory::IRQ_VECTOR);
     _registers.setFlag(Registers::Flags::I, true);
     _registers.setFlag(Registers::Flags::D, true);
     return 6;

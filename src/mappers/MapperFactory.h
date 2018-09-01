@@ -16,23 +16,16 @@ public:
     };
 
 public:
-    MapperFactory(std::shared_ptr<Memory> memory)
-        : _memory(memory)
-    {
-    }
-
     std::shared_ptr<IRomMapper> createMapper(std::shared_ptr<INESRom> rom)
     {
         switch (rom->getMapper())
         {
-            case MapperNROM: return std::make_shared<NROM>(rom, _memory);
+            case MapperNROM: return std::make_shared<NROM>(rom);
         }
 
         return nullptr;
     }
 
-private:
-    std::shared_ptr<Memory> _memory;
 };
 
 }

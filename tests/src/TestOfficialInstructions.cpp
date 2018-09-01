@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "CPU.h"
-#include "Memory.h"
+#include <CPU.h>
+#include <memory/CPUMemory.h>
 
 using namespace nescore;
 
@@ -585,13 +585,13 @@ TEST(CPU, BRK)
     auto p = registers.P;
 
     auto memory = cpu.getMemory();
-    memory->writeShort(Memory::IRQ_VECTOR, Memory::ROM_OFFSET + 0x03);
+    memory->writeShort(CPUMemory::IRQ_VECTOR, CPUMemory::ROM_OFFSET + 0x03);
 
     cpu.tick();
 
-    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0x03);
+    ASSERT_EQ(registers.PC, CPUMemory::ROM_OFFSET + 0x03);
     ASSERT_EQ(memory->popByte(registers.S), p);
-    ASSERT_EQ(memory->popShort(registers.S), Memory::ROM_OFFSET + 2);
+    ASSERT_EQ(memory->popShort(registers.S), CPUMemory::ROM_OFFSET + 2);
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::I));
 }
 
@@ -1353,7 +1353,7 @@ TEST(CPU, JSR)
     cpu.tick();
 
     ASSERT_EQ(registers.PC, 4);
-    ASSERT_EQ(memory->popShort(registers.S), Memory::ROM_OFFSET + 2);
+    ASSERT_EQ(memory->popShort(registers.S), CPUMemory::ROM_OFFSET + 2);
 }
 
 TEST(CPU, LDA)
@@ -1866,12 +1866,12 @@ TEST(CPU, RTI)
     memory->pushByte(registers.S, registers.P);
 
     registers.P = 0;
-    registers.PC = Memory::ROM_OFFSET + 2;
+    registers.PC = CPUMemory::ROM_OFFSET + 2;
 
     cpu.tick();
 
     ASSERT_EQ(registers.P, 0b10111011);
-    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0);
+    ASSERT_EQ(registers.PC, CPUMemory::ROM_OFFSET + 0);
 }
 
 TEST(CPU, RTI_set_BL)
@@ -1885,12 +1885,12 @@ TEST(CPU, RTI_set_BL)
     memory->pushByte(registers.S, registers.P);
 
     registers.P = 0;
-    registers.PC = Memory::ROM_OFFSET + 2;
+    registers.PC = CPUMemory::ROM_OFFSET + 2;
 
     cpu.tick();
 
     ASSERT_EQ(registers.P, 0b10110011);
-    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 0);
+    ASSERT_EQ(registers.PC, CPUMemory::ROM_OFFSET + 0);
 }
 
 TEST(CPU, RTS)
@@ -1899,11 +1899,11 @@ TEST(CPU, RTS)
     auto& registers = cpu.getRegisters();
     auto memory = cpu.getMemory();
     memory->pushShort(registers.S, registers.PC);
-    registers.PC = Memory::ROM_OFFSET + 2;
+    registers.PC = CPUMemory::ROM_OFFSET + 2;
 
     cpu.tick();
 
-    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 1);
+    ASSERT_EQ(registers.PC, CPUMemory::ROM_OFFSET + 1);
 }
 
 TEST(CPU, SBC)

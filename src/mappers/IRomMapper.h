@@ -14,8 +14,8 @@ class IRomMapper
 {
 public:
     virtual ~IRomMapper() {}
-    virtual std::shared_ptr<IMemoryAccessor> getCPUMemory() = 0;
-    virtual std::shared_ptr<IMemoryAccessor> getPPUMemory() = 0;
+    virtual void setupCPU(std::shared_ptr<Memory> memory) = 0;
+    virtual void setupPPU(std::shared_ptr<Memory> memory) = 0;
 };
 
 }

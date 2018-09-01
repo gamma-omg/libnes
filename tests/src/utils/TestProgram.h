@@ -12,6 +12,10 @@ class Memory;
 class INESRom;
 class IRomMapper;
 
+}
+
+using namespace nescore;
+
 class TestProgram
 {
 public:
@@ -24,15 +28,13 @@ private:
     void loadRom(const std::string& fileName);
 
 private:
-    std::shared_ptr<Memory> _memory;
     std::shared_ptr<CPU> _cpu;
     std::shared_ptr<INESRom> _rom;
+    std::shared_ptr<IRomMapper> _mapper;
     std::string _output;
     MapperFactory _mapperFactory;
     bool _started;
 };
-
-}
 
 
 #endif //NESCORE_TESTPROGRAM_H

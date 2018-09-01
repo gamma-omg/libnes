@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <CPU.h>
-#include <Memory.h>
+#include <memory/CPUMemory.h>
 
 using namespace nescore;
 
@@ -215,7 +215,7 @@ TEST(CPU, KIL)
     cpu.tick();
     cpu.tick();
 
-    ASSERT_EQ(registers.PC, Memory::ROM_OFFSET + 1);
+    ASSERT_EQ(registers.PC, CPUMemory::ROM_OFFSET + 1);
     ASSERT_EQ(registers.A, 0);
 }
 

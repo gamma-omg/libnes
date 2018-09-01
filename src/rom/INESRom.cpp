@@ -127,22 +127,22 @@ uint8_t INESRom::getPrgRamBanks() const
     return _header.prgRamBanks;
 }
 
-const uint8_t* INESRom::getTrainer() const
+uint8_t* INESRom::getTrainer() const
 {
     return _trainer;
 }
 
-const uint8_t* INESRom::getPrgRomBank(int bank) const
+uint8_t* INESRom::getPrgRomBank(int bank) const
 {
     return &_prgRom[bank * PRG_ROM_BANK_SIZE];
 }
 
-const uint8_t* INESRom::getChrRomBank(int bank) const
+uint8_t* INESRom::getChrRomBank(int bank) const
 {
     return &_chrRom[bank * CHR_ROM_BANK_SIZE];
 }
 
-const  uint8_t* INESRom::getPlayChoice10() const
+uint8_t* INESRom::getPlayChoice10() const
 {
     return _playChoice10;
 }

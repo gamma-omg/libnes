@@ -2,7 +2,7 @@
 #define NESCORE_ACCESSIMM_H
 
 #include "../CPU.h"
-#include "../IMemoryAccessor.h"
+#include "../memory/CPUMemory.h"
 
 namespace nescore
 {
@@ -10,7 +10,7 @@ namespace nescore
 class IMM
 {
 public:
-    IMM(CPU::Registers& registers, IMemoryAccessor* memory)
+    IMM(CPU::Registers& registers, CPUMemory* memory)
         : _registers(registers)
         , _memory(memory)
     {}
@@ -27,7 +27,7 @@ public:
 
 private:
     CPU::Registers& _registers;
-    IMemoryAccessor* _memory;
+    CPUMemory* _memory;
 };
 
 }

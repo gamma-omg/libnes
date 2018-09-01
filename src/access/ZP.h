@@ -2,7 +2,7 @@
 #define NESCORE_ACCESSZP_H
 
 #include "../CPU.h"
-#include "../IMemoryAccessor.h"
+#include "../memory/CPUMemory.h"
 
 namespace nescore
 {
@@ -10,7 +10,7 @@ namespace nescore
 class ZP
 {
 public:
-    ZP(CPU::Registers& registers, IMemoryAccessor* memory)
+    ZP(CPU::Registers& registers, CPUMemory* memory)
         : _registers(registers)
         , _memory(memory)
         , _cycles(0)
@@ -43,7 +43,7 @@ public:
 
 private:
     CPU::Registers& _registers;
-    IMemoryAccessor* _memory;
+    CPUMemory* _memory;
     uint16_t _address;
     cpu_cycle_t _cycles;
     bool _rw;

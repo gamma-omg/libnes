@@ -63,10 +63,10 @@ public:
     uint8_t getChrRomBanks() const;
     uint8_t getPrgRamBanks() const;
 
-    const uint8_t* getTrainer() const;
-    const uint8_t* getPrgRomBank(int bank) const;
-    const uint8_t* getChrRomBank(int bank) const;
-    const uint8_t* getPlayChoice10() const;
+    uint8_t* getTrainer() const;
+    uint8_t* getPrgRomBank(int bank) const;
+    uint8_t* getChrRomBank(int bank) const;
+    uint8_t* getPlayChoice10() const;
     uint8_t* getPrgRom();
     uint8_t* getChrRom();
 

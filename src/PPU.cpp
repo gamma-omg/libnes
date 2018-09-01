@@ -1,7 +1,7 @@
 #include <memory.h>
 #include "PPU.h"
 #include "CPU.h"
-#include "Memory.h"
+#include "memory/CPUMemory.h"
 
 namespace nescore
 {

@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "Memory.h"
+#include <memory/CPUMemory.h>
 
 using namespace nescore;
 
 TEST(Memory, Read_byte)
 {
-    Memory memory({0x01, 0x02, 0x03});
+    CPUMemory memory({0x01, 0x02, 0x03});
 
     ASSERT_EQ(memory.readByte(0x0000), 0x01);
     ASSERT_EQ(memory.readByte(0x0001), 0x02);
@@ -14,7 +14,7 @@ TEST(Memory, Read_byte)
 
 TEST(Memory, Read_short)
 {
-    Memory memory({0x01, 0x02, 0x03, 0x04});
+    CPUMemory memory({0x01, 0x02, 0x03, 0x04});
 
     ASSERT_EQ(memory.readShort(0x0000), 0x0201);
     ASSERT_EQ(memory.readShort(0x0001), 0x0302);
@@ -23,7 +23,7 @@ TEST(Memory, Read_short)
 
 TEST(Memory, Write_byte)
 {
-    Memory memory;
+    CPUMemory memory;
 
     memory.writeByte(0x05, 0xFE);
 
@@ -32,7 +32,7 @@ TEST(Memory, Write_byte)
 
 TEST(Memory, Write_short)
 {
-    Memory memory;
+    CPUMemory memory;
 
     memory.writeShort(0x05, 0x0405);
 
@@ -43,7 +43,7 @@ TEST(Memory, Write_short)
 
 TEST(Memory, Read_RAM_Mirror)
 {
-    Memory memory({0x01, 0x02, 0x03});
+    CPUMemory memory({0x01, 0x02, 0x03});
 
     ASSERT_EQ(memory.readByte(0x0000), 0x01);
     ASSERT_EQ(memory.readByte(0x0800), 0x01);
@@ -53,7 +53,7 @@ TEST(Memory, Read_RAM_Mirror)
 
 TEST(Memory, Write_RAM_Mirror)
 {
-    Memory memory;
+    CPUMemory memory;
 
     memory.writeByte(0x05, 0xFE);
 
@@ -65,7 +65,7 @@ TEST(Memory, Write_RAM_Mirror)
 
 TEST(Memory, Write_short_RAM_Mirror)
 {
-    Memory memory;
+    CPUMemory memory;
 
     memory.writeShort(0x05, 0xD0FE);
 
@@ -77,12 +77,12 @@ TEST(Memory, Write_short_RAM_Mirror)
 
 TEST(Memory, Write_bytes)
 {
-    Memory memory;
-    uint8_t buffer[] = { 0xF0, 0xFD, 0x78 };
+    CPUMemory source({ 0xF0, 0xFD, 0x78 });
+    CPUMemory memory;
 
-    memory.writeBytes(Memory::ROM_OFFSET, reinterpret_cast<uint8_t*>(&buffer), 3);
+    memory.writeBytes(&source, CPUMemory::ROM_OFFSET, 3);
 
-    ASSERT_EQ(memory.readByte(Memory::ROM_OFFSET), 0xF0);
-    ASSERT_EQ(memory.readByte(Memory::ROM_OFFSET + 1), 0xFD);
-    ASSERT_EQ(memory.readByte(Memory::ROM_OFFSET + 2), 0x78);
+    ASSERT_EQ(memory.readByte(CPUMemory::ROM_OFFSET), 0xF0);
+    ASSERT_EQ(memory.readByte(CPUMemory::ROM_OFFSET + 1), 0xFD);
+    ASSERT_EQ(memory.readByte(CPUMemory::ROM_OFFSET + 2), 0x78);
 }

@@ -1,82 +1,43 @@
 #include <memory.h>
 #include "NROM.h"
-#include "../Memory.h"
 #include "../rom/INESRom.h"
 
 namespace nescore
 {
 
-NROM::CPUMemory::CPUMemory(std::shared_ptr<INESRom> rom, std::shared_ptr<Memory> memory)
+const Memory::Range NROM::PRG_RAM = Memory::Range(0x6000, 0x7FFF);
+const Memory::Range NROM::PRG_ROM_1 = Memory::Range(0x8000, 0xBFFF);
+const Memory::Range NROM::PRG_ROM_2 = Memory::Range(0xC000, 0xFFFF);
+
+NROM::NROM(std::shared_ptr<INESRom> rom)
     : _rom(rom)
-    , _memory(memory)
     , _prgRam(new uint8_t[0x2000])
 {
-    memset(_prgRam, 0x00, 0x2000);
-    _prgRom = _rom->getPrgRom();
 }
 
-NROM::CPUMemory::~CPUMemory()
+NROM::~NROM()
 {
     delete[] _prgRam;
 }
 
-uint8_t NROM::CPUMemory::readByte(uint16_t offset)
+void NROM::setupCPU(std::shared_ptr<Memory> memory)
 {
-    if (offset < 0x6000) return _memory->readByte(offset);
-    if (offset < 0x8000) return _prgRam[offset - 0x6000];
-    return _prgRom[offset - 0x8000];
-}
+    memory->mount(PRG_RAM, _prgRam);
 
-void NROM::CPUMemory::writeByte(uint16_t offset, uint8_t value)
-{
-    if (offset < 0x6000)
+    if (_rom->getPrgRomBanks() == 2)
     {
-        _memory->writeByte(offset, value);
-        return;
+        memory->mount(PRG_ROM_1, _rom->getPrgRomBank(0));
+        memory->mount(PRG_ROM_2, _rom->getPrgRomBank(1));
     }
-    if (offset < 0x8000)
+    else
     {
-        _prgRam[offset - 0x6000] = value;
-        return;
+        memory->mount(PRG_ROM_1, _rom->getPrgRomBank(0));
+        memory->mount(PRG_ROM_2, _rom->getPrgRomBank(0));
     }
-
-    _prgRom[offset - 0x8000] = value;
 }
 
-uint16_t NROM::CPUMemory::getStackOffset()
+void NROM::setupPPU(std::shared_ptr<Memory> memory)
 {
-    return _memory->getStackOffset();
-}
-
-NROM::PPUMemory::PPUMemory(std::shared_ptr<INESRom> rom)
-    : _rom(rom)
-{
-}
-
-uint8_t NROM::PPUMemory::readByte(uint16_t offset)
-{
-    return 0;
-}
-
-void NROM::PPUMemory::writeByte(uint16_t offset, uint8_t value)
-{
-
-}
-
-NROM::NROM(std::shared_ptr<INESRom> rom, std::shared_ptr<Memory> memory)
-    : _cpuMemory(new CPUMemory(rom, memory))
-    , _ppuMemory(new PPUMemory(rom))
-{
-}
-
-std::shared_ptr<IMemoryAccessor> NROM::getCPUMemory()
-{
-    return _cpuMemory;
-}
-
-std::shared_ptr<IMemoryAccessor> NROM::getPPUMemory()
-{
-    return _ppuMemory;
 }
 
 }

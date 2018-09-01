@@ -1,17 +1,15 @@
 #include <fstream>
 #include <CPU.h>
-#include <Memory.h>
+#include <memory/CPUMemory.h>
 #include <rom/INESRom.h>
 #include "TestProgram.h"
 
-namespace nescore
-{
+using namespace nescore;
 
 TestProgram::TestProgram(const std::string &fileName)
-    : _memory(new Memory())
-    , _cpu(nullptr)
+    : _cpu(new CPU())
     , _rom(nullptr)
-    , _mapperFactory(_memory)
+    , _mapper(nullptr)
     , _started(false)
 {
     loadRom(fileName);
@@ -35,7 +33,7 @@ int TestProgram::run()
         }
         if (status != 0x80)
         {
-            _output = _memory->readString(0x6004);
+            _output = _cpu->getMemory()->readString(0x6004);
             return status;
         }
     }
@@ -54,8 +52,6 @@ void TestProgram::loadRom(const std::string &fileName)
     fin.open(fileName, std::ios::binary);
     _rom->read(fin);
 
-    auto mapper = _mapperFactory.createMapper(_rom);
-    _cpu = std::make_shared<CPU>(mapper->getCPUMemory());
-}
-
+    _mapper = _mapperFactory.createMapper(_rom);
+    _mapper->setupCPU(_cpu->getMemory());
 }

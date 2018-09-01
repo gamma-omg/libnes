@@ -122,19 +122,19 @@ void Memory::writeBytes(IMemoryAccessor* src, uint16_t offset, uint16_t size)
 
 std::string Memory::readString(uint16_t offset)
 {
-    char buffer[0xFFFF];
+    char buffer[0x2000];
     char chr;
     int address = 0;
     do
     {
         chr = readByte(offset + address);
         buffer[address++] = chr;
-        if (address >= 0x10000)
+        if (address >= 0x2000)
         {
             buffer[address - 1] = '\0';
         }
     }
-    while (chr == '\0');
+    while (chr != '\0');
 
     return std::string(buffer);
 }

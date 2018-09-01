@@ -2,7 +2,7 @@
 #define NESCORE_ACCESSZP_H
 
 #include "../CPU.h"
-#include "../../memory/CPUMemory.h"
+#include "../CPUMemory.h"
 
 namespace nescore
 {

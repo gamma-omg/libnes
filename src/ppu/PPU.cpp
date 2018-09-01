@@ -2,7 +2,7 @@
 #include "PPU.h"
 #include "PPUMemory.h"
 #include "../cpu/CPU.h"
-#include "../memory/CPUMemory.h"
+#include "../cpu/CPUMemory.h"
 
 namespace nescore
 {

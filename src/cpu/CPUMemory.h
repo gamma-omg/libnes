@@ -2,7 +2,7 @@
 #define NESCORE_CPUMEMORY_H
 
 #include <vector>
-#include "Memory.h"
+#include "../memory/Memory.h"
 
 namespace nescore
 {

@@ -1,6 +1,6 @@
 #include <fstream>
 #include <cpu/CPU.h>
-#include <memory/CPUMemory.h>
+#include <cpu/CPUMemory.h>
 #include <rom/INESRom.h>
 #include "TestProgram.h"
 

@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <functional>
 #include "CPU.h"
-#include "../memory/CPUMemory.h"
+#include "CPUMemory.h"
 
 #include "access/ABS.h"
 #include "access/ABSX.h"

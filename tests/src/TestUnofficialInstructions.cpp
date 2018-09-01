@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <cpu/CPU.h>
-#include <memory/CPUMemory.h>
+#include <cpu/CPUMemory.h>
 
 using namespace nescore;
 

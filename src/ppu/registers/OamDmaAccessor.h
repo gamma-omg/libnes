@@ -1,7 +1,7 @@
 #ifndef NESCORE_OAMDMAACCESSOR_H
 #define NESCORE_OAMDMAACCESSOR_H
 
-#include "../../memory/CPUMemory.h"
+#include "../../cpu/CPUMemory.h"
 
 namespace nescore
 {

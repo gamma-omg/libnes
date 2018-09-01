@@ -2,7 +2,7 @@
 #define NESCORE_PPUREGISTERSACCESSOR_H
 
 #include <memory>
-#include "../../memory/CPUMemory.h"
+#include "../../cpu/CPUMemory.h"
 
 namespace nescore
 {

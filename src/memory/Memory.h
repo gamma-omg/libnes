@@ -7,6 +7,7 @@
 #include <memory>
 #include <stdexcept>
 #include "accessors/IMemoryAccessor.h"
+#include "../rom/INESRom.h"
 
 namespace nescore
 {
@@ -31,6 +32,8 @@ public:
 
     struct Range
     {
+        static Range fromBank(uint8_t bank, uint16_t bankSize);
+
         uint16_t start;
         uint16_t end;
 
@@ -50,6 +53,7 @@ public:
 
 public:
     Memory();
+    virtual ~Memory();
 
     uint8_t readByte(uint16_t offset) override;
     void writeByte(uint16_t offset, uint8_t value) override;
@@ -70,6 +74,7 @@ public:
 
     void mount(Range range, IMemoryAccessor* accessor, MountMode mode = MountMode::ReadWrite);
     void mount(Range range, uint8_t* buffer, MountMode mode = MountMode::ReadWrite);
+    void mount(Range range, const INESRom::Bank& bank, MountMode mode = MountMode::ReadWrite);
     void mirror(Range src, Range dst, MountMode mode = MountMode::ReadWrite);
     void unmountAll();
 

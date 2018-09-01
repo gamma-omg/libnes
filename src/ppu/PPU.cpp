@@ -1,5 +1,6 @@
 #include <memory.h>
 #include "PPU.h"
+#include "PPUMemory.h"
 #include "../cpu/CPU.h"
 #include "../memory/CPUMemory.h"
 
@@ -8,6 +9,7 @@ namespace nescore
 
 PPU::PPU(std::shared_ptr<CPU> cpu)
     : _cpu(cpu)
+    , _memory(new PPUMemory())
     , _registers(this)
     , _oamDma(this)
 {
@@ -15,6 +17,11 @@ PPU::PPU(std::shared_ptr<CPU> cpu)
     _oamDma.mountTo(_cpu->getMemory());
 
     memset(&_oam, 0x100, sizeof(uint8_t));
+}
+
+std::shared_ptr<PPUMemory> PPU::getMemory()
+{
+    return _memory;
 }
 
 void PPU::setPPUControl(uint8_t value)

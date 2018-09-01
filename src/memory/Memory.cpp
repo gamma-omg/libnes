@@ -2,6 +2,7 @@
 #include "accessors/IMemoryAccessor.h"
 #include "accessors/BufferAccessor.h"
 #include "accessors/MirrorAccessor.h"
+#include "accessors/RomBankAccessor.h"
 
 namespace nescore
 {
@@ -18,6 +19,11 @@ Memory::Range::Range(uint16_t start, uint16_t end)
 {
 }
 
+Memory::Range Memory::Range::fromBank(uint8_t bank, uint16_t bankSize)
+{
+    return Memory::Range(bank * bankSize, (bank + 1) * bankSize);
+}
+
 bool Memory::Range::contains(uint16_t offset)
 {
     return offset >= start && offset <= end;
@@ -31,6 +37,10 @@ uint16_t Memory::Range::getGlobalOffset(uint16_t offset)
 
 Memory::Memory()
     : _stackOffset(0)
+{
+}
+
+Memory::~Memory()
 {
 }
 
@@ -157,7 +167,15 @@ void Memory::mount(Memory::Range range, uint8_t* buffer, MountMode mode)
     accessor->setBuffer(buffer);
     mount(range, accessor.get(), mode);
 
-    _accessors.push_back(accessor);
+    _accessors.emplace_back(accessor);
+}
+
+void Memory::mount(Memory::Range range, const INESRom::Bank &bank, Memory::MountMode mode)
+{
+    auto accessor = std::make_shared<RomBankAccessor>(bank);
+    mount(range, accessor.get(), mode);
+
+    _accessors.emplace_back(accessor);
 }
 
 void Memory::mirror(Memory::Range src, Memory::Range dst, MountMode mode)
@@ -165,7 +183,7 @@ void Memory::mirror(Memory::Range src, Memory::Range dst, MountMode mode)
     auto accessor = std::make_shared<MirrorAccessor>(this, src);
     mount(dst, accessor.get(), mode);
 
-    _accessors.push_back(accessor);
+    _accessors.emplace_back(accessor);
 }
 
 void Memory::unmountAll()

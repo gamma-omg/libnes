@@ -1,9 +1,10 @@
 #ifndef NESCORE_INESLOADER_H
 #define NESCORE_INESLOADER_H
 
-#include <stdint-gcc.h>
+#include <cstdint>
 #include <memory>
 #include <istream>
+#include <vector>
 
 namespace nescore
 {
@@ -49,6 +50,26 @@ public:
         PAL,
     };
 
+    class Bank
+    {
+    public:
+        Bank(uint16_t size);
+        Bank(Bank&& other);
+        Bank(const Bank& other) = delete;
+        ~Bank();
+
+        uint16_t getSize() const;
+        uint8_t getByte(uint16_t offset) const;
+        const uint8_t* getData() const;
+
+        void read(std::istream& stream);
+        void clear();
+
+    private:
+        uint16_t _size;
+        uint8_t* _data;
+    };
+
 public:
     INESRom();
     INESRom(const INESRom&) = delete;
@@ -63,12 +84,10 @@ public:
     uint8_t getChrRomBanks() const;
     uint8_t getPrgRamBanks() const;
 
-    uint8_t* getTrainer() const;
-    uint8_t* getPrgRomBank(int bank) const;
-    uint8_t* getChrRomBank(int bank) const;
-    uint8_t* getPlayChoice10() const;
-    uint8_t* getPrgRom();
-    uint8_t* getChrRom();
+    const Bank& getTrainer() const;
+    const Bank& getPrgRomBank(int bank) const;
+    const Bank& getChrRomBank(int bank) const;
+    const Bank& getPlayChoice10() const;
 
     bool hasPersistentMemory() const;
     bool hasTrainer() const;
@@ -105,13 +124,14 @@ private:
 
 private:
     INESHeader _header;
-    uint8_t* _trainer;
-    uint8_t* _playChoice10;
-    uint8_t* _prgRom;
-    uint8_t* _chrRom;
+    Bank _trainer;
+    Bank _playChoice10;
+    std::vector<Bank*> _prgRoms;
+    std::vector<Bank*> _chrRoms;
 };
 
 std::istream& operator >>(std::istream& stream, INESRom& rom);
+std::istream& operator >>(std::istream& stream, INESRom::Bank& bank);
 
 }
 

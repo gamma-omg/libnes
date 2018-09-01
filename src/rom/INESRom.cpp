@@ -4,13 +4,57 @@
 namespace nescore
 {
 
+INESRom::Bank::Bank(uint16_t size)
+    : _size(size)
+    , _data(nullptr)
+{
+}
+
+INESRom::Bank::Bank(INESRom::Bank &&other)
+{
+    _size = other._size;
+    _data = other._data;
+    other._data = nullptr;
+}
+
+INESRom::Bank::~Bank()
+{
+    clear();
+}
+
+uint16_t INESRom::Bank::getSize() const
+{
+    return _size;
+}
+
+const uint8_t *INESRom::Bank::getData() const
+{
+    return _data;
+}
+
+uint8_t INESRom::Bank::getByte(uint16_t offset) const
+{
+    return _data[offset];
+}
+
+void INESRom::Bank::read(std::istream &stream)
+{
+    clear();
+
+    _data = new uint8_t[_size];
+    stream.read(reinterpret_cast<char*>(_data), _size);
+}
+
+void INESRom::Bank::clear()
+{
+    if (_data) delete[] _data;
+}
+
 const char INESRom::FORMAT[] = { 0x4E, 0x45, 0x53, 0x1A };
 
 INESRom::INESRom()
-    : _trainer(0)
-    , _prgRom(0)
-    , _chrRom(0)
-    , _playChoice10(0)
+    : _trainer(TRAINER_SIZE)
+    , _playChoice10(PLAY_CHOICE_10_SIZE)
 {
     memset(&_header, 0x00, sizeof(INESHeader));
 }
@@ -40,28 +84,26 @@ void INESRom::read(std::istream &stream)
 
     if (hasTrainer())
     {
-        _trainer = new uint8_t[TRAINER_SIZE];
-        stream.read(reinterpret_cast<char*>(_trainer), TRAINER_SIZE);
+        stream >> _trainer;
     }
 
-    auto prgRomSize = _header.prgRomBanks * PRG_ROM_BANK_SIZE;
-    if (prgRomSize > 0)
+    for (int i = 0; i < _header.prgRomBanks; ++i)
     {
-        _prgRom = new uint8_t[prgRomSize];
-        stream.read(reinterpret_cast<char*>(_prgRom), prgRomSize);
+        auto bank = new Bank(PRG_ROM_BANK_SIZE);
+        stream >> *bank;
+        _prgRoms.push_back(bank);
     }
 
-    auto chrRomSize = _header.chrRomBanks * CHR_ROM_BANK_SIZE;
-    if (chrRomSize)
+    for (int i = 0; i < _header.chrRomBanks; ++i)
     {
-        _chrRom = new uint8_t[chrRomSize];
-        stream.read(reinterpret_cast<char*>(_chrRom), chrRomSize);
+        auto bank = new Bank(CHR_ROM_BANK_SIZE);
+        stream >> *bank;
+        _chrRoms.push_back(bank);
     }
 
     if (hasPlayChoice10())
     {
-        _playChoice10 = new uint8_t[PLAY_CHOICE_10_SIZE];
-        stream.read(reinterpret_cast<char*>(_playChoice10), PLAY_CHOICE_10_SIZE);
+        stream >> _playChoice10;
     }
 }
 
@@ -127,53 +169,48 @@ uint8_t INESRom::getPrgRamBanks() const
     return _header.prgRamBanks;
 }
 
-uint8_t* INESRom::getTrainer() const
+const INESRom::Bank& INESRom::getTrainer() const
 {
     return _trainer;
 }
 
-uint8_t* INESRom::getPrgRomBank(int bank) const
+const INESRom::Bank& INESRom::getPrgRomBank(int bank) const
 {
-    return &_prgRom[bank * PRG_ROM_BANK_SIZE];
+    return *_prgRoms[bank];
 }
 
-uint8_t* INESRom::getChrRomBank(int bank) const
+const INESRom::Bank& INESRom::getChrRomBank(int bank) const
 {
-    return &_chrRom[bank * CHR_ROM_BANK_SIZE];
+    return *_chrRoms[bank];
 }
 
-uint8_t* INESRom::getPlayChoice10() const
+const INESRom::Bank& INESRom::getPlayChoice10() const
 {
     return _playChoice10;
 }
 
-uint8_t *INESRom::getPrgRom()
-{
-    return _prgRom;
-}
-
-uint8_t *INESRom::getChrRom()
-{
-    return _chrRom;
-}
-
 void INESRom::clear()
 {
-    if (_trainer) delete[] _trainer;
-    if (_playChoice10) delete[] _playChoice10;
-    if (_prgRom) delete[] _prgRom;
-    if (_chrRom) delete[] _chrRom;
+    for (auto& bank : _prgRoms) delete bank;
+    for (auto& bank : _chrRoms) delete bank;
 
-    _trainer = 0;
-    _playChoice10 = 0;
-    _prgRom = 0;
-    _chrRom = 0;
+    _playChoice10.clear();
+    _trainer.clear();
+    _prgRoms.clear();
+    _chrRoms.clear();
+
     memset(&_header, 0x00, sizeof(INESHeader));
 }
 
-std::istream &operator>>(std::istream &stream, INESRom &rom)
+std::istream &operator>>(std::istream& stream, INESRom& rom)
 {
     rom.read(stream);
+    return stream;
+}
+
+std::istream &operator>>(std::istream& stream, INESRom::Bank& bank)
+{
+    bank.read(stream);
     return stream;
 }
 

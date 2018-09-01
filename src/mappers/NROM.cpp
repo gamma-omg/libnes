@@ -38,6 +38,10 @@ void NROM::setupCPU(std::shared_ptr<Memory> memory)
 
 void NROM::setupPPU(std::shared_ptr<Memory> memory)
 {
+    for (int i = 0; i < _rom->getChrRomBanks(); ++i)
+    {
+        memory->mount(Memory::Range::fromBank(i, INESRom::CHR_ROM_BANK_SIZE), _rom->getChrRomBank(i));
+    }
 }
 
 }

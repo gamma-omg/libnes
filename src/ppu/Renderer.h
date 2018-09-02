@@ -19,6 +19,7 @@ public:
     void setPattern(uint16_t pattern, uint8_t row);
     void render(int x, int y, int scrollX = 0, int scrollY = 0);
     void renderPattern(uint16_t pattern, int x, int y, int scrollX = 0, int scrollY = 0);
+    void renderPatternTables();
     void swapBuffers();
 
     int getWidth() const;
@@ -28,6 +29,7 @@ public:
     void saveToFile(const std::string& fileName);
 
 private:
+    int _bufferSize;
     int _width;
     int _height;
     uint32_t* _buffer1;

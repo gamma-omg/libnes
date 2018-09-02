@@ -14,20 +14,7 @@ TEST(RENDERER, CHR_BattleCity)
     Renderer renderer(128, 256);
     renderer.setPattersSource(rom.getChrRomBank(0));
 
-    for (int i = 0; i < 16; i++)
-    {
-        for (int j = 0; j < 16; j++)
-        {
-            renderer.renderPattern(j + i * 16, 8 * j, i * 8);
-        }
-    }
-    for (int i = 0; i < 16; i++)
-    {
-        for (int j = 0; j < 16; j++)
-        {
-            renderer.renderPattern(256 + j + i * 16, 8 * j, i * 8 + 128);
-        }
-    }
+    renderer.renderPatternTables();
 
     renderer.swapBuffers();
     renderer.saveToFile("tests/data/games/battlecity.tga");
@@ -42,20 +29,7 @@ TEST(RENDERER, CHR_DonkeyKong)
     Renderer renderer(128, 256);
     renderer.setPattersSource(rom.getChrRomBank(0));
 
-    for (int i = 0; i < 16; i++)
-    {
-        for (int j = 0; j < 16; j++)
-        {
-            renderer.renderPattern(j + i * 16, 8 * j, i * 8);
-        }
-    }
-    for (int i = 0; i < 16; i++)
-    {
-        for (int j = 0; j < 16; j++)
-        {
-            renderer.renderPattern(256 + j + i * 16, 8 * j, i * 8 + 128);
-        }
-    }
+    renderer.renderPatternTables();
 
     renderer.swapBuffers();
     renderer.saveToFile("tests/data/games/donkey_kong.tga");

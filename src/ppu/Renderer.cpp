@@ -6,15 +6,16 @@ namespace nescore
 {
 
 Renderer::Renderer(int width, int heigt)
-    : _width(width)
+    : _bufferSize(width * heigt)
+    , _width(width)
     , _height(heigt)
-    , _buffer1(new uint32_t[width * heigt])
-    , _buffer2(new uint32_t[width * heigt])
+    , _buffer1(new uint32_t[_bufferSize])
+    , _buffer2(new uint32_t[_bufferSize])
     , _plane0(0)
     , _plane1(0)
 {
-    memset(_buffer1, 0x00, sizeof(uint32_t) * width * heigt);
-    memset(_buffer2, 0x00, sizeof(uint32_t) * width * heigt);
+    memset(_buffer1, 0x00, sizeof(uint32_t) * _bufferSize);
+    memset(_buffer2, 0x00, sizeof(uint32_t) * _bufferSize);
 
     _outputBuffer = _buffer1;
 }
@@ -33,12 +34,17 @@ void Renderer::setPattern(uint16_t pattern, uint8_t row)
 
 void Renderer::render(int x, int y, int scrollX, int scrollY)
 {
-    auto output = _outputBuffer + x + y * _width;
+    auto output = x + y * _width;
     for (int i = 7; i >= 0; --i)
     {
         uint8_t l = (_plane0 & (1 << i)) >> i;
         uint8_t h = (_plane1 & (1 << i)) >> i;
-        *output++ = (h << 1) | l;
+        if (output >= _bufferSize)
+        {
+            return;
+        }
+
+        _outputBuffer[output++] = (h << 1) | l;
     }
 }
 
@@ -48,6 +54,22 @@ void Renderer::renderPattern(uint16_t pattern, int x, int y, int scrollX, int sc
     {
         setPattern(pattern, row);
         render(x, y + row, scrollX, scrollY);
+    }
+}
+
+void Renderer::renderPatternTables()
+{
+    int x = 0;
+    int y = 0;
+    for (int pattern = 0; pattern < 512; ++pattern)
+    {
+        renderPattern(pattern, x, y);
+        x += 8;
+        if (x >= 128)
+        {
+            x = 0;
+            y += 8;
+        }
     }
 }
 

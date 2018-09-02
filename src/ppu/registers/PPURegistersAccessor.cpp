@@ -27,7 +27,7 @@ void PPURegistersAccessor::writeByte(uint16_t offset, uint8_t value)
     }
 }
 
-uint8_t PPURegistersAccessor::readByte(uint16_t offset)
+uint8_t PPURegistersAccessor::readByte(uint16_t offset) const
 {
     switch (offset)
     {

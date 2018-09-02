@@ -27,16 +27,6 @@ uint16_t INESRom::Bank::getSize() const
     return _size;
 }
 
-const uint8_t *INESRom::Bank::getData() const
-{
-    return _data;
-}
-
-uint8_t INESRom::Bank::getByte(uint16_t offset) const
-{
-    return _data[offset];
-}
-
 void INESRom::Bank::read(std::istream &stream)
 {
     clear();
@@ -48,6 +38,15 @@ void INESRom::Bank::read(std::istream &stream)
 void INESRom::Bank::clear()
 {
     if (_data) delete[] _data;
+}
+
+void INESRom::Bank::writeByte(uint16_t offset, uint8_t value)
+{
+}
+
+uint8_t INESRom::Bank::readByte(uint16_t offset) const
+{
+    return offset < _size ? _data[offset] : 0;
 }
 
 const char INESRom::FORMAT[] = { 0x4E, 0x45, 0x53, 0x1A };
@@ -169,24 +168,24 @@ uint8_t INESRom::getPrgRamBanks() const
     return _header.prgRamBanks;
 }
 
-const INESRom::Bank& INESRom::getTrainer() const
+const INESRom::Bank* INESRom::getTrainer() const
 {
-    return _trainer;
+    return &_trainer;
 }
 
-const INESRom::Bank& INESRom::getPrgRomBank(int bank) const
+const INESRom::Bank* INESRom::getPrgRomBank(int bank) const
 {
-    return *_prgRoms[bank];
+    return _prgRoms[bank];
 }
 
-const INESRom::Bank& INESRom::getChrRomBank(int bank) const
+const INESRom::Bank* INESRom::getChrRomBank(int bank) const
 {
-    return *_chrRoms[bank];
+    return _chrRoms[bank];
 }
 
-const INESRom::Bank& INESRom::getPlayChoice10() const
+const INESRom::Bank* INESRom::getPlayChoice10() const
 {
-    return _playChoice10;
+    return &_playChoice10;
 }
 
 void INESRom::clear()

@@ -21,7 +21,7 @@ void OamDmaAccessor::writeByte(uint16_t offset, uint8_t value)
     _ppu->setOamDma(value);
 }
 
-uint8_t OamDmaAccessor::readByte(uint16_t offset)
+uint8_t OamDmaAccessor::readByte(uint16_t offset) const
 {
     return 0;
 }

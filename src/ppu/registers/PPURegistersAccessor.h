@@ -30,7 +30,7 @@ public:
 
     void mountTo(std::shared_ptr<CPUMemory> memory);
     void writeByte(uint16_t offset, uint8_t value) override;
-    uint8_t readByte(uint16_t offset) override;
+    uint8_t readByte(uint16_t offset) const override;
 
 private:
     PPU* _ppu;

@@ -13,7 +13,7 @@ public:
     virtual ~IMemoryAccessor() {};
 
     virtual void writeByte(uint16_t offset, uint8_t value) = 0;
-    virtual uint8_t readByte(uint16_t offset) = 0;
+    virtual uint8_t readByte(uint16_t offset) const = 0;
 };
 
 }

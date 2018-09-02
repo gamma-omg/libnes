@@ -5,6 +5,7 @@
 #include <memory>
 #include <istream>
 #include <vector>
+#include "../memory/accessors/IMemoryAccessor.h"
 
 namespace nescore
 {
@@ -50,7 +51,7 @@ public:
         PAL,
     };
 
-    class Bank
+    class Bank : public IMemoryAccessor
     {
     public:
         Bank(uint16_t size);
@@ -58,10 +59,10 @@ public:
         Bank(const Bank& other) = delete;
         ~Bank();
 
-        uint16_t getSize() const;
-        uint8_t getByte(uint16_t offset) const;
-        const uint8_t* getData() const;
+        void writeByte(uint16_t offset, uint8_t value) override;
+        uint8_t readByte(uint16_t offset) const override;
 
+        uint16_t getSize() const;
         void read(std::istream& stream);
         void clear();
 
@@ -84,10 +85,10 @@ public:
     uint8_t getChrRomBanks() const;
     uint8_t getPrgRamBanks() const;
 
-    const Bank& getTrainer() const;
-    const Bank& getPrgRomBank(int bank) const;
-    const Bank& getChrRomBank(int bank) const;
-    const Bank& getPlayChoice10() const;
+    const Bank* getTrainer() const;
+    const Bank* getPrgRomBank(int bank) const;
+    const Bank* getChrRomBank(int bank) const;
+    const Bank* getPlayChoice10() const;
 
     bool hasPersistentMemory() const;
     bool hasTrainer() const;

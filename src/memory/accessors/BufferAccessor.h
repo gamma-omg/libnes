@@ -10,7 +10,7 @@ class BufferAccessor : public IMemoryAccessor
 {
 public:
     void writeByte(uint16_t offset, uint8_t value) override;
-    uint8_t readByte(uint16_t offset) override;
+    uint8_t readByte(uint16_t offset) const override;
 
     void setBuffer(uint8_t* buffer);
 

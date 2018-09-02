@@ -39,8 +39,8 @@ public:
 
         Range(uint16_t start, uint16_t end);
 
-        bool contains(uint16_t offset);
-        uint16_t getGlobalOffset(uint16_t offset);
+        bool contains(uint16_t offset) const;
+        uint16_t getGlobalOffset(uint16_t offset) const;
     };
 
     struct Mount
@@ -55,7 +55,7 @@ public:
     Memory();
     virtual ~Memory();
 
-    uint8_t readByte(uint16_t offset) override;
+    uint8_t readByte(uint16_t offset) const override;
     void writeByte(uint16_t offset, uint8_t value) override;
 
     uint8_t popByte(uint8_t& s);
@@ -74,12 +74,12 @@ public:
 
     void mount(Range range, IMemoryAccessor* accessor, MountMode mode = MountMode::ReadWrite);
     void mount(Range range, uint8_t* buffer, MountMode mode = MountMode::ReadWrite);
-    void mount(Range range, const INESRom::Bank& bank, MountMode mode = MountMode::ReadWrite);
+    void mount(Range range, const INESRom::Bank* bank, MountMode mode = MountMode::ReadWrite);
     void mirror(Range src, Range dst, MountMode mode = MountMode::ReadWrite);
     void unmountAll();
 
 private:
-    Mount* findMount(std::list<Mount>& source, uint16_t offset);
+    const Mount* findMount(const std::list<Mount>& source, uint16_t offset) const;
 
 private:
     std::list<Mount> _readMounts;

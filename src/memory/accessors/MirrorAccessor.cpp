@@ -14,7 +14,7 @@ void MirrorAccessor::writeByte(uint16_t offset, uint8_t value)
     _source->writeByte(_range.getGlobalOffset(offset), value);
 }
 
-uint8_t MirrorAccessor::readByte(uint16_t offset)
+uint8_t MirrorAccessor::readByte(uint16_t offset) const
 {
     return _source->readByte(_range.getGlobalOffset(offset));
 }

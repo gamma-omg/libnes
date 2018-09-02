@@ -24,12 +24,12 @@ Memory::Range Memory::Range::fromBank(uint8_t bank, uint16_t bankSize)
     return Memory::Range(bank * bankSize, (bank + 1) * bankSize);
 }
 
-bool Memory::Range::contains(uint16_t offset)
+bool Memory::Range::contains(uint16_t offset) const
 {
     return offset >= start && offset <= end;
 }
 
-uint16_t Memory::Range::getGlobalOffset(uint16_t offset)
+uint16_t Memory::Range::getGlobalOffset(uint16_t offset) const
 {
     return (start + offset) % (end - start);
 }
@@ -44,9 +44,9 @@ Memory::~Memory()
 {
 }
 
-uint8_t Memory::readByte(uint16_t offset)
+uint8_t Memory::readByte(uint16_t offset) const
 {
-    auto mount = findMount(_readMounts, offset);
+    const auto mount = findMount(_readMounts, offset);
     if (!mount)
     {
         throw nes_memory_error("Mount point was not found for address " + offset);
@@ -57,7 +57,7 @@ uint8_t Memory::readByte(uint16_t offset)
 
 void Memory::writeByte(uint16_t offset, uint8_t value)
 {
-    auto mount = findMount(_writeMounts, offset);
+    const auto mount = findMount(_writeMounts, offset);
     if (!mount)
     {
         throw nes_memory_error("Mount point was not found for address " + offset);
@@ -170,7 +170,7 @@ void Memory::mount(Memory::Range range, uint8_t* buffer, MountMode mode)
     _accessors.emplace_back(accessor);
 }
 
-void Memory::mount(Memory::Range range, const INESRom::Bank &bank, Memory::MountMode mode)
+void Memory::mount(Memory::Range range, const INESRom::Bank* bank, Memory::MountMode mode)
 {
     auto accessor = std::make_shared<RomBankAccessor>(bank);
     mount(range, accessor.get(), mode);
@@ -198,7 +198,7 @@ void Memory::setStackOffset(uint16_t offset)
     _stackOffset = offset;
 }
 
-Memory::Mount* Memory::findMount(std::list<Mount>& source, uint16_t offset)
+const Memory::Mount* Memory::findMount(const std::list<Mount>& source, uint16_t offset) const
 {
     for (auto& mount : source)
     {

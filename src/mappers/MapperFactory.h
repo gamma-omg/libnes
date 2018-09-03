@@ -16,7 +16,7 @@ public:
     };
 
 public:
-    std::shared_ptr<IRomMapper> createMapper(std::shared_ptr<INESRom> rom)
+    static std::shared_ptr<IRomMapper> createMapper(std::shared_ptr<INESRom> rom)
     {
         switch (rom->getMapper())
         {

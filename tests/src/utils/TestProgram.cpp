@@ -2,6 +2,7 @@
 #include <cpu/CPU.h>
 #include <cpu/CPUMemory.h>
 #include <rom/INESRom.h>
+#include <mappers/MapperFactory.h>
 #include "TestProgram.h"
 
 using namespace nescore;
@@ -52,6 +53,6 @@ void TestProgram::loadRom(const std::string &fileName)
     fin.open(fileName, std::ios::binary);
     _rom->read(fin);
 
-    _mapper = _mapperFactory.createMapper(_rom);
+    _mapper = MapperFactory::createMapper(_rom);
     _mapper->setupCPU(_cpu->getMemory());
 }

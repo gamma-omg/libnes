@@ -9,6 +9,7 @@
 #include "registers/PPUAddress.h"
 #include "registers/PPURegistersAccessor.h"
 #include "registers/OamDmaAccessor.h"
+#include "../Timings.h"
 
 namespace nescore
 {
@@ -22,6 +23,9 @@ public:
     PPU(std::shared_ptr<CPU> cpu);
 
     std::shared_ptr<PPUMemory> getMemory();
+
+    void update(master_cycle time);
+    void reset();
 
     void setPPUControl(uint8_t value);
     void setPPUMask(uint8_t value);

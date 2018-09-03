@@ -2,7 +2,6 @@
 #define NESCORE_TESTPROGRAM_H
 
 #include <string>
-#include <mappers/MapperFactory.h>
 
 namespace nescore
 {
@@ -32,7 +31,6 @@ private:
     std::shared_ptr<INESRom> _rom;
     std::shared_ptr<IRomMapper> _mapper;
     std::string _output;
-    MapperFactory _mapperFactory;
     bool _started;
 };
 

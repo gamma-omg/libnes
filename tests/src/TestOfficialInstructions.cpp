@@ -1570,7 +1570,7 @@ TEST(CPU, NOP)
 
     cpu.tick();
 
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
 }
 
 TEST(CPU, ORA)
@@ -1639,7 +1639,7 @@ TEST(CPU, PHA)
     cpu.tick();
 
     ASSERT_EQ(memory->popShort(registers.S), 5);
-    ASSERT_EQ(cpu.getCycle(), 3);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(3));
 }
 
 TEST(CPU, PHP)
@@ -1652,7 +1652,7 @@ TEST(CPU, PHP)
     cpu.tick();
 
     ASSERT_EQ(memory->popShort(registers.S), 0b10110101);
-    ASSERT_EQ(cpu.getCycle(), 3);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(3));
 }
 
 TEST(CPU, PLA)
@@ -1667,7 +1667,7 @@ TEST(CPU, PLA)
     cpu.tick();
 
     ASSERT_EQ(registers.A, 5);
-    ASSERT_EQ(cpu.getCycle(), 3 + 4);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(3 + 4));
 }
 
 TEST(CPU, PLP)
@@ -1682,7 +1682,7 @@ TEST(CPU, PLP)
     cpu.tick();
 
     ASSERT_EQ(registers.P, 0b10110101);
-    ASSERT_EQ(cpu.getCycle(), 3 + 4);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(3 + 4));
 }
 
 TEST(CPU, ROL)
@@ -1693,7 +1693,7 @@ TEST(CPU, ROL)
 
     cpu.tick();
 
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
     ASSERT_EQ(registers.A, 0b10101100);
 }
 
@@ -1998,7 +1998,7 @@ TEST(CPU, SEC)
     cpu.tick();
 
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
 }
 
 TEST(CPU, SED)
@@ -2009,7 +2009,7 @@ TEST(CPU, SED)
     cpu.tick();
 
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::D));
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
 }
 
 TEST(CPU, SEI)
@@ -2020,7 +2020,7 @@ TEST(CPU, SEI)
     cpu.tick();
 
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::I));
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
 }
 
 TEST(CPU, STA)

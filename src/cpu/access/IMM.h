@@ -20,9 +20,9 @@ public:
         return _memory->readByte(_registers.PC++);
     }
 
-    cpu_cycle_t getCycles() const
+    cpu_cycle getCycles() const
     {
-        return 1;
+        return cpu_cycle(1);
     }
 
 private:

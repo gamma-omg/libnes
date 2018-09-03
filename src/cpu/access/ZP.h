@@ -19,7 +19,7 @@ public:
 
     uint8_t read()
     {
-        _cycles = 2;
+        _cycles = cpu_cycle(2);
         _address = _memory->readByte(_registers.PC++);
         _rw = true;
         return _memory->readByte(_address);
@@ -32,11 +32,11 @@ public:
             _address = _memory->readByte(_registers.PC++);
         }
 
-        _cycles = _rw ? 4 : 2;
+        _cycles = _rw ? cpu_cycle(4) : cpu_cycle(2);
         _memory->writeByte(_address, value);
     }
 
-    cpu_cycle_t getCycles() const
+    cpu_cycle getCycles() const
     {
         return _cycles;
     }
@@ -45,7 +45,7 @@ private:
     CPU::Registers& _registers;
     CPUMemory* _memory;
     uint16_t _address;
-    cpu_cycle_t _cycles;
+    cpu_cycle _cycles;
     bool _rw;
 };
 

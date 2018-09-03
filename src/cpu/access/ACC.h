@@ -25,9 +25,9 @@ public:
         _registers.A = value;
     }
 
-    cpu_cycle_t getCycles() const
+    cpu_cycle getCycles() const
     {
-        return 1;
+        return cpu_cycle(1);
     }
 
 private:

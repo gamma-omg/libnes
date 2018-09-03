@@ -13,7 +13,7 @@ TEST(CPU, ALR)
     cpu.tick();
 
     ASSERT_EQ(registers.A, 0b00101000);
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
 }
 
 TEST(CPU, ANC_1)
@@ -25,7 +25,7 @@ TEST(CPU, ANC_1)
     cpu.tick();
 
     ASSERT_EQ(registers.A, 0b11010001);
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
 }
@@ -39,7 +39,7 @@ TEST(CPU, ANC_2)
     cpu.tick();
 
     ASSERT_EQ(registers.A, 0b11010001);
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
 }
@@ -55,7 +55,7 @@ TEST(CPU, ARR)
     cpu.tick();
 
     ASSERT_EQ(registers.A, 0b11101000);
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::C));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::V));
 }
@@ -70,7 +70,7 @@ TEST(CPU, AXS)
     cpu.tick();
 
     ASSERT_EQ(registers.X, 0b10100100 + 5);
-    ASSERT_EQ(cpu.getCycle(), 2);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(2));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::C));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
@@ -87,7 +87,7 @@ TEST(CPU, LAX)
 
     ASSERT_EQ(registers.X, 0xFF);
     ASSERT_EQ(registers.A, 0xFF);
-    ASSERT_EQ(cpu.getCycle(), 3);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(3));
 }
 
 TEST(CPU, SAX)
@@ -101,7 +101,7 @@ TEST(CPU, SAX)
     cpu.tick();
 
     ASSERT_EQ(memory->readByte(0x05), 0b01010010);
-    ASSERT_EQ(cpu.getCycle(), 3);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(3));
 }
 
 TEST(CPU, DCP)
@@ -115,7 +115,7 @@ TEST(CPU, DCP)
     cpu.tick();
 
     ASSERT_EQ(memory->readByte(0x05), 19);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
@@ -133,7 +133,7 @@ TEST(CPU, ISC)
 
     ASSERT_EQ(memory->readByte(0x05), 6);
     ASSERT_EQ(registers.A, 4);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
@@ -150,7 +150,7 @@ TEST(CPU, RLA)
 
     ASSERT_EQ(memory->readByte(0x05), 0b10100110);
     ASSERT_EQ(registers.A, 0b00000100);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
@@ -167,7 +167,7 @@ TEST(CPU, RRA)
 
     ASSERT_EQ(memory->readByte(0x05), 0b01101001);
     ASSERT_EQ(registers.A, 0b01101001 + 7);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
@@ -184,7 +184,7 @@ TEST(CPU, SLO)
 
     ASSERT_EQ(memory->readByte(0x05), 0b10100100);
     ASSERT_EQ(registers.A, 0b10111111);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
@@ -201,7 +201,7 @@ TEST(CPU, SRE)
 
     ASSERT_EQ(memory->readByte(0x05), 0b01101001);
     ASSERT_EQ(registers.A, 0b11110010);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
     ASSERT_TRUE(registers.getFlag(CPU::Registers::Flags::N));
     ASSERT_FALSE(registers.getFlag(CPU::Registers::Flags::Z));
 }
@@ -248,7 +248,7 @@ TEST(CPU, SXA)
     cpu.tick();
 
     ASSERT_EQ(memory->readByte(0x1108), 1);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
 }
 
 TEST(CPU, SYA)
@@ -262,7 +262,7 @@ TEST(CPU, SYA)
     cpu.tick();
 
     ASSERT_EQ(memory->readByte(0x1108), 1);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
 }
 
 TEST(CPU, XAS)
@@ -278,5 +278,5 @@ TEST(CPU, XAS)
 
     ASSERT_EQ(registers.S, 1);
     ASSERT_EQ(memory->readByte(0x1008), 1);
-    ASSERT_EQ(cpu.getCycle(), 5);
+    ASSERT_EQ(cpu.getCycle(), cpu_cycle(5));
 }

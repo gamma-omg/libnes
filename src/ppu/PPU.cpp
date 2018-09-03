@@ -24,6 +24,16 @@ std::shared_ptr<PPUMemory> PPU::getMemory()
     return _memory;
 }
 
+void PPU::update(master_cycle time)
+{
+    // TODO: implement
+}
+
+void PPU::reset()
+{
+    // TODO: implement
+}
+
 void PPU::setPPUControl(uint8_t value)
 {
     _ppuControl = value;

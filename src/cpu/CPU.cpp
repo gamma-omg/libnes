@@ -123,7 +123,7 @@ cpu_cycle_t CPU::getCycle() const
 
 void CPU::setupInstructions()
 {
-    memset(&_instructions, 0, sizeof(InstructionHandler) * 0xFF);
+    memset(&_instructions, 0, sizeof(InstructionHandler) * 0x100);
 
     _instructions[0x69] = CPU::op_adc<IMM>;
     _instructions[0x65] = CPU::op_adc<ZP>;

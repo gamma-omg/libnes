@@ -20,9 +20,9 @@ public:
         return 0;
     }
 
-    cpu_cycle getCycles() const
+    cpu_tick_t getCycles() const
     {
-        return cpu_cycle(1);
+        return 1;
     }
 
 private:

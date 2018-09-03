@@ -85,7 +85,7 @@ void CPU::tick()
         return;
     }
 
-    if (_dmaCycle != cpu_cycle::zero())
+    if (_dmaCycle > 0)
     {
         _cycle++;
         _dmaCycle--;
@@ -100,7 +100,7 @@ void CPU::tick()
     }
 
     _cycle++;
-    _cycle += (this->*handler)();
+    _cycle += cpu_cycle((this->*handler)());
 }
 
 void CPU::tick(int count)
@@ -113,7 +113,7 @@ void CPU::tick(int count)
 
 void CPU::startDmaTransfer()
 {
-    _dmaCycle = _cycle % 2 == cpu_cycle::zero() ? cpu_cycle(513) : cpu_cycle(514);
+    _dmaCycle = _cycle % 2 == cpu_cycle::zero() ? 513 : 514;
 }
 
 CPU::Registers &CPU::getRegisters()
@@ -434,7 +434,7 @@ void CPU::setupInstructions()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_adc()
+cpu_tick_t CPU::op_adc()
 {
     AccessMode am(_registers, _memory.get());
     _registers.A = _add(am.read());
@@ -442,7 +442,7 @@ cpu_cycle CPU::op_adc()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_and()
+cpu_tick_t CPU::op_and()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -452,7 +452,7 @@ cpu_cycle CPU::op_and()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_asl()
+cpu_tick_t CPU::op_asl()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -461,7 +461,7 @@ cpu_cycle CPU::op_asl()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_bit()
+cpu_tick_t CPU::op_bit()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -475,7 +475,7 @@ cpu_cycle CPU::op_bit()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_cmp()
+cpu_tick_t CPU::op_cmp()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -488,7 +488,7 @@ cpu_cycle CPU::op_cmp()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_cpx()
+cpu_tick_t CPU::op_cpx()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -501,7 +501,7 @@ cpu_cycle CPU::op_cpx()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_cpy()
+cpu_tick_t CPU::op_cpy()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -514,7 +514,7 @@ cpu_cycle CPU::op_cpy()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_dec()
+cpu_tick_t CPU::op_dec()
 {
     AccessMode am(_registers, _memory.get());
     int8_t operand = am.read();
@@ -527,7 +527,7 @@ cpu_cycle CPU::op_dec()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_eor()
+cpu_tick_t CPU::op_eor()
 {
     AccessMode am(_registers, _memory.get());
     _registers.A = _eor(_registers.A, am.read());
@@ -535,7 +535,7 @@ cpu_cycle CPU::op_eor()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_inc()
+cpu_tick_t CPU::op_inc()
 {
     AccessMode am(_registers, _memory.get());
     int8_t operand = am.read();
@@ -548,7 +548,7 @@ cpu_cycle CPU::op_inc()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_lda()
+cpu_tick_t CPU::op_lda()
 {
     AccessMode am(_registers, _memory.get());
     _registers.A = am.read();
@@ -558,7 +558,7 @@ cpu_cycle CPU::op_lda()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_ldx()
+cpu_tick_t CPU::op_ldx()
 {
     AccessMode am(_registers, _memory.get());
     _registers.X = am.read();
@@ -568,7 +568,7 @@ cpu_cycle CPU::op_ldx()
 }
 
 template <typename AccessMode>
-cpu_cycle CPU::op_ldy()
+cpu_tick_t CPU::op_ldy()
 {
     AccessMode am(_registers, _memory.get());
     _registers.Y = am.read();
@@ -578,7 +578,7 @@ cpu_cycle CPU::op_ldy()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_lsr()
+cpu_tick_t CPU::op_lsr()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_lsr(am.read()));
@@ -586,7 +586,7 @@ cpu_cycle CPU::op_lsr()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_ora()
+cpu_tick_t CPU::op_ora()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -595,7 +595,7 @@ cpu_cycle CPU::op_ora()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_rol()
+cpu_tick_t CPU::op_rol()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_rol(am.read()));
@@ -603,7 +603,7 @@ cpu_cycle CPU::op_rol()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_ror()
+cpu_tick_t CPU::op_ror()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_ror(am.read()));
@@ -611,7 +611,7 @@ cpu_cycle CPU::op_ror()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_sbc()
+cpu_tick_t CPU::op_sbc()
 {
     AccessMode am(_registers, _memory.get());
     _registers.A = _add(~am.read());
@@ -619,7 +619,7 @@ cpu_cycle CPU::op_sbc()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_sta()
+cpu_tick_t CPU::op_sta()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_registers.A);
@@ -627,7 +627,7 @@ cpu_cycle CPU::op_sta()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_stx()
+cpu_tick_t CPU::op_stx()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_registers.X);
@@ -635,7 +635,7 @@ cpu_cycle CPU::op_stx()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_sty()
+cpu_tick_t CPU::op_sty()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_registers.Y);
@@ -643,7 +643,7 @@ cpu_cycle CPU::op_sty()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_lax()
+cpu_tick_t CPU::op_lax()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -655,7 +655,7 @@ cpu_cycle CPU::op_lax()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_sax()
+cpu_tick_t CPU::op_sax()
 {
     AccessMode am(_registers, _memory.get());
     am.write(_registers.A & _registers.X);
@@ -663,7 +663,7 @@ cpu_cycle CPU::op_sax()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_dcp()
+cpu_tick_t CPU::op_dcp()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -678,7 +678,7 @@ cpu_cycle CPU::op_dcp()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_isc()
+cpu_tick_t CPU::op_isc()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -690,7 +690,7 @@ cpu_cycle CPU::op_isc()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_rla()
+cpu_tick_t CPU::op_rla()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -702,7 +702,7 @@ cpu_cycle CPU::op_rla()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_rra()
+cpu_tick_t CPU::op_rra()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -714,7 +714,7 @@ cpu_cycle CPU::op_rra()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_slo()
+cpu_tick_t CPU::op_slo()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -726,7 +726,7 @@ cpu_cycle CPU::op_slo()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_sre()
+cpu_tick_t CPU::op_sre()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -738,7 +738,7 @@ cpu_cycle CPU::op_sre()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_skb()
+cpu_tick_t CPU::op_skb()
 {
     AccessMode am(_registers, _memory.get());
     am.read();
@@ -746,7 +746,7 @@ cpu_cycle CPU::op_skb()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_ign()
+cpu_tick_t CPU::op_ign()
 {
     AccessMode am(_registers, _memory.get());
     am.read();
@@ -754,7 +754,7 @@ cpu_cycle CPU::op_ign()
 }
 
 template<typename AccessMode>
-cpu_cycle CPU::op_axa()
+cpu_tick_t CPU::op_axa()
 {
     AccessMode am(_registers, _memory.get());
     uint8_t result = _registers.X & _registers.A;
@@ -764,29 +764,29 @@ cpu_cycle CPU::op_axa()
     return am.getCycles();
 }
 
-cpu_cycle CPU::op_inx()
+cpu_tick_t CPU::op_inx()
 {
     _registers.X++;
     updateZNFlags(_registers.X);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_iny()
+cpu_tick_t CPU::op_iny()
 {
     _registers.Y++;
     updateZNFlags(_registers.Y);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_jmp_abs()
+cpu_tick_t CPU::op_jmp_abs()
 {
     auto address = _memory->readShort(_registers.PC);
     _registers.PC = address;
 
-    return cpu_cycle(2);
+    return 2;
 }
 
-cpu_cycle CPU::op_jmp_ind()
+cpu_tick_t CPU::op_jmp_ind()
 {
     uint16_t base = _memory->readShort(_registers.PC);
     uint16_t address = 0;
@@ -802,227 +802,227 @@ cpu_cycle CPU::op_jmp_ind()
     }
 
     _registers.PC = address;
-    return cpu_cycle(5);
+    return 5;
 }
 
-cpu_cycle CPU::op_jsr()
+cpu_tick_t CPU::op_jsr()
 {
     _memory->pushShort(_registers.S, _registers.PC + 1);
     _registers.PC = _memory->readShort(_registers.PC);
 
-    return cpu_cycle(6);
+    return 6;
 }
 
-cpu_cycle CPU::op_bcc()
+cpu_tick_t CPU::op_bcc()
 {
     return branchOnFlag(Registers::Flags::C, false);
 }
 
-cpu_cycle CPU::op_bcs()
+cpu_tick_t CPU::op_bcs()
 {
     return branchOnFlag(Registers::Flags::C, true);
 }
 
-cpu_cycle CPU::op_beq()
+cpu_tick_t CPU::op_beq()
 {
     return branchOnFlag(Registers::Flags::Z, true);
 }
 
-cpu_cycle CPU::op_bmi()
+cpu_tick_t CPU::op_bmi()
 {
     return branchOnFlag(Registers::Flags::N, true);
 }
 
-cpu_cycle CPU::op_bne()
+cpu_tick_t CPU::op_bne()
 {
     return branchOnFlag(Registers::Flags::Z, false);
 }
 
-cpu_cycle CPU::op_bpl()
+cpu_tick_t CPU::op_bpl()
 {
     return branchOnFlag(Registers::Flags::N, false);
 }
 
-cpu_cycle CPU::op_brk()
+cpu_tick_t CPU::op_brk()
 {
     _memory->pushShort(_registers.S, _registers.PC + 1);
     _memory->pushByte(_registers.S, _registers.P);
     _registers.PC = _memory->readShort(CPUMemory::IRQ_VECTOR);
     _registers.setFlag(Registers::Flags::I, true);
     _registers.setFlag(Registers::Flags::D, true);
-    return cpu_cycle(6);
+    return 6;
 }
 
-cpu_cycle CPU::op_bvc()
+cpu_tick_t CPU::op_bvc()
 {
     return branchOnFlag(Registers::Flags::V, false);
 }
 
-cpu_cycle CPU::op_bvs()
+cpu_tick_t CPU::op_bvs()
 {
     return branchOnFlag(Registers::Flags::V, true);
 }
 
-cpu_cycle CPU::op_clc()
+cpu_tick_t CPU::op_clc()
 {
     _registers.setFlag(Registers::Flags::C, false);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_cld()
+cpu_tick_t CPU::op_cld()
 {
     _registers.setFlag(Registers::Flags::D, false);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_cli()
+cpu_tick_t CPU::op_cli()
 {
     _registers.setFlag(Registers::Flags::I, false);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_clv()
+cpu_tick_t CPU::op_clv()
 {
     _registers.setFlag(Registers::Flags::V, false);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_dex()
+cpu_tick_t CPU::op_dex()
 {
     _registers.X--;
     updateZNFlags(_registers.X);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_dey()
+cpu_tick_t CPU::op_dey()
 {
     _registers.Y--;
     updateZNFlags(_registers.Y);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_nop()
+cpu_tick_t CPU::op_nop()
 {
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_pha()
+cpu_tick_t CPU::op_pha()
 {
     _memory->pushByte(_registers.S, _registers.A);
-    return cpu_cycle(2);
+    return 2;
 }
 
-cpu_cycle CPU::op_php()
+cpu_tick_t CPU::op_php()
 {
     _memory->pushByte(_registers.S, _registers.P);
-    return cpu_cycle(2);
+    return 2;
 }
 
-cpu_cycle CPU::op_pla()
+cpu_tick_t CPU::op_pla()
 {
     _registers.A = _memory->popByte(_registers.S);
     updateZNFlags(_registers.A);
-    return cpu_cycle(3);
+    return 3;
 }
 
-cpu_cycle CPU::op_plp()
+cpu_tick_t CPU::op_plp()
 {
     _registers.P = _memory->popByte(_registers.S);
     _registers.P |= Registers::Flags::B | Registers::Flags::L;
-    return cpu_cycle(3);
+    return 3;
 }
 
-cpu_cycle CPU::op_rti()
+cpu_tick_t CPU::op_rti()
 {
     _registers.P = _memory->popByte(_registers.S);
     _registers.P |= Registers::Flags::B | Registers::Flags::L;
     _registers.PC = _memory->popShort(_registers.S);
-    return cpu_cycle(5);
+    return 5;
 }
 
-cpu_cycle CPU::op_rts()
+cpu_tick_t CPU::op_rts()
 {
     _registers.PC = _memory->popShort(_registers.S) + 1;
-    return cpu_cycle(5);
+    return 5;
 }
 
-cpu_cycle CPU::op_sec()
+cpu_tick_t CPU::op_sec()
 {
     _registers.setFlag(Registers::Flags::C, true);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_sed()
+cpu_tick_t CPU::op_sed()
 {
     _registers.setFlag(Registers::Flags::D, true);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_sei()
+cpu_tick_t CPU::op_sei()
 {
     _registers.setFlag(Registers::Flags::I, true);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_tax()
+cpu_tick_t CPU::op_tax()
 {
     _registers.X = _registers.A;
     updateZNFlags(_registers.X);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_tay()
+cpu_tick_t CPU::op_tay()
 {
     _registers.Y = _registers.A;
     updateZNFlags(_registers.Y);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_tsx()
+cpu_tick_t CPU::op_tsx()
 {
     _registers.X = _registers.S;
     updateZNFlags(_registers.X);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_txa()
+cpu_tick_t CPU::op_txa()
 {
     _registers.A = _registers.X;
     updateZNFlags(_registers.A);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_tya()
+cpu_tick_t CPU::op_tya()
 {
     _registers.A = _registers.Y;
     updateZNFlags(_registers.A);
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_txs()
+cpu_tick_t CPU::op_txs()
 {
     _registers.S = _registers.X;
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_alr()
+cpu_tick_t CPU::op_alr()
 {
     IMM am(_registers, _memory.get());
     _registers.A = _and(_registers.A, am.read());
     _registers.A = _lsr(_registers.A);
 
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_anc()
+cpu_tick_t CPU::op_anc()
 {
     IMM am(_registers, _memory.get());
     _registers.A = _and(am.read(), _registers.A);
     _registers.setFlag(Registers::Flags::C, _registers.getFlag(Registers::Flags::N));
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_arr()
+cpu_tick_t CPU::op_arr()
 {
     IMM am(_registers, _memory.get());
     _registers.A = _and(am.read(), _registers.A);
@@ -1034,10 +1034,10 @@ cpu_cycle CPU::op_arr()
     _registers.setFlag(Registers::Flags::C, bit6);
     _registers.setFlag(Registers::Flags::V, bit6 ^ bit5);
 
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_axs()
+cpu_tick_t CPU::op_axs()
 {
     IMM am(_registers, _memory.get());
     uint8_t operand = am.read();
@@ -1047,16 +1047,16 @@ cpu_cycle CPU::op_axs()
     _registers.setFlag(Registers::Flags::C, (result & 0x100) == 0);
     updateZNFlags(_registers.X);
 
-    return cpu_cycle(1);
+    return 1;
 }
 
-cpu_cycle CPU::op_kil()
+cpu_tick_t CPU::op_kil()
 {
     _killed = true;
-    return cpu_cycle(0);
+    return 0;
 }
 
-cpu_cycle CPU::op_las()
+cpu_tick_t CPU::op_las()
 {
     ABSY am(_registers, _memory.get());
     uint8_t result = _and(am.read(), _registers.S);
@@ -1067,7 +1067,7 @@ cpu_cycle CPU::op_las()
     return am.getCycles();
 }
 
-cpu_cycle CPU::op_sxa()
+cpu_tick_t CPU::op_sxa()
 {
     uint16_t address = _memory->readShort(_registers.PC) + _registers.Y;
     _registers.PC += 2;
@@ -1077,10 +1077,10 @@ cpu_cycle CPU::op_sxa()
     uint8_t result = _registers.X & (ah + 1);
 
     _memory->writeByte((result << 8) | al, result);
-    return cpu_cycle(4);
+    return 4;
 }
 
-cpu_cycle CPU::op_sya()
+cpu_tick_t CPU::op_sya()
 {
     uint16_t address = _memory->readShort(_registers.PC) + _registers.X;
     _registers.PC += 2;
@@ -1090,10 +1090,10 @@ cpu_cycle CPU::op_sya()
     uint8_t result = _registers.Y & (ah + 1);
 
     _memory->writeByte((result << 8) | al, result);
-    return cpu_cycle(4);
+    return 4;
 }
 
-cpu_cycle CPU::op_xaa()
+cpu_tick_t CPU::op_xaa()
 {
     IMM am(_registers, _memory.get());
     am.read();
@@ -1102,7 +1102,7 @@ cpu_cycle CPU::op_xaa()
     return am.getCycles();
 }
 
-cpu_cycle CPU::op_xas()
+cpu_tick_t CPU::op_xas()
 {
     ABSY am(_registers, _memory.get());
     uint16_t operand = am.getAddress() >> 8;
@@ -1114,7 +1114,7 @@ cpu_cycle CPU::op_xas()
     return am.getCycles();
 }
 
-cpu_cycle CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)
+cpu_tick_t CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)
 {
     if (_registers.getFlag(flag) == state)
     {
@@ -1124,14 +1124,14 @@ cpu_cycle CPU::branchOnFlag(CPU::Registers::Flags flag, bool state)
         auto jumpPage = jump & 0xFF00;
         _registers.PC = jump;
 
-        return page == jumpPage ? cpu_cycle(1) : cpu_cycle(2);
+        return page == jumpPage ? 1 : 2;
     }
     else
     {
         _registers.PC++;
     }
 
-    return cpu_cycle(1);
+    return 1;
 }
 
 uint8_t CPU::_add(uint8_t value)

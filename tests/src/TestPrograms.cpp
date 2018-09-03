@@ -10,7 +10,7 @@ using namespace nescore;
 
 TEST(CPU, Implied)
 {
-    TestProgram test("tests/data/01-implied.nes");
+    TestProgram test("tests/data/cpu/01-implied.nes");
 
     int status = test.run();
 
@@ -22,7 +22,7 @@ TEST(CPU, Implied)
 
 TEST(CPU, Immediate)
 {
-    TestProgram test("tests/data/02-immediate.nes");
+    TestProgram test("tests/data/cpu/02-immediate.nes");
 
     int status = test.run();
 
@@ -34,7 +34,7 @@ TEST(CPU, Immediate)
 
 TEST(CPU, ZeroPage)
 {
-    TestProgram test("tests/data/03-zero_page.nes");
+    TestProgram test("tests/data/cpu/03-zero_page.nes");
 
     int status = test.run();
 
@@ -46,7 +46,7 @@ TEST(CPU, ZeroPage)
 
 TEST(CPU, ZeroPage_XY)
 {
-    TestProgram test("tests/data/04-zp_xy.nes");
+    TestProgram test("tests/data/cpu/04-zp_xy.nes");
 
     int status = test.run();
 
@@ -58,7 +58,7 @@ TEST(CPU, ZeroPage_XY)
 
 TEST(CPU, Absolute)
 {
-    TestProgram test("tests/data/05-absolute.nes");
+    TestProgram test("tests/data/cpu/05-absolute.nes");
 
     int status = test.run();
 
@@ -70,7 +70,7 @@ TEST(CPU, Absolute)
 
 TEST(CPU, Absolute_XY)
 {
-    TestProgram test("tests/data/06-abs_xy.nes");
+    TestProgram test("tests/data/cpu/06-abs_xy.nes");
 
     int status = test.run();
 
@@ -82,7 +82,7 @@ TEST(CPU, Absolute_XY)
 
 TEST(CPU, Indirect_X)
 {
-    TestProgram test("tests/data/07-ind_x.nes");
+    TestProgram test("tests/data/cpu/07-ind_x.nes");
 
     int status = test.run();
 
@@ -94,7 +94,7 @@ TEST(CPU, Indirect_X)
 
 TEST(CPU, Indirect_Y)
 {
-    TestProgram test("tests/data/08-ind_y.nes");
+    TestProgram test("tests/data/cpu/08-ind_y.nes");
 
     int status = test.run();
 
@@ -106,7 +106,7 @@ TEST(CPU, Indirect_Y)
 
 TEST(CPU, Branches)
 {
-    TestProgram test("tests/data/09-branches.nes");
+    TestProgram test("tests/data/cpu/09-branches.nes");
 
     int status = test.run();
 
@@ -118,7 +118,7 @@ TEST(CPU, Branches)
 
 TEST(CPU, Stack)
 {
-    TestProgram test("tests/data/10-stack.nes");
+    TestProgram test("tests/data/cpu/10-stack.nes");
 
     int status = test.run();
 
@@ -130,7 +130,7 @@ TEST(CPU, Stack)
 
 TEST(CPU, Special)
 {
-    TestProgram test("tests/data/11-special.nes");
+    TestProgram test("tests/data/cpu/11-special.nes");
 
     int status = test.run();
 

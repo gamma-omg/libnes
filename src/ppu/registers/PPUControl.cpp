@@ -13,28 +13,17 @@ PPUControl::PPUControl() : _register(0) {}
 
 uint16_t PPUControl::getNametableAddr() const
 {
-    auto mode = _register & Bits::NAMETABLE_ADDR;
-    switch (mode)
-    {
-        case 0: return 0x2000;
-        case 1: return 0x2400;
-        case 2: return 0x2800;
-        case 3: return 0x2C00;
-    }
-
-    return 0;
+    return 0x2000 + (_register & Bits::NAMETABLE_ADDR) << 10;
 }
 
 uint16_t PPUControl::getSpritePatternAddr() const
 {
-    auto mode = (_register & Bits::SPRITE_PATTERN_ADDR) != 0;
-    return mode ? 0x1000 : 0x0000;
+    return (_register & Bits::SPRITE_PATTERN_ADDR) << 9;
 }
 
 uint16_t PPUControl::getBackgroundPatternAddr() const
 {
-    auto mode = (_register & Bits::BACKGROUND_PATTERN_ADDR) != 0;
-    return mode ? 0x1000 : 0x0000;
+    return (_register & Bits::BACKGROUND_PATTERN_ADDR) << 9;
 }
 
 uint8_t PPUControl::getVRAMIncrement() const

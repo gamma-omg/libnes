@@ -1,6 +1,4 @@
 .idea
 tests/data/games
-!debug/*.a
-!release/*.a
-debug
-release
+!bin/*.a
+bin

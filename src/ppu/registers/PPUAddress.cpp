@@ -14,6 +14,12 @@ PPUAddress& PPUAddress::operator=(uint8_t value)
     return *this;
 }
 
+PPUAddress &PPUAddress::operator+=(uint16_t value)
+{
+    _register += value;
+    return *this;
+}
+
 PPUAddress::operator uint16_t() const
 {
     return _register;

@@ -7,18 +7,11 @@
 #include <memory>
 #include <stdexcept>
 #include "accessors/IMemoryAccessor.h"
+#include "accessors/BufferAccessor.h"
 #include "../rom/INESRom.h"
 
 namespace nescore
 {
-
-class nes_memory_error : std::runtime_error
-{
-public:
-    nes_memory_error(const std::string& message) : std::runtime_error(message)
-    {
-    }
-};
 
 class Memory : public IMemoryAccessor
 {
@@ -52,7 +45,7 @@ public:
     };
 
 public:
-    Memory();
+    Memory(int size);
     virtual ~Memory();
 
     uint8_t readByte(uint16_t offset) const override;
@@ -67,7 +60,8 @@ public:
     void pushShort(uint8_t& s, uint16_t value);
     void readBytes(IMemoryAccessor* dst, uint16_t offset, uint16_t size);
     void readBytes(uint8_t* dst, uint16_t offset, uint16_t size);
-    void writeBytes(IMemoryAccessor* src, uint16_t offset, uint16_t size);
+    void writeBytes(const IMemoryAccessor* src, uint16_t offset, uint16_t size);
+    void writeBytes(const uint8_t* src, uint16_t offset, uint16_t size);
     void setStackOffset(uint16_t offset);
 
     std::string readString(uint16_t offset);
@@ -79,14 +73,16 @@ public:
     void unmountAll();
 
 private:
-    const Mount* findMount(const std::list<Mount>& source, uint16_t offset) const;
+    const Mount* findMount(const std::list<Mount*>& source, uint16_t offset) const;
 
 private:
-    std::list<Mount> _readMounts;
-    std::list<Mount> _writeMounts;
+    std::list<Mount*> _readMounts;
+    std::list<Mount*> _writeMounts;
     std::list<std::shared_ptr<IMemoryAccessor>> _accessors;
-    uint16_t _stackOffset;
 
+    uint16_t _stackOffset;
+    uint8_t* _fallbackBuffer;
+    BufferAccessor _fallbackAccessor;
 };
 
 }

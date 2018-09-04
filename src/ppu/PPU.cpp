@@ -12,6 +12,10 @@ PPU::PPU(std::shared_ptr<CPU> cpu)
     , _memory(new PPUMemory())
     , _registers(this)
     , _oamDma(this)
+    , _renderer(SCREEN_WIDTH, SCREEN_HEIGHT)
+    , _lineX(0)
+    , _lineY(0)
+    , _vramReadBuffer(0)
 {
     _registers.mountTo(_cpu->getMemory());
     _oamDma.mountTo(_cpu->getMemory());
@@ -26,7 +30,23 @@ std::shared_ptr<PPUMemory> PPU::getMemory()
 
 void PPU::update(master_cycle time)
 {
-    // TODO: implement
+    _masterClock = time;
+    while (_ppuClock < _masterClock)
+    {
+        tick();
+    }
+}
+
+void PPU::tick()
+{
+    if (_lineX % 8 == 0)
+    {
+//        _renderer.setPattern(readPattern(), _lineY % 8);
+//        _renderer.setAttributes(readAttributes());
+//        _renderer.render(_lineX, _lineY);
+    }
+
+    _ppuClock++;
 }
 
 void PPU::reset()
@@ -37,41 +57,50 @@ void PPU::reset()
 void PPU::setPPUControl(uint8_t value)
 {
     _ppuControl = value;
+    _latch = value;
 }
 
 void PPU::setPPUMask(uint8_t value)
 {
     _ppuMask = value;
+    _latch = value;
 }
 
 void PPU::setPPUStatus(uint8_t value)
 {
     _ppuStatus = value;
+    _latch = value;
 }
 
 void PPU::setOamData(uint8_t value)
 {
     _oam[_oamAddr++] = value;
+    _latch = value;
 }
 
 void PPU::setOamAddr(uint8_t value)
 {
     _oamAddr = value;
+    _latch = value;
 }
 
 void PPU::setPPUScroll(uint8_t value)
 {
     _ppuScroll = value;
+    _latch = value;
 }
 
 void PPU::setPPUAddress(uint8_t value)
 {
     _ppuAddress = value;
+    _latch = value;
 }
 
 void PPU::setPPUData(uint8_t value)
 {
-    // TODO: implement
+    _memory->writeByte(_ppuAddress, value);
+    _ppuAddress += _ppuControl.getVRAMIncrement();
+    _latch = value;
 }
 
 void PPU::setOamDma(uint8_t value)
@@ -80,35 +109,53 @@ void PPU::setOamDma(uint8_t value)
     _cpu->startDmaTransfer();
 }
 
-const PPUControl& PPU::getPPUControl() const
+void PPU::setLatch(uint8_t value)
+{
+    _latch = value;
+}
+
+const PPUControl& PPU::getPPUControl()
 {
     return _ppuControl;
 }
 
-const PPUMask& PPU::getPPUMask() const
+const PPUMask& PPU::getPPUMask()
 {
     return _ppuMask;
 }
 
-const PPUStatus& PPU::getPPUStatus() const
+const PPUStatus& PPU::getPPUStatus()
 {
+    _latch = _ppuStatus;
     return _ppuStatus;
 }
 
-uint8_t PPU::getOamAddr() const
+uint8_t PPU::getOamAddr()
 {
     return _oamAddr;
 }
 
-uint8_t PPU::getOamData() const
+uint8_t PPU::getOamData()
 {
+    auto data = _oam[_oamAddr];
+    _latch = data;
+
     return _oam[_oamAddr];
 }
 
-uint8_t PPU::getPPUData() const
+uint8_t PPU::getPPUData()
 {
-    // TODO: implement
-    return 0;
+    auto data = _vramReadBuffer;
+    _vramReadBuffer = _memory->readByte(_ppuAddress);
+    _ppuAddress += _ppuControl.getVRAMIncrement();
+    _latch = data;
+
+    return data;
+}
+
+uint8_t PPU::getLatch() const
+{
+    return _latch;
 }
 
 

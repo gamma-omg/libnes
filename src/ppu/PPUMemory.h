@@ -16,8 +16,6 @@ public:
     PPUMemory();
     ~PPUMemory();
 
-private:
-    uint8_t* _vram;
 };
 
 }

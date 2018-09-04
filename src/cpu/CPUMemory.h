@@ -28,9 +28,6 @@ public:
 
     void loadProgram(const std::vector<uint8_t>& program);
     void setResetVector(uint16_t offset);
-
-private:
-    uint8_t* _ram;
 };
 
 }

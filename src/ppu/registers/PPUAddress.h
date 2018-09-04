@@ -12,6 +12,7 @@ public:
     PPUAddress();
 
     PPUAddress& operator=(uint8_t value);
+    PPUAddress& operator+=(uint16_t value);
     operator uint16_t() const;
 
 private:

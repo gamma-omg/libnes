@@ -35,21 +35,26 @@ uint16_t Memory::Range::getGlobalOffset(uint16_t offset) const
 }
 
 
-Memory::Memory()
+Memory::Memory(int size)
     : _stackOffset(0)
+    , _fallbackBuffer(new uint8_t[size])
 {
+    _fallbackAccessor.setBuffer(_fallbackBuffer);
 }
 
 Memory::~Memory()
 {
+    unmountAll();
+
+    delete[] _fallbackBuffer;
 }
 
 uint8_t Memory::readByte(uint16_t offset) const
 {
-    const auto mount = findMount(_readMounts, offset);
+    auto mount = findMount(_readMounts, offset);
     if (!mount)
     {
-        throw nes_memory_error("Mount point was not found for address " + offset);
+        return _fallbackAccessor.readByte(offset);
     }
 
     return mount->accessor->readByte(offset - mount->range.start);
@@ -57,10 +62,11 @@ uint8_t Memory::readByte(uint16_t offset) const
 
 void Memory::writeByte(uint16_t offset, uint8_t value)
 {
-    const auto mount = findMount(_writeMounts, offset);
+    auto mount = findMount(_writeMounts, offset);
     if (!mount)
     {
-        throw nes_memory_error("Mount point was not found for address " + offset);
+        _fallbackAccessor.writeByte(offset, value);
+        return;
     }
 
     mount->accessor->writeByte(offset - mount->range.start, value);
@@ -122,11 +128,19 @@ void Memory::readBytes(uint8_t *dst, uint16_t offset, uint16_t size)
     }
 }
 
-void Memory::writeBytes(IMemoryAccessor* src, uint16_t offset, uint16_t size)
+void Memory::writeBytes(const IMemoryAccessor* src, uint16_t offset, uint16_t size)
 {
     for (auto i = 0; i < size; ++i)
     {
         writeByte(offset + i, src->readByte(i));
+    }
+}
+
+void Memory::writeBytes(const uint8_t *src, uint16_t offset, uint16_t size)
+{
+    for (auto i = 0; i < size; ++i)
+    {
+        writeByte(offset + i, *src++);
     }
 }
 
@@ -153,11 +167,11 @@ void Memory::mount(Memory::Range range, IMemoryAccessor *accessor, MountMode mod
 {
     if (mode & MountMode::Read)
     {
-        _readMounts.emplace_front(Mount(range, accessor));
+        _readMounts.emplace_front(new Mount(range, accessor));
     }
     if (mode & MountMode::Write)
     {
-        _writeMounts.emplace_front(Mount(range, accessor));
+        _writeMounts.emplace_front(new Mount(range, accessor));
     }
 }
 
@@ -188,6 +202,9 @@ void Memory::mirror(Memory::Range src, Memory::Range dst, MountMode mode)
 
 void Memory::unmountAll()
 {
+    for (auto& mount : _readMounts) delete mount;
+    for (auto& mount : _writeMounts) delete mount;
+
     _readMounts.clear();
     _writeMounts.clear();
     _accessors.clear();
@@ -198,13 +215,13 @@ void Memory::setStackOffset(uint16_t offset)
     _stackOffset = offset;
 }
 
-const Memory::Mount* Memory::findMount(const std::list<Mount>& source, uint16_t offset) const
+const Memory::Mount* Memory::findMount(const std::list<Mount*>& source, uint16_t offset) const
 {
     for (auto& mount : source)
     {
-        if (mount.range.contains(offset))
+        if (mount->range.contains(offset))
         {
-            return &mount;
+            return mount;
         }
     }
 

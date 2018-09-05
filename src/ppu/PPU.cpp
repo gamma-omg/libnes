@@ -1,6 +1,7 @@
 #include <memory.h>
 #include "PPU.h"
 #include "PPUMemory.h"
+#include "IRenderCallback.h"
 #include "../cpu/CPU.h"
 #include "../cpu/CPUMemory.h"
 
@@ -21,6 +22,11 @@ PPU::PPU(std::shared_ptr<CPU> cpu)
     _oamDma.mountTo(_cpu->getMemory());
 
     memset(&_oam, 0x100, sizeof(uint8_t));
+}
+
+void PPU::setRenderCallback(IRenderCallback *callback)
+{
+    _renderCallback = callback;
 }
 
 std::shared_ptr<PPUMemory> PPU::getMemory()
@@ -44,6 +50,26 @@ void PPU::tick()
 //        _renderer.setPattern(readPattern(), _lineY % 8);
 //        _renderer.setAttributes(readAttributes());
 //        _renderer.render(_lineX, _lineY);
+    }
+
+    _lineX++;
+    if (_lineX > _renderer.getWidth())
+    {
+        _lineX = 0;
+        _lineY++;
+    }
+
+    if (_lineY > _renderer.getHeight())
+    {
+        _lineY = 0;
+        _lineX = 0;
+        _renderer.setPattersSource(_memory.get());
+        _renderer.renderPatternTables();
+
+        if (_renderCallback)
+        {
+            _renderCallback->renderFrame(_renderer.getWidth(), _renderer.getHeight(), _renderer.getOutput());
+        }
     }
 
     _ppuClock++;

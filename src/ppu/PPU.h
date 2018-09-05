@@ -17,6 +17,7 @@ namespace nescore
 
 class CPU;
 class PPUMemory;
+class IRenderCallback;
 
 class PPU
 {
@@ -29,6 +30,7 @@ public:
 
     std::shared_ptr<PPUMemory> getMemory();
 
+    void setRenderCallback(IRenderCallback* callback);
     void update(master_cycle time);
     void tick();
     void reset();
@@ -58,6 +60,8 @@ private:
 private:
     std::shared_ptr<CPU> _cpu;
     std::shared_ptr<PPUMemory> _memory;
+
+    IRenderCallback* _renderCallback;
 
     PPURegistersAccessor _registers;
     OamDmaAccessor _oamDma;

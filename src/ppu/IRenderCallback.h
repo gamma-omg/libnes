@@ -9,7 +9,7 @@ namespace nescore
 class IRenderCallback
 {
 public:
-    virtual ~IRenderCallback();
+    virtual ~IRenderCallback() = default;
     virtual void renderFrame(int width, int height, const uint32_t * frameBuffer) = 0;
 };
 

@@ -10,7 +10,7 @@ class IRenderCallback
 {
 public:
     virtual ~IRenderCallback();
-    virtual renderFrame(int width, int height, const uint32_t * frameBuffer) = 0;
+    virtual void renderFrame(int width, int height, const uint32_t * frameBuffer) = 0;
 };
 
 }

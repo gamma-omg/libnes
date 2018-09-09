@@ -12,6 +12,7 @@ class CPU;
 class PPU;
 class INESRom;
 class IRomMapper;
+class IRenderCallback;
 
 class NES
 {
@@ -19,6 +20,7 @@ public:
     NES();
 
     void update(seconds delta);
+    void setRenderCallback(IRenderCallback* callback);
     void loadRom(const std::string& fileName);
     void loadRom(std::shared_ptr<INESRom> rom);
     bool isRomLoaded() const;

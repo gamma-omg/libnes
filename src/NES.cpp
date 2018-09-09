@@ -18,10 +18,15 @@ NES::NES()
 
 void NES::update(seconds delta)
 {
-    _clock += delta;
+    //_clock += delta;
 
-    _cpu->update(_clock);
+    //_cpu->update(_clock);
     _ppu->update(_clock);
+}
+
+void NES::setRenderCallback(IRenderCallback *callback)
+{
+    _ppu->setRenderCallback(callback);
 }
 
 void NES::loadRom(const std::string &fileName)
@@ -41,6 +46,8 @@ void NES::loadRom(std::shared_ptr<INESRom> rom)
     _mapper = MapperFactory::createMapper(rom);
     _mapper->setupCPU(_cpu->getMemory());
     _mapper->setupPPU(_ppu->getMemory());
+
+    _clock = master_cycle(0);
 }
 
 bool NES::isRomLoaded() const

@@ -36,6 +36,24 @@ std::shared_ptr<PPUMemory> PPU::getMemory()
 
 void PPU::update(master_cycle time)
 {
+    uint8_t palette[] = { 0x0F, 0x16, 0x16, 0x30 };
+    _renderer.setPattersSource(_memory.get());
+    _renderer.setPalette(palette);
+    _renderer.renderPatternTables();
+
+    if (_renderCallback)
+    {
+        _renderCallback->renderFrame(_renderer.getWidth(), _renderer.getHeight(), _renderer.getOutput());
+    }
+    _renderer.swapBuffers();
+    return;
+
+//    for (int i = 0; i < 256 * 256; i++)
+//    {
+//        tick();
+//    }
+//    return;
+
     _masterClock = time;
     while (_ppuClock < _masterClock)
     {

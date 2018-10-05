@@ -66,7 +66,7 @@ private:
 
     bool isPageCrossed(uint16_t address, uint16_t offset)
     {
-        return (address + offset) & 0xFF00 != address & 0xFF00;
+        return ((address + offset) & 0xFF00) != (address & 0xFF00);
     }
 
 private:

@@ -150,7 +150,7 @@ bool INESRom::hasPlayChoice10() const
 
 bool INESRom::isNES2Format() const
 {
-    return _header.flag7 & Flag7::NES2_FORMAT == 0b1000;
+    return (_header.flag7 & Flag7::NES2_FORMAT) == 0b1000;
 }
 
 uint8_t INESRom::getPrgRomBanks() const

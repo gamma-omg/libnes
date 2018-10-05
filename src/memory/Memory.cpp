@@ -49,7 +49,7 @@ uint8_t Memory::readByte(uint16_t offset) const
     const auto mount = findMount(_readMounts, offset);
     if (!mount)
     {
-        throw nes_memory_error("Mount point was not found for address " + offset);
+        throw nes_memory_error("Mount point was not found for address " + std::to_string(offset));
     }
 
     return mount->accessor->readByte(offset - mount->range.start);
@@ -60,7 +60,7 @@ void Memory::writeByte(uint16_t offset, uint8_t value)
     const auto mount = findMount(_writeMounts, offset);
     if (!mount)
     {
-        throw nes_memory_error("Mount point was not found for address " + offset);
+        throw nes_memory_error("Mount point was not found for address " + std::to_string(offset));
     }
 
     mount->accessor->writeByte(offset - mount->range.start, value);

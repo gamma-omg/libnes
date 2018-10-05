@@ -84,10 +84,6 @@ void CPU::tick()
 
     auto opcode = _memory->readByte(_registers.PC++);
     auto handler = _instructions[opcode];
-    if (!handler)
-    {
-        throw std::runtime_error("Invalid opcode: " + opcode);
-    }
 
     _cycle++;
     _cycle += (this->*handler)();

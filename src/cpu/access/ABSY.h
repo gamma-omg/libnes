@@ -21,7 +21,7 @@ public:
     {
         _cycles = 3;
         _address = _memory->readShort(_registers.PC);
-        if (_address & 0xFF + _registers.Y > 0xFF)
+        if ((_address & 0xFF + _registers.Y) > 0xFF)
         {
             _cycles++;
         }

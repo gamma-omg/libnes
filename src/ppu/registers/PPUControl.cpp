@@ -13,7 +13,7 @@ PPUControl::PPUControl() : _register(0) {}
 
 uint16_t PPUControl::getNametableAddr() const
 {
-    return 0x2000 + (_register & Bits::NAMETABLE_ADDR) << 10;
+    return 0x2000 + ((_register & Bits::NAMETABLE_ADDR) << 10);
 }
 
 uint16_t PPUControl::getSpritePatternAddr() const
